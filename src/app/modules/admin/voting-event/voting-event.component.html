@@ -1,0 +1,53 @@
+<div class="voting-event">
+
+  <div class="voting-event-section">
+    <h3>All events</h3>
+    <button mat-flat-button color="accent" (click)="viewVoteCloudForAllEvents()">Word cloud</button>
+    <span *ngIf="(configuration$ | async)?.allVotesToggle">
+      <button mat-flat-button color="accent" (click)="viewRadarForAllEvents()">Tech radar</button>
+    </span>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="voting-event-section">
+    <h3>Single event</h3>
+    <mat-form-field>
+      <mat-select placeholder="Choose a voting event" [(value)]="selectedName" (selectionChange)="cleanMessages()">
+        <mat-option *ngFor="let votingEvent of votingEvents$ | async; let i=index" [value]="votingEvent.name">
+          {{votingEvent.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div *ngIf="getSelectedEvent()">
+      <button mat-flat-button *ngIf="isSelectedEventClosed()" color="accent" (click)="openSelectedEvent()">Open
+        Event</button>
+      <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="closeSelectedEvent()">Close
+        Event</button>
+      <button mat-flat-button color="accent" (click)="viewVoteCloud()">Word cloud</button>
+      <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="voters()">Voters</button>
+      <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="viewRadarForSelectedEvent()">Tech radar</button>
+      <span mat-flat-button *ngIf="(configuration$ | async)?.revoteToggle">
+        <button mat-flat-button *ngIf="showTechnologiesForRevote()" color="accent" (click)="techForRevote()">Tech for
+          Revote</button>
+        <button mat-flat-button *ngIf="canBeOpenedForRevote()" color="accent" (click)="openForRevote()">Revote</button>
+        <button mat-flat-button *ngIf="canBeClosedForRevote()" color="accent" (click)="closeForRevote()">Close
+          Revote</button>
+      </span>
+      <div *ngIf="messageAction" class="selected-event-message" [innerHTML]="messageAction"></div>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="voting-event-section">
+    <h3>New event</h3>
+    <form [formGroup]="eventCreationForm" (ngSubmit)="onSubmit()">
+      <input #eventName type="text" formControlName="eventNameControl" required class="voting-event-input"
+        placeholder="Name">
+      <button mat-flat-button type="submit" color="accent" [class.button-disabled]="eventCreationForm.invalid"
+        [disabled]="eventCreationForm.invalid">Create</button>
+    </form>
+    <div *ngIf="messageCreate" class="create-voting-event-message" [innerHTML]="messageCreate"></div>
+  </div>
+
+</div>

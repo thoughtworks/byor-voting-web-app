@@ -1,0 +1,23 @@
+.header {
+  padding: 1.3rem;
+  background: url('/assets/images/tech-radar-landing-page-wide.png') no-repeat 50% 50%;
+  background-size: cover;
+
+  &__title {
+    font-size: 3vw;
+    color: #fff;
+
+    h1 {
+      line-height: normal;
+    }
+  }
+
+}
+
+@media screen and (min-width: 800px) {
+  .header {
+    &__title {
+     font-size: 24px;
+    }
+  }
+}

@@ -1,0 +1,141 @@
+@import "../../../styles/theme/colors";
+
+$boxes_padding: 1.3rem;
+
+:host {
+  position: relative;
+}
+
+.technology-card-list {
+    padding-top: 30px;
+    overflow: auto;
+    background-color: rgba(0,0,0,.06);
+    -webkit-overflow-scrolling: touch;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.technology-card {
+    height: 8rem;
+    width: 15rem;
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    text-align: center;
+    line-height: 1.4;
+    color: white;
+    justify-content: space-evenly;
+}
+
+.new-ribbon {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.technology-title {
+    font-weight: bold;
+    height: 50px;
+}
+
+.technology-description {
+    font-size: x-small;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.vote-chip {
+  color: #fff;
+}
+
+.search-field {
+    width: 100%;
+}
+
+.input-field {
+    // this is to override the thoughtworks screen.css which specifies a differen box-shadow for input.focus
+    // which causes the input field to get a grey border
+    box-shadow: inset 0 0 1px #fdfafafc;
+}
+
+.quadrant-buttons, .search-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 $boxes_padding;
+}
+
+.quadrant-button {
+  margin: 1rem;
+  color: white;
+}
+
+.selected-quadrant-button {
+    background-color: #3f51b5;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px 0;
+  justify-content: center;
+}
+
+.ring-button {
+  width: 40%;
+  margin: 10px !important;
+  padding: 0;
+}
+
+.votes-information {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: #fff;
+  .mat-expansion-panel-header {
+    flex-direction: row-reverse;
+    .mat-expansion-panel-header-title {
+      align-items: center;
+    }
+    .mat-expansion-panel-header-description {
+      flex-grow: 0;
+      margin-right: 0;
+    }
+  }
+  .selection-list > div {
+    padding: $boxes_padding 0 0 0;
+  }
+}
+
+.tools {
+  background-color: $green;
+}
+
+.technique {
+  background-color: $blue;
+}
+
+.platforms {
+  background-color: $orange;
+}
+
+.languages {
+  background-color: $violet;
+}
+
+.help-dialogue-button {
+  border: none;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.vote-comment {
+  width: 100%
+}

@@ -1,0 +1,16 @@
+@import "../../../styles/theme/colors";
+
+.ring-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ring-button {
+  margin: 1rem;
+  color: white;
+}
+
+.selected-ring {
+  background-color: #3f51b5;
+}

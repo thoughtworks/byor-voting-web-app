@@ -1,0 +1,38 @@
+<div class="vote-section">
+  <div *ngIf="!(moreThanOneOpenEvent$ | async) && (votingEvent$ | async) as votingEvent">
+    <span class="event-label">Voting for event: <strong>{{votingEvent.name}}</strong></span>
+  </div>
+
+  <div class="event-selection" *ngIf="moreThanOneOpenEvent$ | async">
+    <mat-form-field>
+      <mat-select #eventSelect placeholder="Choose a voting event" id="eventSelectEl">
+        <mat-option *ngFor="let votingEvent of openVotingEvents$ | async" [value]="votingEvent.name">
+          {{votingEvent.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>
+
+<div class="vote-section">
+  <div class="voter">
+    <label>First Name</label>
+    <input #voterFirstName type="text" class="voter-input" id="firstName">
+    <label>Last Name</label>
+    <input #voterLastName type="text" class="voter-input" id="lastName">
+  </div>
+
+  <div class="form-actions">
+    <button #startButton mat-flat-button color="accent" [class.button-disabled]="!(isValidInputData$ | async)"
+      [class.button-enabled]="(isValidInputData$ | async)" [disabled]="!(isValidInputData$ | async)">
+      <span class="button-text"> Start Session </span>
+    </button>
+  </div>
+
+  <div *ngIf="message$ | async as message" class="message" [innerHTML]="message"></div>
+
+</div>
+<div class="banner-section">
+  <a [href]="(configuration$ | async)?.bannerTargetUrl" target="_blank"><img
+      [src]="(configuration$ | async)?.bannerImageUrl"></a>
+</div>

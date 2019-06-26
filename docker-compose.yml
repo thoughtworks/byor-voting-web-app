@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+
+  byor-app:
+    build: 
+      context: .
+      target: dev
+    image: byor-app
+    volumes:
+      - byor_app:/usr/src/app
+    ports:
+      - 4200:4200
+    environment:
+      BACKEND_SERVICE_URL:
+      RADAR_SERVICE_URL:
+    command: ${APP_COMMAND:-}
+
+volumes:
+  byor_app:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD
+      o: bind

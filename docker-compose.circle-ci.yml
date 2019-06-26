@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+
+  byor-app:
+    volumes:
+      - byor_app_ssh:/root/.ssh
+    environment:
+      CI:
+      GITHUB_TOKEN:
+
+volumes:
+  byor_app:
+  byor_app_ssh:

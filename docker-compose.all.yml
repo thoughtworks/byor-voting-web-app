@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+
+  mongo:
+    image: mongo:4.0
+    volumes:
+      - local_all_mongo_data:/data/db
+    ports:
+      - 27019:27017
+
+  byor-backend:
+    image: byoritaly/byor-backend:latest
+    depends_on:
+      - mongo
+    ports:
+      - 3001:3000
+    environment:
+      MONGO_URI: 'mongodb://mongo/'
+      MONGO_URI_ADMIN: 'mongodb://mongo/'
+      MONGO_DB_NAME: 'byor'
+
+  byor-app:
+    image: byoritaly/byor-app:latest
+    depends_on:
+      - byor-backend
+    ports:
+      - 4201:80
+    environment:
+      BACKEND_SERVICE_URL: 'http://localhost:3001/'
+      RADAR_SERVICE_URL: 'https://radar.thoughtworks.com/'
+
+volumes:
+  local_all_mongo_data:

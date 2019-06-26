@@ -1,0 +1,109 @@
+{
+  "name": "ng-build-your-own-radar",
+  "version": "0.9.0",
+  "scripts": {
+    "ng": "npx ng",
+    "start": "npx ng serve --extra-webpack-config webpack.extra.js --poll 2000 --host 0.0.0.0",
+    "build": "npx ng build --extra-webpack-config webpack.extra.js -c production",
+    "lint": "npx ng lint",
+    "lint:fix": "npm run lint -- --fix",
+    "test": "npm run test:watch -- --watch=false",
+    "test:watch": "npx ng test --extra-webpack-config webpack.extra.js --poll 2000",
+    "semantic-release": "npx semantic-release",
+    "e2e": "npx ng e2e",
+    "analyze": "npm run build -- --stats-json && npx webpack-bundle-analyzer dist/ng-build-your-own-radar/stats.json"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^7.2.15",
+    "@angular/cdk": "^7.3.7",
+    "@angular/common": "~7.2.15",
+    "@angular/compiler": "~7.2.15",
+    "@angular/core": "~7.2.15",
+    "@angular/forms": "~7.2.15",
+    "@angular/material": "^7.3.7",
+    "@angular/platform-browser": "~7.2.15",
+    "@angular/platform-browser-dynamic": "~7.2.15",
+    "@angular/router": "~7.2.15",
+    "@auth0/angular-jwt": "^2.1.0",
+    "@types/lodash": "^4.14.130",
+    "core-js": "^2.5.4",
+    "d3": "^5.7.0",
+    "d3-cloud": "^1.2.5",
+    "d3-tip": "^0.9.1",
+    "observable-mongo": "^2.2.2",
+    "rxjs": "~6.5.2",
+    "tslib": "^1.9.0",
+    "zone.js": "~0.8.29"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^0.13.6",
+    "@angular/cli": "~7.3.9",
+    "@angular/compiler-cli": "^7.2.15",
+    "@angular/language-service": "~7.2.15",
+    "@semantic-release/changelog": "^3.0.2",
+    "@semantic-release/git": "^7.0.8",
+    "@types/d3": "^5.5.0",
+    "@types/jasmine": "~2.8.8",
+    "@types/jasminewd2": "~2.0.3",
+    "@types/node": "~8.9.4",
+    "codelyzer": "~4.5.0",
+    "commitizen": "^3.1.1",
+    "cz-conventional-changelog": "^2.1.0",
+    "husky": "^2.2.0",
+    "jasmine-core": "~2.99.1",
+    "jasmine-spec-reporter": "~4.2.1",
+    "karma": "^4.0.1",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-coverage-istanbul-reporter": "~2.0.1",
+    "karma-jasmine": "~1.1.2",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "ngx-build-plus": "^7.8.3",
+    "prettier": "^1.16.4",
+    "protractor": "~5.4.0",
+    "rxjs-marbles": "^5.0.0",
+    "semantic-release": "^15.13.12",
+    "ts-node": "~7.0.0",
+    "tslint": "~5.11.0",
+    "typescript": "~3.2.4",
+    "webpack-bundle-analyzer": "^3.0.4"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook",
+      "pre-commit": "exec < /dev/tty && make check_for_secrets"
+    }
+  },
+  "release": {
+    "branch": "master",
+    "prepare": [
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      {
+        "path": "@semantic-release/git",
+        "assets": [
+          "package.json",
+          "package-lock.json",
+          "CHANGELOG.md"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
+      ],
+      "@semantic-release/github"
+    ]
+  }
+}

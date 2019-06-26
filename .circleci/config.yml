@@ -1,0 +1,126 @@
+version: 2.1
+only_tagged_versions: &only_tagged_versions
+  filters:
+    tags:
+      only: /^v.*/
+    branches:
+      ignore: /.*/
+commands:
+  add_missing_dependencies:
+    steps:
+      - run:
+          name: Add curl, git and make
+          command: |
+            apt-get update
+            apt-get install -y curl git make jq
+      - run:
+          name: Install Docker client
+          command: |
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sh get-docker.sh
+            rm -Rf get-docker.sh
+            docker --version
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
+            docker-compose --version
+  run_common_initial_steps:
+    steps:
+      - setup_remote_docker:
+          version: 18.06.0-ce
+          # Inactive for now... needs to be whitelisted (and/or OS), see https://circleci.com/docs/2.0/docker-layer-caching/
+          docker_layer_caching: true
+      - add_missing_dependencies
+      - checkout
+      - restore_cache:
+          keys:
+            - dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+      - run:
+          name: Copy current dir to remote docker
+          # mount hack for cicleci: https://circleci.com/docs/2.0/building-docker-images/#mounting-folders
+          command: |
+            /bin/bash .make/utils/execute-in-docker.sh -s "${CIRCLE_PROJECT_REPONAME}" -o "--no-start"
+            docker cp . $(docker-compose ps -q ${CIRCLE_PROJECT_REPONAME}):/usr/src/app/
+      - run:
+          name: Copy ~/.ssh dir to remote docker
+          command: docker cp ~/.ssh $(docker-compose ps -q ${CIRCLE_PROJECT_REPONAME}):/root/
+      - run:
+          name: Install
+          command: make install
+      - run:
+          name: Copy node_modules dir from remote docker
+          # return node_modules hack for cicleci: https://circleci.com/docs/2.0/building-docker-images/#mounting-folders
+          command: docker cp $(docker-compose ps -q ${CIRCLE_PROJECT_REPONAME}):/usr/src/app/node_modules/ ./node_modules/
+      - save_cache:
+          paths:
+            - node_modules
+          key: dependencies-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+defaults: &defaults
+  docker:
+    - image: ubuntu:18.04
+jobs:
+  test:
+    <<: *defaults
+    steps:
+      - run_common_initial_steps
+      - run:
+          name: Lint
+          command: make lint
+      - run:
+          name: Unit tests
+          # TODO temp hack that sets backend service url since unit tests as of now are no actual unit tests
+          command: BACKEND_SERVICE_URL="${AWS_SERVICE_URL}" make unit_tests
+      - run:
+          name: Verify build for production
+          command: BACKEND_SERVICE_URL="${AWS_SERVICE_URL}" make build
+  release:
+    <<: *defaults
+    steps:
+      - run_common_initial_steps
+      - run:
+          name: Semantic release
+          command: make semantic_release
+  publish:
+    <<: *defaults
+    steps:
+      - run_common_initial_steps
+      - run:
+          name: Publish to Docker Hub
+          command: |
+            TAG_BASE="byoritaly/${CIRCLE_PROJECT_REPONAME}:"
+            IMAGE_TAG=${TAG_BASE}$(cat package.json | jq -r .version)
+            TAGS=( $IMAGE_TAG )
+            if [ "$(git rev-parse HEAD)" == "$(git rev-parse master)" ]; then TAGS=( "${TAGS[@]}" "${TAG_BASE}latest" ); fi
+            docker login -u ${DOCKER_HUB_USER_ID} -p ${DOCKER_HUB_PWD}
+            for TAG in "${TAGS[@]}"; do
+              docker build -t ${TAG} .
+              docker push ${TAG}
+            done
+            docker logout
+workflows:
+  version: 2.1
+  # This runs on non-tag pushes
+  untagged:
+    jobs:
+      - test:
+          context: byor
+      - release:
+          context: byor
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
+  # This only runs on deploy tags and not branches
+  tagged:
+    jobs:
+      - test:
+          <<: *only_tagged_versions
+          context: byor
+      - publish:
+          <<: *only_tagged_versions
+          context: byor
+          requires:
+            - test

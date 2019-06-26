@@ -1,0 +1,52 @@
+/* You can add global styles to this file, and also import other style files */
+// @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "../node_modules/@angular/material/prebuilt-themes/indigo-pink.css";
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  height: 100%;
+
+  // This defines the what 1 rem is
+  font-size: 62.5%;
+}
+
+body {
+  box-sizing: border-box;
+  font-family: "Open Sans", "Helvetica Neue", sans-serif, Arial;
+  font-size: 1.8rem;
+  line-height: 1.6em;
+  color: #333;
+}
+
+.mat-flat-button {
+  color: white;
+  background-color: #333;
+  font-weight: bold;
+}
+
+.votes-information {
+  .mat-content {
+    padding-left: 1.3rem;
+    overflow: visible;
+  }
+}
+
+$pink: #ee0b77;
+
+a, a:active, a:hover, a:visited, a:link {
+  color: $pink;
+  text-decoration: none;
+  cursor: pointer;
+  border-bottom: 1px solid $pink;
+}
+a:hover {
+  border-bottom-color: lighten( $pink, 20% );
+  color: lighten( $pink, 20% );
+}

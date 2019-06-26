@@ -1,0 +1,26 @@
+<mat-card>
+    <mat-card-header>
+        <div *ngIf="allowVote()">
+            <a class="help-dialogue-button" (click)="showHelp()">
+                <mat-icon aria-hidden="false" aria-label="Help">help</mat-icon>
+            </a>
+            <mat-card-title>
+                {{data.technology.name}}
+            </mat-card-title>
+            <mat-card-subtitle>Select ring</mat-card-subtitle>
+        </div>
+        <div *ngIf="!allowVote()">
+            <mat-card-title>{{data.message}}</mat-card-title>
+        </div>
+    </mat-card-header>
+    <mat-card-actions *ngIf="allowVote()" class="card-actions">
+        <button *ngFor="let ring of rings" class="ring-button" color="accent" mat-flat-button (click)="vote(ring)"
+            tabindex="-1">{{ring  | uppercase }}</button>
+    </mat-card-actions>
+    <mat-card-content *ngIf="showComment$() | async">
+        <mat-card-subtitle>Comment</mat-card-subtitle>
+        <mat-form-field class="vote-comment">
+            <textarea matInput #comment matInput placeholder="Leave a comment if u want"></textarea>
+        </mat-form-field>
+    </mat-card-content>
+</mat-card>

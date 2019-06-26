@@ -1,0 +1,18 @@
+<div class="voting-event">
+  <div class="voters-list-section">
+    <button mat-flat-button color="accent" (click)="getWinner()">And the winner is ...</button>
+    <div class="winner" *ngFor="let winner of winners$ | async">{{winner}}</div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="voters-list-section">
+    <div>The list of those who voted</div>
+    <mat-list>
+      <mat-list-item *ngFor="let voter of voters$ | async">
+        <div class="voter">{{voter}}</div>
+      </mat-list-item>
+    </mat-list>
+  </div>
+
+</div>

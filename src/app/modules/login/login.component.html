@@ -1,0 +1,27 @@
+<header>
+  <div class="login-title">
+    <div class="login-title__text">
+      <h2>Login</h2>
+    </div>
+  </div>
+</header>
+
+<div class="login-section">
+
+  <div class="login">
+    <label>User</label>
+    <input #userid type="text" class="login-input" id="userid">
+    <label>Password</label>
+    <input #pwd type="password" class="login-input" id="pwd">
+  </div>
+
+  <div class="form-actions">
+    <button #loginButton mat-flat-button color="accent" [class.button-disabled]="!(isValidInputData$ | async)"
+      [class.button-enabled]="(isValidInputData$ | async)" [disabled]="!(isValidInputData$ | async)">
+      <span class="button-text">Login</span>
+    </button>
+  </div>
+
+  <div *ngIf="message$ | async as message" class="message" [innerHTML]="message"></div>
+
+</div>

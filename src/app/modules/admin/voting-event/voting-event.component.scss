@@ -1,0 +1,28 @@
+@import "../../../styles/abstracts/mixins";
+
+.voting-event {
+  font-size: 1.6rem;
+
+  .voting-event-section {
+    padding: 1.3rem;
+
+    h3 {
+      margin-bottom: 1.3rem;
+    }
+
+    .voting-event-input {
+      width: 100%;
+      @include byor-input;
+    }
+
+    label {
+      display: block;
+      margin-bottom: .3rem;
+    }
+
+    .mat-flat-button {
+      margin: 0 1rem 1rem 0;
+    }
+
+  }
+}

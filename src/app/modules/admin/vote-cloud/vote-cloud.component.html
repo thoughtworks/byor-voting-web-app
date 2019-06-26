@@ -1,0 +1,17 @@
+<header>
+  <div class="vote-cloud-title">
+    <div class="vote-cloud-title__text">
+      <h1>{{'Votes - ' + (eventName$ | async)}}</h1>
+    </div>
+  </div>
+  <div class="ring-buttons">
+    <button *ngFor="let ring of rings"
+            class="ring-button"
+            (click)="ringSelected(ring)"
+            [class.selected-ring]="isRingSelected(ring)"
+            mat-flat-button color="accent">
+      {{ring | uppercase}}
+    </button>
+  </div>
+</header>
+<div class="word-cloud"></div>

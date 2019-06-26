@@ -1,0 +1,52 @@
+/* TEAM */
+	Developer: Alessandro Confetti
+	Github: zigolab
+	Twitter: @zigolab
+	From: Italy
+	
+	Developer: Anilkumar Kodi
+	Github: anilkumarkodi
+	Twitter: @aniltpl08
+	From: India
+
+	Developer: Enrico Piccin
+	Github: EnricoPicci
+	Twitter: @enricopiccinin
+	From: Italy
+	
+	Developer: Mario Grimaldi
+	Github: mariol3
+	Twitter: @mariogrimaldi89
+	From: Italy
+
+	Developer: Matteo Cajani
+	Github: fagia
+	Twitter: @matteocajani
+	From: Italy
+	
+	Developer: Sandeep Bhardwaj
+	Github: sbchaos
+	From: India
+	
+	Designer: Sara Michelazzo
+	Github: SaraMichelazzo
+	Twitter: @SaraMichelazzo
+	From: Italy
+	
+	Developer: Senthilraja Ramamoorthy
+	Github: senthilreddy
+	Twitter: @rsenthilreddy
+	From: India
+
+	Quality analyst: Srilatha K Y
+	Github: srilathaky
+	Twitter: @SrilathaUpadhy1 ‏
+	From: India
+
+/* THANKS */
+		
+
+/* SITE */
+	Last update:2019/06/12
+	Language: English
+	Standards: HTML5, CSS3

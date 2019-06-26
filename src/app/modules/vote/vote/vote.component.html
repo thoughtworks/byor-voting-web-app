@@ -1,0 +1,82 @@
+<div>
+
+  <div *ngIf="messageVote" class="vote-message" [innerHTML]="messageVote"></div>
+
+  <div class="search-section">
+    <mat-form-field class="search-field">
+      <input #searchField matInput type="text" placeholder="Search" class="input-field">
+      <button *ngIf="searchField.value !== ''" mat-button mat-icon-button matSuffix aria-label="Clear"
+        (click)="clearSearch()">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <div class="quadrant-buttons">
+    <button *ngFor="let quadrant of quadrants" (click)="quadrantSelected(quadrant)"
+      [ngClass]="quadrant.substr(0,9).toLowerCase()" class="quadrant-button" mat-flat-button
+      [class.selected-quadrant-button]="isQuadrantSelected(quadrant) | async">
+      <span *ngIf="technologiesToShow && technologiesToShow.length !== 0">
+        {{quadrant | uppercase}}
+      </span>
+    </button>
+  </div>
+</div>
+
+<mat-divider></mat-divider>
+
+<div class="technology-card-list">
+  <mat-card class="technology-card" *ngFor="let technology of technologiesToShow"
+    [ngClass]="technology.quadrant.substr(0,9).toLowerCase()" (click)="openVoteDialog(technology)">
+    <span *ngIf="technology.isNew" class="new-ribbon">
+      <svg width="50" height="50" viewBox="0 0 100 100">
+        <path fill="none" d="M-1-1h582v402H-1z" />
+        <g>
+          <path d="M-1.167-1h582v402h-582V-1z" fill="none" />
+          <path fill="#62437a" d="M0 0l100 100V40L60 0H0z" />
+          <text fill="#fff" font-family="Helvetica" font-size="20" x="41.845" y="42.063"
+            transform="rotate(45.001 65.161 35.133)">NEW</text>
+        </g>
+      </svg>
+    </span>
+    {{truncatedName(technology.name)}}
+  </mat-card>
+  <div *ngFor="let quadrant of quadrants">
+    <mat-card class="technology-card" [ngClass]="quadrant.substr(0,9).toLowerCase()"
+      (click)="createNewTechnology(searchField.value, quadrant)"
+      *ngIf="searchField.value !== '' && technologiesToShow.length === 0 && !isAlreadyVoted(searchField.value)">
+      <span id="add-technology"> {{truncatedName('Add as a new '+ quadrant)}} </span>
+    </mat-card>
+  </div>
+
+  <div *ngIf="searchField.value !== '' && technologiesToShow.length === 0 && isAlreadyVoted(searchField.value)">
+    <span> {{truncatedName('Already voted')}} </span>
+  </div>
+
+
+  <div class="votes-information" *ngIf="votes.length > 0">
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header collapsedHeight="54px" expandedHeight="54px">
+          <mat-panel-title>
+            <span [matBadge]="votes.length" matBadgeOverlap="false" matBadgeColor="accent">Votes</span>
+          </mat-panel-title>
+          <mat-panel-description>
+            <button mat-flat-button (click)="saveVotes()" color="accent">Save</button>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div *ngFor="let ring of rings" class="selection-list">
+          <div *ngIf="getVotesByRing(ring).length">
+            <h5>{{ ring  | uppercase }}:</h5>
+            <mat-chip-list>
+              <mat-chip [ngClass]="vote.technology.quadrant.substr(0,9).toLowerCase()" class="vote-chip"
+                *ngFor="let vote of getVotesByRing(ring)" (removed)="removeVote(vote)">
+                <span>{{ vote.technology.name }}</span>
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            </mat-chip-list>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>

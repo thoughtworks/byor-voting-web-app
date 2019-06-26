@@ -1,0 +1,14 @@
+replicaCount: 1
+name: byor-voting-web-app
+namespace: byor
+image:
+    repository: byoritaly/byor-voting-web-app
+    tag: latest
+    pullPolicy: IfNotPresent
+
+containerPort: 80
+service:
+    port: 80
+    type: ClusterIP
+    backendServiceUrl: /api/
+    radarServiceUrl: 'https://radar.thoughtworks.com/'

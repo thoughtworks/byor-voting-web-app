@@ -1,0 +1,18 @@
+.help-dialogue-card {
+    .mat-card-header {
+        justify-content: center;
+    }
+
+    .mat-card-actions {
+        text-align: center;
+    }
+
+    .help-dialogue-ring {
+        line-height: 1.4em;
+        margin-bottom: 15px;
+
+        .help-dialogue-ring-name {
+            font-weight: bold;
+        }
+    }
+}
