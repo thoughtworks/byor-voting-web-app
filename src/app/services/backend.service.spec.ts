@@ -12,7 +12,7 @@ import { VotingEvent } from '../models/voting-event';
 import { Technology } from '../models/technology';
 import { environment } from '../../environments/environment';
 import { Vote } from '../models/vote';
-import { JwtModule } from '@auth0/angular-jwt';
+import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { apiDomain } from '../app.module';
 import { logError } from '../utils/utils';
 
@@ -23,6 +23,14 @@ describe('BackendService', () => {
   function getTestToken() {
     return testToken;
   }
+
+  function testJwtOptionsFactory() {
+    return {
+      tokenGetter: getTestToken,
+      whitelistedDomains: apiDomain()
+    }
+  }
+
   const validUser = { user: 'abc', pwd: '123' };
 
   beforeEach(() => {
@@ -30,9 +38,9 @@ describe('BackendService', () => {
       imports: [
         HttpClientModule,
         JwtModule.forRoot({
-          config: {
-            tokenGetter: getTestToken,
-            whitelistedDomains: [apiDomain()]
+          jwtOptionsProvider: {
+            provide: JWT_OPTIONS,
+            useFactory: testJwtOptionsFactory
           }
         })
       ],
@@ -345,83 +353,83 @@ describe('BackendService', () => {
 
     it(`5.2 tries to authenticate a user with the wrong password. 
   It assumes that the users used in the test are correctly loaded in the backend`, (done) => {
-      const service: BackendService = TestBed.get(BackendService);
-      const invalidUser = { user: 'abc', pwd: '321' };
+        const service: BackendService = TestBed.get(BackendService);
+        const invalidUser = { user: 'abc', pwd: '321' };
 
-      service.authenticate(invalidUser.user, invalidUser.pwd).subscribe(
-        (resp) => {
-          logError('5.2 authenticate a user with wrong password ' + resp);
-          done();
-          throw new Error('the authenticate logic has some issues');
-        },
-        (err) => {
-          expect(err.errorCode).toBe(ERRORS.pwdInvalid);
-          done();
-        },
-        () => done()
-      );
-    }, 10000);
+        service.authenticate(invalidUser.user, invalidUser.pwd).subscribe(
+          (resp) => {
+            logError('5.2 authenticate a user with wrong password ' + resp);
+            done();
+            throw new Error('the authenticate logic has some issues');
+          },
+          (err) => {
+            expect(err.errorCode).toBe(ERRORS.pwdInvalid);
+            done();
+          },
+          () => done()
+        );
+      }, 10000);
 
     it(`5.3 tries to authenticate a user that does not exist. 
   It assumes that the users used in the test are correctly loaded in the backend`, (done) => {
-      const service: BackendService = TestBed.get(BackendService);
-      const invalidUser = { user: 'not existing user', pwd: '321' };
+        const service: BackendService = TestBed.get(BackendService);
+        const invalidUser = { user: 'not existing user', pwd: '321' };
 
-      service.authenticate(invalidUser.user, invalidUser.pwd).subscribe(
-        (resp) => {
-          logError('5.3 authenticate a user that does not exist ' + resp);
-          done();
-          throw new Error('the authenticate logic has some issues');
-        },
-        (err) => {
-          expect(err.errorCode).toBe(ERRORS.userUnknown);
-          done();
-        },
-        () => done()
-      );
-    }, 10000);
+        service.authenticate(invalidUser.user, invalidUser.pwd).subscribe(
+          (resp) => {
+            logError('5.3 authenticate a user that does not exist ' + resp);
+            done();
+            throw new Error('the authenticate logic has some issues');
+          },
+          (err) => {
+            expect(err.errorCode).toBe(ERRORS.userUnknown);
+            done();
+          },
+          () => done()
+        );
+      }, 10000);
   });
 
   describe('6 BackendService - getConfiguration', () => {
     it(`6.1 retrieve the configuration without specifying a user.
   It assumes that the configuration has been correctly loaded on the backend
   This can be achieved using the command node ./dist/src/mongodb/scripts/set-configuration-collection DEV`, (done) => {
-      const service: BackendService = TestBed.get(BackendService);
+        const service: BackendService = TestBed.get(BackendService);
 
-      service.getConfiguration().subscribe(
-        (configuration) => {
-          expect(configuration.revoteToggle).toBeFalsy();
-          expect(configuration.secondValue).toBe('second');
-          expect(configuration.thirdValue).toBeUndefined();
-        },
-        (err) => {
-          logError('6.1 retrieve the configuration without specifying a user ' + err);
-          done();
-          throw new Error('the getConfiguration logic has some issues');
-        },
-        () => done()
-      );
-    }, 10000);
+        service.getConfiguration().subscribe(
+          (configuration) => {
+            expect(configuration.revoteToggle).toBeFalsy();
+            expect(configuration.secondValue).toBe('second');
+            expect(configuration.thirdValue).toBeUndefined();
+          },
+          (err) => {
+            logError('6.1 retrieve the configuration without specifying a user ' + err);
+            done();
+            throw new Error('the getConfiguration logic has some issues');
+          },
+          () => done()
+        );
+      }, 10000);
 
     it(`6.2 retrieve the configuration specifying a user.
   It assumes that the configuration has been correctly loaded on the backend
   This can be achieved using the command node ./dist/src/mongodb/scripts/set-configuration-collection DEV`, (done) => {
-      const service: BackendService = TestBed.get(BackendService);
+        const service: BackendService = TestBed.get(BackendService);
 
-      service.getConfiguration('abc').subscribe(
-        (configuration) => {
-          expect(configuration.revoteToggle).toBeTruthy();
-          expect(configuration.secondValue).toBe('second');
-          expect(configuration.thirdValue).toBe('third');
-        },
-        (err) => {
-          logError('6.1 retrieve the configuration without specifying a user ' + err);
-          done();
-          throw new Error('the getConfiguration logic has some issues');
-        },
-        () => done()
-      );
-    }, 10000);
+        service.getConfiguration('abc').subscribe(
+          (configuration) => {
+            expect(configuration.revoteToggle).toBeTruthy();
+            expect(configuration.secondValue).toBe('second');
+            expect(configuration.thirdValue).toBe('third');
+          },
+          (err) => {
+            logError('6.1 retrieve the configuration without specifying a user ' + err);
+            done();
+            throw new Error('the getConfiguration logic has some issues');
+          },
+          () => done()
+        );
+      }, 10000);
   });
 
   describe('7 BackendService - saveLogInfo', () => {
@@ -650,7 +658,7 @@ describe('redirect to radar page', () => {
     })
   );
 
-  it('should create proper query params for getting all blips', function() {
+  it('should create proper query params for getting all blips', function () {
     const service: BackendService = TestBed.get(BackendService);
     const windowOpenSpy = spyOn(window, 'open');
     service.url = 'service-url/';
@@ -662,7 +670,7 @@ describe('redirect to radar page', () => {
     );
   });
 
-  it('should create title param with default sitename when site name not given in config', function() {
+  it('should create title param with default sitename when site name not given in config', function () {
     const service: BackendService = TestBed.get(BackendService);
     const windowOpenSpy = spyOn(window, 'open');
     service.url = 'service-url/';
@@ -674,7 +682,7 @@ describe('redirect to radar page', () => {
     );
   });
 
-  it('should create proper query params for getting blips for event', function() {
+  it('should create proper query params for getting blips for event', function () {
     const service: BackendService = TestBed.get(BackendService);
     const windowOpenSpy = spyOn(window, 'open');
     service.url = 'service-url/';
@@ -697,7 +705,7 @@ describe('redirect to radar page', () => {
     );
   });
 
-  it('should create proper query params for getting blips for revote', function() {
+  it('should create proper query params for getting blips for revote', function () {
     const service: BackendService = TestBed.get(BackendService);
     const windowOpenSpy = spyOn(window, 'open');
     service.url = 'service-url';

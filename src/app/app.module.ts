@@ -21,10 +21,14 @@ export function getToken() {
   return localStorage.getItem('access_token');
 }
 
+export function apiDomain() {
+  return [new URL(environment.serviceUrl).hostname + ':' + new URL(environment.serviceUrl).port];
+}
+
 export function jwtOptionsFactory() {
   return {
     tokenGetter: getToken,
-    whitelistedDomains: [new URL(environment.serviceUrl).hostname + ':' + new URL(environment.serviceUrl).port]
+    whitelistedDomains: apiDomain()
   }
 }
 
