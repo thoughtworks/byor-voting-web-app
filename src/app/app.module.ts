@@ -21,8 +21,11 @@ export function getToken() {
   return localStorage.getItem('access_token');
 }
 
-export function apiDomain() {
-  return new URL(environment.serviceUrl).hostname + ':' + new URL(environment.serviceUrl).port;
+export function jwtOptionsFactory() {
+  return {
+    tokenGetter: getToken,
+    whitelistedDomains: [new URL(environment.serviceUrl).hostname + ':' + new URL(environment.serviceUrl).port]
+  }
 }
 
 @NgModule({
@@ -37,13 +40,13 @@ export function apiDomain() {
     VoteModule,
     LoginModule,
     JwtModule.forRoot({
-      config: {
-        tokenGetter: getToken,
-        whitelistedDomains: [apiDomain()]
+      jwtOptionsProvider: {
+        provide: JWT_OPTIONS,
+        useFactory: jwtOptionsFactory
       }
     })
   ],
   providers: [HttpErrorHandler, EventsService],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }
