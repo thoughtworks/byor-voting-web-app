@@ -22,7 +22,14 @@ export function getToken() {
 }
 
 export function apiDomain() {
-  return new URL(environment.serviceUrl).hostname + ':' + new URL(environment.serviceUrl).port;
+  return [new URL(environment.serviceUrl).hostname + ':' + new URL(environment.serviceUrl).port];
+}
+
+export function jwtOptionsFactory() {
+  return {
+    tokenGetter: getToken,
+    whitelistedDomains: apiDomain()
+  }
 }
 
 @NgModule({
@@ -37,13 +44,13 @@ export function apiDomain() {
     VoteModule,
     LoginModule,
     JwtModule.forRoot({
-      config: {
-        tokenGetter: getToken,
-        whitelistedDomains: [apiDomain()]
+      jwtOptionsProvider: {
+        provide: JWT_OPTIONS,
+        useFactory: jwtOptionsFactory
       }
     })
   ],
   providers: [HttpErrorHandler, EventsService],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }
