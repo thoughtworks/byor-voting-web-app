@@ -2,11 +2,11 @@ version: '3.7'
 
 services:
 
-  byor-app:
+  byor-voting-web-app:
     build: 
       context: .
       target: dev
-    image: byor-app
+    image: byor-voting-web-app
     volumes:
       - byor_app:/usr/src/app
     ports:

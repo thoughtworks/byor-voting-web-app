@@ -211,7 +211,7 @@ The build artifacts will be stored in the `dist/` directory.
 ### Build the docker image
 
 ```shell
-docker build -t byor-app:latest .
+docker build -t byor-voting-web-app:latest .
 ```
 
 ## HOWTOs
@@ -295,7 +295,7 @@ execute:
 export BACKEND_SERVICE_URL='backend-service-url-here'
 export RADAR_SERVICE_URL='radar-service-url-here'
 export EXPOSED_APP_PORT='exposed-app-port-here'
-docker run -it --rm -p ${EXPOSED_APP_PORT}:80 -e BACKEND_SERVICE_URL -e RADAR_SERVICE_URL byor-app:latest
+docker run -it --rm -p ${EXPOSED_APP_PORT}:80 -e BACKEND_SERVICE_URL -e RADAR_SERVICE_URL byor-voting-web-app:latest
 ```
 
 ## Credits

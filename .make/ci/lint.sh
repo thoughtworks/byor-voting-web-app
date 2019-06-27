@@ -15,5 +15,5 @@ echo "About to execute: ${full_command}"
 /bin/bash .make/utils/execute-in-docker.sh \
 -d "run" \
 -c "${full_command}" \
--s "byor-app" \
+-s "byor-voting-web-app" \
 -o "--rm"

@@ -20,8 +20,8 @@ case "${test_script}" in
     test)
         /bin/bash .make/utils/execute-in-docker.sh \
         -c "${full_command}" \
-        -s "byor-app" \
-        -o "--exit-code-from byor-app";;
+        -s "byor-voting-web-app" \
+        -o "--exit-code-from byor-voting-web-app";;
     *)
         echo "ERROR: ${test_script} is not supported"
         exit 1;;

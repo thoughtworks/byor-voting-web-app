@@ -9,5 +9,5 @@ fi
 /bin/bash .make/utils/execute-in-docker.sh \
 -d "run" \
 -c "npm run semantic-release" \
--s "byor-app" \
+-s "byor-voting-web-app" \
 -o "--rm"
