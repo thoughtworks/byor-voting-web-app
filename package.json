@@ -1,6 +1,6 @@
 {
   "name": "ng-build-your-own-radar",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "ng": "npx ng",
     "start": "npx ng serve --extra-webpack-config webpack.extra.js --poll 2000 --host 0.0.0.0",
