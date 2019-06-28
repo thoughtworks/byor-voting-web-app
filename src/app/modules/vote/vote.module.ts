@@ -9,18 +9,13 @@ import { VoteService } from './services/vote.service';
 import { RouterModule } from '@angular/router';
 import { routes } from './vote-routing';
 import { HelpDialogueComponent } from './vote/help-dialogue/help-dialogue.component';
+import { ConversationModule } from '../conversation/conversation.module';
 
 @NgModule({
   declarations: [VoteComponent, StartVotingSessionComponent, VoteDialogueComponent, VoteSavedDialogueComponent, HelpDialogueComponent],
-  imports: [
-    RouterModule.forChild(routes),
-    CommonModule,
-    AppMaterialModule,
-  ],
+  imports: [RouterModule.forChild(routes), CommonModule, AppMaterialModule, ConversationModule],
   entryComponents: [VoteDialogueComponent, VoteSavedDialogueComponent, HelpDialogueComponent],
   providers: [VoteService],
-  exports: [
-    StartVotingSessionComponent
-  ]
+  exports: [StartVotingSessionComponent]
 })
-export class VoteModule { }
+export class VoteModule {}

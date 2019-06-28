@@ -127,6 +127,15 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
     return this.votes.filter((v) => v.ring === ring);
   }
 
+  technologySelected(technology: Technology) {
+    const votingEventRound = this.voteService.credentials.votingEvent.round;
+    if (votingEventRound && votingEventRound > 1) {
+      this.goToConversation(technology);
+    } else {
+      this.openVoteDialog(technology);
+    }
+  }
+
   createNewTechnology(name: string, quadrant: string) {
     const votingEvent = this.voteService.credentials.votingEvent;
     const technology: Technology = {
@@ -168,6 +177,11 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
         }
       }
     });
+  }
+
+  goToConversation(technology: Technology) {
+    this.voteService.technology = technology;
+    this.router.navigate(['vote/conversation']);
   }
 
   addVote(vote: Vote) {

@@ -9,6 +9,7 @@ export enum ServiceNames {
   saveVotes,
   aggregateVotes,
   getVotesWithCommentsForTechAndEvent,
+  addReplyToVoteComment,
   getVotingEvents,
   getVotingEvent,
   createVotingEvent,

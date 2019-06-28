@@ -15,6 +15,7 @@ import { Blip } from '../models/blip';
 import { ERRORS } from './errors';
 import { logError } from '../utils/utils';
 import { inspect } from 'util';
+import { Comment } from '../models/comment';
 
 interface BackEndError {
   errorCode: string;
@@ -144,6 +145,19 @@ export class BackendService {
     const payload = this.buildPostPayloadForService(ServiceNames.getVotesWithCommentsForTechAndEvent);
     payload['technologyId'] = technologyId;
     payload['eventId'] = eventId;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        return resp.data;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  addReplyToVoteComment(voteId: string, reply: Comment, commentReceivingReplyId: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.addReplyToVoteComment);
+    payload['voteId'] = voteId;
+    payload['reply'] = reply;
+    payload['commentReceivingReplyId'] = commentReceivingReplyId;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
         return resp.data;
