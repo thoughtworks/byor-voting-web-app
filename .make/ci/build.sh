@@ -10,5 +10,5 @@ echo "Taget radar service: ${RADAR_SERVICE_URL}"
 BACKEND_SERVICE_URL="${BACKEND_SERVICE_URL}" RADAR_SERVICE_URL="${RADAR_SERVICE_URL}" /bin/bash .make/utils/execute-in-docker.sh \
 -d "run" \
 -c "npm run build" \
--s "byor-app" \
+-s "byor-voting-web-app" \
 -o "--rm"

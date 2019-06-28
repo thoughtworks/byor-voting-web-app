@@ -105,9 +105,9 @@ workflows:
   untagged:
     jobs:
       - test:
-          context: byor
+          context: BYOR-VotingApp
       - release:
-          context: byor
+          context: BYOR-VotingApp
           requires:
             - test
           filters:
@@ -118,9 +118,9 @@ workflows:
     jobs:
       - test:
           <<: *only_tagged_versions
-          context: byor
+          context: BYOR-VotingApp
       - publish:
           <<: *only_tagged_versions
-          context: byor
+          context: BYOR-VotingApp
           requires:
             - test

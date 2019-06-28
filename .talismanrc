@@ -17,7 +17,7 @@ fileignoreconfig:
   checksum: 0ac91d9d13996d2f4ddbf714fb797389d6cb621282440cee481a5f850b08e95f
   ignore_detectors: []
 - filename: src/app/services/backend.service.spec.ts
-  checksum: 11106c6ac0ca3a2a4948a61c8537a9d13a9b47e7f595d79055383db9cf0ceecf
+  checksum: dcf98ba54329a81de976728ca53eb91cbf13ac54a659422bdf0571ef237acf31
   ignore_detectors: []
 - filename: docs/images/vote_process.gif
   checksum: c3a82314b7db3029e5dd9b4226bde884f472561112b4287b5193eeeab1a7cf75
@@ -32,5 +32,5 @@ fileignoreconfig:
   checksum: 9a353b823ee064904663633b97d6fe7122e05dc9150e1d049781b8d1d0f4bc69
   ignore_detectors: []
 - filename: .make/cd/deploy_aws.sh
-  checksum: 909387524c726d40c9971b9a2550d783fd5308b356a8ee23eaf704ca6b0d98d3
+  checksum: ef91d1d1d9ba8571fbc8fbaa0459635a0bbef8bec2a8a2e1c9c6b21ace5b833c
   ignore_detectors: []
