@@ -14,7 +14,7 @@ fileignoreconfig:
   checksum: 96f4f7aa4bd17b66037dcd3c066dfa5d1e11fa2d44ea6ba3f9d7ad02ec41bff8
   ignore_detectors: []
 - filename: src/app/modules/login/login.component.ts
-  checksum: 0ac91d9d13996d2f4ddbf714fb797389d6cb621282440cee481a5f850b08e95f
+  checksum: 510ff54745a0315fdaa5de0cf6923cc4e30081789e358120baf277f8cd1b5379
   ignore_detectors: []
 - filename: src/app/services/backend.service.spec.ts
   checksum: dcf98ba54329a81de976728ca53eb91cbf13ac54a659422bdf0571ef237acf31

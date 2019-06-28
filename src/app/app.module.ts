@@ -16,10 +16,11 @@ import { VoteModule } from './modules/vote/vote.module';
 import { HttpErrorHandler } from './shared/http-error-handler/http-error-handler.service';
 import { EventsService } from './services/events.service';
 import { environment } from '../environments/environment';
+import { getToken } from './utils/get-token';
 
-export function getToken() {
-  return localStorage.getItem('access_token');
-}
+// export function getToken() {
+//   return localStorage.getItem('access_token');
+// }
 
 export function apiDomain() {
   return [new URL(environment.serviceUrl).hostname + ':' + new URL(environment.serviceUrl).port];
@@ -29,7 +30,7 @@ export function jwtOptionsFactory() {
   return {
     tokenGetter: getToken,
     whitelistedDomains: apiDomain()
-  }
+  };
 }
 
 @NgModule({
@@ -53,4 +54,4 @@ export function jwtOptionsFactory() {
   providers: [HttpErrorHandler, EventsService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

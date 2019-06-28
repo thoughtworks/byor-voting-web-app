@@ -26,6 +26,7 @@ The following is a set of guidelines, not rules, for contributing. Feel free to 
 -   [Release versioning](#release-versioning)
 -   [Typescript Styleguide](#typescript-styleguide)
 -   [Testing](#testing)
+-   [Run the continuous integration on local](#run-the-continuous-integration-on-local)
 -   [Build the application for Production](#build-the-application-for-production)
 -   [Build the docker image](#build-the-docker-image)
 
@@ -145,6 +146,8 @@ Please follow these steps to have your contribution considered by the maintainer
 
 While the prerequisites above must be satisfied prior to having your pull request reviewed, the reviewer(s) may ask you to complete additional design work, tests, or other changes before your pull request can be ultimately accepted.
 
+Note: consider that the Continuous Integration logic runs lint checks and uses the prettier module - if you use VSCode it is recommended to install the "Prettier - Code formatter" extension to avoid lint errors.
+
 
 ## Guidelines
 
@@ -195,6 +198,16 @@ make unit_tests
 If not executed in CI mode, the above commands will prompt the user for executing tests in watch mode.
 
 - **E2E tests**: *TODO (make unit actual unit, add e2e and move not-unitable tests to e2e)*
+
+
+### Run the continuous integration on local
+
+You can run the CI logic on local via the command:
+
+```shell
+make ci_all
+```
+
 
 ### Build the application for Production
 
