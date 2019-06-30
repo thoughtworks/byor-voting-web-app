@@ -1,4 +1,4 @@
-<span class="title">{{voteService.technology.name}}</span>
+<span class="title">{{appSession.getSelectedTechnology().name}}</span>
 <div *ngIf="errorMessage" class="conversation-message" [innerHTML]="errorMessage"></div>
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>

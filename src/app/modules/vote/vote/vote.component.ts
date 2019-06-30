@@ -21,6 +21,8 @@ import * as _ from 'lodash';
 import { TwRings } from 'src/app/models/ring';
 import { Comment } from 'src/app/models/comment';
 import { logError } from 'src/app/utils/utils';
+import { AppSessionService } from 'src/app/app-session.service';
+import { getActionName } from 'src/app/utils/voting-event-flow.util';
 
 @Component({
   selector: 'byor-vote',
@@ -65,7 +67,8 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
     private router: Router,
     private errorService: ErrorService,
     public dialog: MatDialog,
-    private voteService: VoteService
+    private voteService: VoteService,
+    private appSession: AppSessionService
   ) {}
 
   ngAfterViewInit() {
@@ -109,7 +112,7 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
   }
 
   getTechnologies() {
-    const votingEvent = this.voteService.credentials.votingEvent;
+    const votingEvent = this.appSession.getSelectedVotingEvent();
     return this.backEnd.getVotingEvent(votingEvent._id).pipe(
       map((event) => {
         let technologies = event.technologies;
@@ -128,11 +131,17 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
   }
 
   technologySelected(technology: Technology) {
-    const votingEventRound = this.voteService.credentials.votingEvent.round;
-    if (votingEventRound && votingEventRound > 1) {
+    const votingEventRound = this.appSession.getSelectedVotingEvent().round;
+    this.appSession.setSelectedTechnology(technology);
+    const actionName = getActionName(this.appSession.getSelectedVotingEvent());
+    if (actionName === 'vote') {
+      this.openVoteDialog(technology);
+    } else if (actionName === 'conversation') {
+      this.goToConversation(technology);
+    } else if (actionName === 'recommendation') {
       this.goToConversation(technology);
     } else {
-      this.openVoteDialog(technology);
+      throw new Error(`No route for action name "${actionName}"`);
     }
   }
 

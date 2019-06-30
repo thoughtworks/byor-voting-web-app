@@ -9,6 +9,8 @@ import { VoteService } from '../../vote/services/vote.service';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { Vote } from 'src/app/models/vote';
 import { VoteCredentials } from 'src/app/models/vote-credentials';
+import { AppSessionService } from 'src/app/app-session.service';
+import { AuthService } from '../../login/auth.service';
 
 /** Flat comment node with expandable and level information */
 export class CommentFlatNode {
@@ -51,13 +53,13 @@ export class ConversationComponent implements OnDestroy {
   showAddReplyButton = true;
   errorMessage: string;
 
-  constructor(private backEnd: BackendService, public voteService: VoteService) {
+  constructor(private backEnd: BackendService, private authService: AuthService, public appSession: AppSessionService) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<CommentFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-    const tech = this.voteService.technology;
-    const votingEvent = this.voteService.credentials.votingEvent;
+    const tech = this.appSession.getSelectedTechnology();
+    const votingEvent = this.appSession.getSelectedVotingEvent();
     this.commentRetrievalSubscription = this.triggerCommentRetrieval
       .pipe(
         switchMap((flatNode) =>
@@ -192,7 +194,7 @@ export class ConversationComponent implements OnDestroy {
       return null;
     }
     const nestedNode = this.flatNodeMap.get(node);
-    const author = this.getCommentAuthorName(this.voteService.credentials);
+    const author = this.authService.user;
     this.backEnd
       .addReplyToVoteComment(node.voteId, { text, author }, nestedNode.parentCommentId)
       .pipe(
@@ -204,12 +206,6 @@ export class ConversationComponent implements OnDestroy {
   cancelComment(node: CommentFlatNode) {
     this.showAddReplyButton = true;
     this.triggerCommentRetrieval.next(node);
-  }
-
-  getCommentAuthorName(credentials: VoteCredentials) {
-    const firstName = credentials.voterId.firstName;
-    const lastName = credentials.voterId.lastName;
-    return `${firstName} ${lastName}`;
   }
 
   getTitle(node: CommentFlatNode) {

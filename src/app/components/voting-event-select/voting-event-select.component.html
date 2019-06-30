@@ -1,0 +1,18 @@
+<div class="selection-section">
+  <div class="event-selection">
+    <mat-form-field>
+      <mat-select #eventSelect placeholder="Choose a voting event" id="eventSelectEl" (selectionChange)="eventSelected(eventSelect)">
+        <mat-option *ngFor="let votingEvent of votingEventSelectService.votingEvents" [value]="votingEvent.name">
+          {{votingEvent.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>
+
+<div class="select-actions">
+  <button #selectButton mat-flat-button color="accent" [class.button-disabled]="!votingEventName"
+    [class.button-enabled]="votingEventName" [disabled]="!votingEventName" (click)="goToIdentification()">
+    <span class="button-text"> Select Event </span>
+  </button>
+</div>

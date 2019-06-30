@@ -34,3 +34,6 @@ fileignoreconfig:
 - filename: .make/cd/deploy_aws.sh
   checksum: ef91d1d1d9ba8571fbc8fbaa0459635a0bbef8bec2a8a2e1c9c6b21ace5b833c
   ignore_detectors: []
+- filename: src/app/modules/login/login-voting-event/login-voting-event.component.ts
+  checksum: c56211684d1af6785d67fe6deda91af2b405037c80161090561eb388c642e5e7
+  ignore_detectors: []
