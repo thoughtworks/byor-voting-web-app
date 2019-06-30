@@ -3,9 +3,9 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
 
 import { TwRings } from '../../../models/ring';
 import { HelpDialogueComponent } from './help-dialogue/help-dialogue.component';
-import { ConfigurationService } from 'src/app/services/configuration.service';
-import { shareReplay, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { AppSessionService } from 'src/app/app-session.service';
+import { getAction } from 'src/app/utils/voting-event-flow.util';
 
 @Component({
   selector: 'byor-vote-dialogue',
@@ -22,19 +22,19 @@ export class VoteDialogueComponent implements OnInit {
     public dialog: MatDialog,
     public dialogRef: MatDialogRef<VoteDialogueComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private configurationService: ConfigurationService
+    private appSession: AppSessionService
   ) {}
 
-  ngOnInit() {
-    this.configuration$ = this.configurationService.defaultConfiguration().pipe(shareReplay(1));
-  }
+  ngOnInit() {}
 
   allowVote() {
     return this.data.message ? false : true;
   }
 
-  showComment$() {
-    return this.configuration$.pipe(map((config) => (this.allowVote() ? !config.hideVoteComment : false)));
+  showComment() {
+    const votingEvent = this.appSession.getSelectedVotingEvent();
+    const actionStep = getAction(votingEvent);
+    return !actionStep.commentOnVoteBlocked;
   }
 
   showHelp() {

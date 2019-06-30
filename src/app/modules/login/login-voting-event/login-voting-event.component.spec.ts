@@ -1,6 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { AppMaterialModule } from '../../../app-material.module';
 
 import { LoginVotingEventComponent } from './login-voting-event.component';
+import { AppSessionService } from 'src/app/app-session.service';
 
 describe('LoginVotingEventComponent', () => {
   let component: LoginVotingEventComponent;
@@ -8,9 +14,10 @@ describe('LoginVotingEventComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoginVotingEventComponent ]
-    })
-    .compileComponents();
+      declarations: [LoginVotingEventComponent],
+      imports: [BrowserAnimationsModule, HttpClientTestingModule, RouterTestingModule, AppMaterialModule],
+      providers: [AppSessionService]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -17,6 +17,10 @@ export function getIdentificationRoute(votingEvent: VotingEvent) {
   return route;
 }
 
+export function getAction(votingEvent: VotingEvent) {
+  return getFlowStep(votingEvent).action;
+}
+
 export function getActionName(votingEvent: VotingEvent) {
   return getFlowStep(votingEvent).action.name;
 }

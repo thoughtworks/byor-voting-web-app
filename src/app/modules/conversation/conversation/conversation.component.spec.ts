@@ -11,6 +11,9 @@ import { observeOn, skip, take, map, tap } from 'rxjs/operators';
 import { BackendService } from 'src/app/services/backend.service';
 import { VoteService } from '../../vote/services/vote.service';
 import { Vote } from 'src/app/models/vote';
+import { AppSessionService } from 'src/app/app-session.service';
+import { Technology } from 'src/app/models/technology';
+import { VotingEvent } from 'src/app/models/voting-event';
 
 const TEST_TECHNOLOGIES = [
   {
@@ -57,6 +60,24 @@ const TEST_TECHNOLOGY = {
   isnew: true,
   description: 'Description of <strong>Babel</strong>'
 };
+
+class MockAppSessionService {
+  private selectedTechnology: Technology;
+  private selectedVotingEvent: VotingEvent;
+
+  constructor() {
+    this.selectedTechnology = TEST_TECHNOLOGY;
+    this.selectedVotingEvent = { _id: '123', name: 'an event', status: 'open', creationTS: 'abc' };
+  }
+
+  getSelectedTechnology() {
+    return this.selectedTechnology;
+  }
+
+  getSelectedVotingEvent() {
+    return this.selectedVotingEvent;
+  }
+}
 
 const firsCommentId = 'firsCommentId';
 const replyToFirsCommentId = 'replyToFirsCommentId';
@@ -120,7 +141,11 @@ describe('ConversationComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ConversationComponent, CommentCardComponent],
       imports: [AppMaterialModule, MatTreeModule, HttpClientTestingModule],
-      providers: [{ provide: BackendService, useClass: MockBackEndService }, { provide: VoteService, useClass: MockVoteService }]
+      providers: [
+        { provide: BackendService, useClass: MockBackEndService },
+        { provide: VoteService, useClass: MockVoteService },
+        { provide: AppSessionService, useClass: MockAppSessionService }
+      ]
     }).compileComponents();
   }));
 

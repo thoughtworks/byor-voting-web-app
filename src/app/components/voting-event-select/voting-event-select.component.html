@@ -2,7 +2,7 @@
   <div class="event-selection">
     <mat-form-field>
       <mat-select #eventSelect placeholder="Choose a voting event" id="eventSelectEl" (selectionChange)="eventSelected(eventSelect)">
-        <mat-option *ngFor="let votingEvent of votingEventSelectService.votingEvents" [value]="votingEvent.name">
+        <mat-option *ngFor="let votingEvent of appSession.votingEvents" [value]="votingEvent.name">
           {{votingEvent.name}}
         </mat-option>
       </mat-select>
