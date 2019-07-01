@@ -303,6 +303,24 @@ export class BackendService {
     return this.http.post(this.url, payload).pipe(catchError(this.handleError));
   }
 
+  addCommentToTech(_id: string, technologyId: string, comment: string, author: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.addCommentToTech);
+    payload['_id'] = _id;
+    payload['technologyId'] = technologyId;
+    payload['comment'] = comment;
+    payload['author'] = author;
+    return this.http.post(this.url, payload).pipe(catchError(this.handleError));
+  }
+
+  addReplyToTechComment(votingEventId: string, technologyId: string, reply: Comment, commentReceivingReplyId: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.addReplyToTechComment);
+    payload['votingEventId'] = votingEventId;
+    payload['technologyId'] = technologyId;
+    payload['reply'] = reply;
+    payload['commentReceivingReplyId'] = commentReceivingReplyId;
+    return this.http.post(this.url, payload).pipe(catchError(this.handleError));
+  }
+
   getVoters(votingEvent: VotingEvent) {
     const payload = this.buildPostPayloadForService(ServiceNames.getVoters);
     payload['votingEvent'] = votingEvent;
@@ -318,6 +336,50 @@ export class BackendService {
     const payload = this.buildPostPayloadForService(ServiceNames.authenticate);
     payload['user'] = user;
     payload['pwd'] = pwd;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        const r = this.handleReponseDefault(resp);
+        return r;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  authenticateForVotingEvent(
+    user: string,
+    pwd: string,
+    role: string,
+    votingEventId: string
+  ): Observable<{ token: string; pwdInserted: boolean }> {
+    const payload = this.buildPostPayloadForService(ServiceNames.authenticateForVotingEvent);
+    payload['user'] = user;
+    payload['pwd'] = pwd;
+    payload['role'] = role;
+    payload['votingEventId'] = votingEventId;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        const r = this.handleReponseDefault(resp);
+        return r;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  addUsersWithRole(users: { user: string; role: string }[]) {
+    const payload = this.buildPostPayloadForService(ServiceNames.addUsersWithRole);
+    payload['users'] = users;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        const r = this.handleReponseDefault(resp);
+        return r;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  deleteUsers(users: string[]) {
+    const payload = this.buildPostPayloadForService(ServiceNames.deleteUsers);
+    payload['users'] = users;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
         const r = this.handleReponseDefault(resp);

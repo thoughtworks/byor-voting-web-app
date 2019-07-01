@@ -1,3 +1,5 @@
+import { Comment } from './comment';
+
 export interface Technology {
   _id?: string;
   id?: string;
@@ -7,4 +9,5 @@ export interface Technology {
   description: string;
   imageFile?: string;
   forRevote?: boolean;
+  comments?: Comment[];
 }

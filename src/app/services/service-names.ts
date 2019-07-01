@@ -17,6 +17,8 @@ export enum ServiceNames {
   closeVotingEvent,
   cancelVotingEvent,
   addNewTechnologyToEvent,
+  addCommentToTech,
+  addReplyToTechComment,
   getVoters,
   calculateBlips,
   calculateBlipsFromAllEvents,
@@ -24,5 +26,8 @@ export enum ServiceNames {
   closeForRevote,
   getConfiguration,
   authenticate,
+  authenticateForVotingEvent,
+  addUsersWithRole,
+  deleteUsers,
   saveLogInfo
 }
