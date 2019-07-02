@@ -16,6 +16,7 @@ import { ERRORS } from './errors';
 import { logError } from '../utils/utils';
 import { inspect } from 'util';
 import { Comment } from '../models/comment';
+import { VotingEventFlow } from '../models/voting-event-flow';
 
 interface BackEndError {
   errorCode: string;
@@ -254,9 +255,10 @@ export class BackendService {
     );
   }
 
-  createVotingEvent(name: string) {
+  createVotingEvent(name: string, flow?: VotingEventFlow) {
     const payload = this.buildPostPayloadForService(ServiceNames.createVotingEvent);
     payload['name'] = name;
+    payload['flow'] = flow;
     return this.http.post(this.url, payload).pipe(
       map((resp: RespFromBackend) => {
         return resp;
@@ -348,14 +350,14 @@ export class BackendService {
   authenticateForVotingEvent(
     user: string,
     pwd: string,
-    role: string,
-    votingEventId: string
+    votingEventId: string,
+    flowStepName: string
   ): Observable<{ token: string; pwdInserted: boolean }> {
     const payload = this.buildPostPayloadForService(ServiceNames.authenticateForVotingEvent);
     payload['user'] = user;
     payload['pwd'] = pwd;
-    payload['role'] = role;
     payload['votingEventId'] = votingEventId;
+    payload['flowStepName'] = flowStepName;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
         const r = this.handleReponseDefault(resp);

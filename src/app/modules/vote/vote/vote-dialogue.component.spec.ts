@@ -26,7 +26,7 @@ class MockAppSessionService {
       name: 'an event',
       status: 'open',
       creationTS: 'abc',
-      flow: { steps: [{ identification: { name: 'nickname' }, action: { name: 'vote' } }] }
+      flow: { steps: [{ name: 'the flow', identification: { name: 'nickname' }, action: { name: 'vote' } }] }
     };
   }
 

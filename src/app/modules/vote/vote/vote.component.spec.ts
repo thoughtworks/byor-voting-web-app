@@ -77,6 +77,9 @@ class MockAppSessionService {
   getSelectedVotingEvent() {
     return this.selectedVotingEvent;
   }
+  getSelectedTechnology() {
+    return null;
+  }
 }
 
 describe('VoteComponent', () => {

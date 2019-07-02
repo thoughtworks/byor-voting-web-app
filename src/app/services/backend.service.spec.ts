@@ -16,6 +16,7 @@ import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { apiDomain } from '../app.module';
 import { logError } from '../utils/utils';
 import { Comment } from '../models/comment';
+import { VotingEventFlow } from '../models/voting-event-flow';
 
 describe('BackendService', () => {
   let testToken;
@@ -804,6 +805,22 @@ describe('BackendService', () => {
       const pwd = 'my password';
       const firstRole = 'architect';
       const secondRole = 'dev';
+      const firstStepName = 'first step';
+      const secondStepName = 'second step';
+      const votingEventFlow: VotingEventFlow = {
+        steps: [
+          {
+            name: firstStepName,
+            identification: { name: 'nickname' },
+            action: { name: 'vote', commentOnVoteBlocked: false }
+          },
+          {
+            name: secondStepName,
+            identification: { name: 'login', roles: [firstRole] },
+            action: { name: 'conversation' }
+          }
+        ]
+      };
       // at the moment the format is one object per role, and the name is repeated is the used has more than one role
       // this is to mimic an csv format
       const votingEventUser = [{ user, role: firstRole }, { user, role: secondRole }];
@@ -821,7 +838,7 @@ describe('BackendService', () => {
           concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
         )
         .pipe(
-          concatMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.createVotingEvent(votingEventName, votingEventFlow)),
           concatMap(() => service.getVotingEvents()),
           tap((votingEvents) => {
             const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
@@ -829,7 +846,7 @@ describe('BackendService', () => {
           }),
           concatMap(() => service.addUsersWithRole(votingEventUser)),
           // authinticate first time
-          concatMap(() => service.authenticateForVotingEvent(user, pwd, firstRole, votingEvent._id)),
+          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id, firstStepName)),
           tap((resp) => {
             expect(resp.token).toBeDefined();
             expect(resp.pwdInserted).toBeTruthy();
@@ -837,7 +854,7 @@ describe('BackendService', () => {
             testToken = resp.token;
           }),
           // authenticate secondtime
-          concatMap(() => service.authenticateForVotingEvent(user, pwd, firstRole, votingEvent._id)),
+          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id, firstStepName)),
           tap((resp) => {
             expect(resp.token).toBeDefined();
             expect(resp.pwdInserted).toBeFalsy();
@@ -845,9 +862,9 @@ describe('BackendService', () => {
           }),
           // delete the user and then try to authenticate
           concatMap(() => service.deleteUsers([user])),
-          concatMap(() => service.authenticateForVotingEvent(user, pwd, firstRole, votingEvent._id)),
+          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id, firstStepName)),
           catchError((err) => {
-            console.error(err);
+            expect(err.errorCode).toBe(ERRORS.userUnknown);
             return of(null);
           })
         )

@@ -1,7 +1,10 @@
 export type IdentificationTypeNames = 'nickname' | 'login';
 export type ActionNames = 'vote' | 'conversation' | 'recommendation';
+export type TechSelectLogic = 'TechWithComments' | 'TechUncertain';
 
 export interface VotingEventStep {
-  identification: { name: IdentificationTypeNames; role?: any };
-  action: { name: ActionNames; commentOnVoteBlocked?: boolean };
+  name: string;
+  description?: string;
+  identification: { name: IdentificationTypeNames; roles?: string[] };
+  action: { name: ActionNames; commentOnVoteBlocked?: boolean; techSelectLogic?: TechSelectLogic };
 }

@@ -17,7 +17,7 @@ fileignoreconfig:
   checksum: 510ff54745a0315fdaa5de0cf6923cc4e30081789e358120baf277f8cd1b5379
   ignore_detectors: []
 - filename: src/app/services/backend.service.spec.ts
-  checksum: 4fb42ea12edc56c266d61835bd6ffd096c261441554f4c25b37864031299915a
+  checksum: cac6925ede89879ba601e3e08bc3e9aa8c58c61863eb82f914c2829a1e5c0de1
   ignore_detectors: []
 - filename: docs/images/vote_process.gif
   checksum: c3a82314b7db3029e5dd9b4226bde884f472561112b4287b5193eeeab1a7cf75
