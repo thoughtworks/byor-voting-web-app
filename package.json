@@ -1,5 +1,5 @@
 {
-  "name": "ng-build-your-own-radar",
+  "name": "byor-voting-web-app",
   "version": "1.0.1",
   "scripts": {
     "ng": "npx ng",
@@ -11,7 +11,7 @@
     "test:watch": "npx ng test --extra-webpack-config webpack.extra.js --poll 2000",
     "semantic-release": "npx semantic-release",
     "e2e": "npx ng e2e",
-    "analyze": "npm run build -- --stats-json && npx webpack-bundle-analyzer dist/ng-build-your-own-radar/stats.json"
+    "analyze": "npm run build -- --stats-json && npx webpack-bundle-analyzer dist/byor-voting-web-app/stats.json"
   },
   "private": true,
   "dependencies": {
