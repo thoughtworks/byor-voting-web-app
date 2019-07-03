@@ -5,9 +5,10 @@ import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { AppMaterialModule } from '../../app-material.module';
 import { LoginVotingEventComponent } from './login-voting-event/login-voting-event.component';
+import { NicknameComponent } from './nickname/nickname.component';
 
 @NgModule({
-  declarations: [LoginComponent, LoginVotingEventComponent],
+  declarations: [LoginComponent, LoginVotingEventComponent, NicknameComponent],
   providers: [AuthGuard, AuthService],
   imports: [CommonModule, AppMaterialModule],
   exports: [LoginComponent]

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { VotingEvent } from 'src/app/models/voting-event';
 import { Technology } from './models/technology';
+import { Credentials } from './models/credentials';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ export class AppSessionService {
   private votingEvents: VotingEvent[];
   private selectedVotingEvent: VotingEvent;
   private selectedTechnology: Technology;
+  private credentials: Credentials;
 
   constructor() {}
 
@@ -31,5 +33,12 @@ export class AppSessionService {
   }
   setSelectedTechnology(technology: Technology) {
     this.selectedTechnology = technology;
+  }
+
+  getCredentials() {
+    return this.credentials;
+  }
+  setCredentials(credentials: Credentials) {
+    this.credentials = credentials;
   }
 }

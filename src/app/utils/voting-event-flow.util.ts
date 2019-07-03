@@ -10,7 +10,7 @@ export function getIdentificationRoute(votingEvent: VotingEvent) {
   if (identificationType === 'login') {
     route = 'login-voting-event';
   } else if (identificationType === 'nickname') {
-    route = 'vote';
+    route = 'nickname';
   } else {
     throw new Error(`No route defined for identification type ${identificationType}`);
   }

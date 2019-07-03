@@ -8,6 +8,7 @@ import { VoteService } from '../services/vote.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { logError } from 'src/app/utils/utils';
+import { AppSessionService } from 'src/app/app-session.service';
 
 @Component({
   selector: 'byor-start-voting-session',
@@ -34,7 +35,8 @@ export class StartVotingSessionComponent implements AfterViewInit, OnDestroy, On
     private router: Router,
     private voteService: VoteService,
     private errorService: ErrorService,
-    private configurationService: ConfigurationService
+    private configurationService: ConfigurationService,
+    private appSession: AppSessionService
   ) {}
   openVotingEvents$: Observable<Array<VotingEvent>>;
 
@@ -83,6 +85,7 @@ export class StartVotingSessionComponent implements AfterViewInit, OnDestroy, On
       .subscribe(
         (credentials) => {
           this.voteService.credentials = credentials;
+          this.appSession.setSelectedVotingEvent(credentials.votingEvent);
           this.router.navigate(['vote/start']);
         },
         (error) => {

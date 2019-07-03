@@ -1,0 +1,53 @@
+@import "../../../styles/abstracts/mixins";
+
+$login-sections-max-width: 480px;
+
+.nickname-section {
+  margin: 1.3rem auto;
+  padding: 0 1.3rem;
+  max-width: $login-sections-max-width;
+
+  .event-selection {
+    display: block;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  .nickname {
+    margin-bottom: 2rem;
+
+    .nickname-input {
+      width: 100%;
+      @include byor-input;
+    }
+
+    label {
+      display: block;
+      margin-bottom: .3rem;
+    }
+  }
+
+  .button-disabled {
+    border: none;
+  }
+
+  .button-text {
+    color: #ffffff;
+  }
+}
+
+.banner-section {
+  margin: 0 auto;
+  padding: 6rem 1.3rem;
+  max-width: $login-sections-max-width;
+  text-align: center;
+
+  a {
+    border-bottom: none;
+    img {
+      max-width: 100%;
+    }
+  }
+}

@@ -5,7 +5,8 @@ import { BackendService } from './services/backend.service';
 import { ErrorService } from './services/error.service';
 import { AppSessionService } from './app-session.service';
 import { getIdentificationRoute } from './utils/voting-event-flow.util';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
+import { ConfigurationService } from './services/configuration.service';
 
 @Component({
   selector: 'byor-root',
@@ -19,27 +20,39 @@ export class AppComponent implements OnInit {
     private router: Router,
     private backend: BackendService,
     public errorService: ErrorService,
-    private appSession: AppSessionService
+    private appSession: AppSessionService,
+    private configurationService: ConfigurationService
   ) {}
 
   ngOnInit() {
-    this.backend
-      .getVotingEvents()
-      .pipe(map((votingEvents) => votingEvents.filter((ve) => ve.status === 'open')))
-      .subscribe((votingEvents) => {
-        if (!votingEvents || votingEvents.length === 0) {
-          this.errorService.setError(new Error('There are no Voting Events open'));
-          this.router.navigate(['error']);
-        } else if (votingEvents.length === 1) {
-          const votingEvent = votingEvents[0];
-          this.appSession.setSelectedVotingEvent(votingEvent);
-          const route = getIdentificationRoute(votingEvent);
-          this.router.navigate([route]);
-        } else {
-          this.appSession.setVotingEvents(votingEvents);
-          this.router.navigate(['selectVotingEvent']);
-        }
-      });
+    this.configurationService
+      .defaultConfiguration()
+      .pipe(
+        tap((config) => {
+          if (config.enableVotingEventFlow) {
+            this.backend
+              .getVotingEvents()
+              .pipe(map((votingEvents) => votingEvents.filter((ve) => ve.status === 'open')))
+              .subscribe((votingEvents) => {
+                if (!votingEvents || votingEvents.length === 0) {
+                  this.errorService.setError(new Error('There are no Voting Events open'));
+                  this.router.navigate(['error']);
+                } else if (votingEvents.length === 1) {
+                  const votingEvent = votingEvents[0];
+                  this.appSession.setSelectedVotingEvent(votingEvent);
+                  const route = getIdentificationRoute(votingEvent);
+                  this.router.navigate([route]);
+                } else {
+                  this.appSession.setVotingEvents(votingEvents);
+                  this.router.navigate(['selectVotingEvent']);
+                }
+              });
+          } else {
+            this.router.navigate(['vote']);
+          }
+        })
+      )
+      .subscribe();
   }
 
   goToAdminPage() {
