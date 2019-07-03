@@ -29,6 +29,7 @@ speed-measure-plugin.json
 !.vscode/extensions.json
 
 # misc
+config/byor_*.sh
 /.sass-cache
 /connect.lock
 /coverage

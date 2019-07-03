@@ -28,6 +28,9 @@ ci_all: ## Runs all the following tasks in sequence: install, lint, unit tests, 
 
 .PHONY: deploy semantic_release
 
+deploy_byor: ## Deploys custom byor on AWS S3
+		@/bin/bash .make/cd/deploy_byor_aws.sh
+
 deploy: ## Deploys on AWS S3
 		@/bin/bash .make/cd/deploy_aws.sh
 

@@ -24,7 +24,7 @@ FROM nginx:1.16-alpine AS prod
 
 ENV BACKEND_SERVICE_URL_PLACEHOLDER="__BACKEND__SERVICE__URL__PLACEHOLDER__" RADAR_SERVICE_URL_PLACEHOLDER="__RADAR__SERVICE__URL__PLACEHOLDER__" NGINX_BASE_DIR="/usr/share/nginx/html"
 
-COPY --from=build /usr/src/app/dist/ng-build-your-own-radar ${NGINX_BASE_DIR}
+COPY --from=build /usr/src/app/dist/byor-voting-web-app ${NGINX_BASE_DIR}
 
 COPY ./docker-nginx.conf /etc/nginx/conf.d/default.conf
 

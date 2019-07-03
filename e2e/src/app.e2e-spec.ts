@@ -9,6 +9,6 @@ describe('workspace-project App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('Welcome to ng-build-your-own-radar!');
+    expect(page.getTitleText()).toEqual('Welcome to byor-voting-web-app!');
   });
 });
