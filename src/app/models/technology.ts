@@ -10,4 +10,6 @@ export interface Technology {
   imageFile?: string;
   forRevote?: boolean;
   comments?: Comment[];
+  numberOfVotes?: number;
+  numberOfComments?: number;
 }

@@ -812,7 +812,7 @@ describe('BackendService', () => {
           {
             name: firstStepName,
             identification: { name: 'nickname' },
-            action: { name: 'vote', commentOnVoteBlocked: false }
+            action: { name: 'vote', parameters: { commentOnVoteBlocked: false } }
           },
           {
             name: secondStepName,

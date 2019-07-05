@@ -6,5 +6,5 @@ export interface VotingEventStep {
   name: string;
   description?: string;
   identification: { name: IdentificationTypeNames; roles?: string[] };
-  action: { name: ActionNames; commentOnVoteBlocked?: boolean; techSelectLogic?: TechSelectLogic };
+  action: { name: ActionNames; parameters?: { commentOnVoteBlocked?: boolean; techSelectLogic?: TechSelectLogic } };
 }

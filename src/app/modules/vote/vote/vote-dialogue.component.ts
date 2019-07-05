@@ -34,7 +34,7 @@ export class VoteDialogueComponent implements OnInit {
   showComment() {
     const votingEvent = this.appSession.getSelectedVotingEvent();
     const actionStep = getAction(votingEvent);
-    return !actionStep.commentOnVoteBlocked;
+    return !actionStep.parameters.commentOnVoteBlocked;
   }
 
   showHelp() {
