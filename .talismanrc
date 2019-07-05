@@ -41,8 +41,8 @@ fileignoreconfig:
   checksum: 2740b006c659977adb8595efe4c3802f14e093075f03c7a84552af96fd4e09b1
   ignore_detectors: []
 - filename: .make/cd/deploy_byor_aws.sh
-  checksum: 28ae88798796d143b1e2428b8be6394c39ad36b559aa3a494d437af1604c2ec0
+  checksum: f2831155da2da77b3250aebaff38937804c23dd2c4f7365f59f1e1cd936d79c5
   ignore_detectors: []
 - filename: .make/utils/get_byor_env.sh
-  checksum: b5f8ee2acbbc68ae3494c28fb13ce6fae03d51017e9b199e0a4ffb03a38d6907
+  checksum: bc21d6fe5eba70eda5823d13bf32b5225bf98027bf7bbf05c5c3546c685ccde0
   ignore_detectors: []

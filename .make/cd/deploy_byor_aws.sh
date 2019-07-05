@@ -3,10 +3,13 @@ set -e;
 
 source .make/utils/get_byor_env.sh
 
-read -e -p "Please enter the byor project folder [../build-your-own-radar]: " inByorPath;
-
+if [ -z "${1}" ]; then
+    read -e -p "Please enter the byor project folder [../build-your-own-radar]: " inByorPath;
+else
+    inByorPath=$1
+fi
 byorPath="${inByorPath:-../build-your-own-radar}"
-s3Path="${AWS_SERVICE_STAGE}--byor-voting-web-app"
+s3Path="${AWS_SERVICE_STAGE}--byor"
 cwd=$(pwd)
 
 echo "Building BYOR from ${byor}"
