@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, } from '@angular/common/http/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of, asyncScheduler } from 'rxjs';
@@ -11,28 +11,45 @@ import { VoteService } from '../services/vote.service';
 import { VoteComponent } from './vote.component';
 import { BackendService } from '../../../services/backend.service';
 import { TwRings } from 'src/app/models/ring';
+import { AppSessionService } from 'src/app/app-session.service';
+import { VotingEvent } from 'src/app/models/voting-event';
 
 const TEST_TECHNOLOGIES = [
   {
-    id: '0001', name: 'Babel', quadrant: 'Tools', isnew: true,
+    id: '0001',
+    name: 'Babel',
+    quadrant: 'Tools',
+    isnew: true,
     description: 'Description of <strong>Babel</strong>'
   },
   {
-    id: '0002', name: 'Ember.js', quadrant: 'Languages & Frameworks', isnew: true,
+    id: '0002',
+    name: 'Ember.js',
+    quadrant: 'Languages & Frameworks',
+    isnew: true,
     description: 'Description of <strong>Ember.js</strong>'
   },
   {
-    id: '0003', name: 'Docker', quadrant: 'Platforms', isnew: false,
+    id: '0003',
+    name: 'Docker',
+    quadrant: 'Platforms',
+    isnew: false,
     description: 'Description of <strong>Docker</strong>'
   },
   {
-    id: '0004', name: 'Consumer-driven contract testing', quadrant: 'Techniques', isnew: true,
+    id: '0004',
+    name: 'Consumer-driven contract testing',
+    quadrant: 'Techniques',
+    isnew: true,
     description: 'Description of <strong>Consumer-driven contract testin</strong>'
   },
   {
-    id: '0005', name: 'LambdaCD', quadrant: 'Tools', isnew: true,
+    id: '0005',
+    name: 'LambdaCD',
+    quadrant: 'Tools',
+    isnew: true,
     description: 'Description of <strong>LambdaCD</strong>'
-  },
+  }
 ];
 class MockBackEndService {
   getVotingEvent() {
@@ -50,6 +67,20 @@ class MockVoteService {
     };
   }
 }
+class MockAppSessionService {
+  private selectedVotingEvent: VotingEvent;
+
+  constructor() {
+    this.selectedVotingEvent = { _id: '123', name: 'an event', status: 'open', creationTS: 'abc' };
+  }
+
+  getSelectedVotingEvent() {
+    return this.selectedVotingEvent;
+  }
+  getSelectedTechnology() {
+    return null;
+  }
+}
 
 describe('VoteComponent', () => {
   let component: VoteComponent;
@@ -58,13 +89,13 @@ describe('VoteComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [VoteComponent],
-      imports: [BrowserAnimationsModule, HttpClientTestingModule, RouterTestingModule, AppMaterialModule,],
+      imports: [BrowserAnimationsModule, HttpClientTestingModule, RouterTestingModule, AppMaterialModule],
       providers: [
         { provide: BackendService, useClass: MockBackEndService },
         { provide: VoteService, useClass: MockVoteService },
+        { provide: AppSessionService, useClass: MockAppSessionService }
       ]
-    })
-      .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -89,7 +120,7 @@ describe('VoteComponent', () => {
 
     component.quadrantSelected(quadrantSelected);
     fixture.whenStable().then(() => {
-      expect(component.technologiesToShow.length).toBe(TEST_TECHNOLOGIES.filter(d => d.quadrant === quadrantSelected).length);
+      expect(component.technologiesToShow.length).toBe(TEST_TECHNOLOGIES.filter((d) => d.quadrant === quadrantSelected).length);
     });
   });
 
@@ -114,7 +145,7 @@ describe('VoteComponent', () => {
 
     component.addVote(vote);
     fixture.whenStable().then(() => {
-      expect(component.technologiesToShow.find(t => t.name === vote.technology.name)).toBeUndefined();
+      expect(component.technologiesToShow.find((t) => t.name === vote.technology.name)).toBeUndefined();
     });
   });
 
@@ -130,7 +161,7 @@ describe('VoteComponent', () => {
     component.removeVote(vote);
 
     fixture.whenStable().then(() => {
-      expect(component.technologiesToShow.find(t => t.name === vote.technology.name)).toBeDefined();
+      expect(component.technologiesToShow.find((t) => t.name === vote.technology.name)).toBeDefined();
     });
   });
 
@@ -159,14 +190,13 @@ describe('VoteComponent', () => {
     expect(component.getVotesByRing(TwRings.names[0])).toEqual([firstVote]);
     expect(component.getVotesByRing(TwRings.names[1])).toEqual([secondVote, thirdVote]);
     expect(component.getVotesByRing(TwRings.names[2]).length).toEqual(0);
-
   });
 
   describe('search for technology', () => {
     it('should list down all the technologies that matches the search string', () => {
-      component.search$ = of(TEST_TECHNOLOGIES[0].name)
+      component.search$ = of(TEST_TECHNOLOGIES[0].name);
       fixture.whenStable().then(() => {
-        expect(component.technologiesToShow.find(t => t === TEST_TECHNOLOGIES[0]));
+        expect(component.technologiesToShow.find((t) => t === TEST_TECHNOLOGIES[0]));
       });
     });
 
@@ -186,10 +216,10 @@ describe('VoteComponent', () => {
         expect(component.technologiesToShow.length).toBe(0);
       });
     });
-  })
+  });
 
   describe('vote exist', () => {
-    it('should return true when vote is already added', function () {
+    it('should return true when vote is already added', function() {
       const ring = 'hold';
       const technologyVotedIndex = 1;
       const vote = {
@@ -200,11 +230,10 @@ describe('VoteComponent', () => {
       component.addVote(vote);
 
       const isExist = component.isAlreadyVoted(TEST_TECHNOLOGIES[technologyVotedIndex].name);
-      expect(isExist).toBeTruthy()
-
+      expect(isExist).toBeTruthy();
     });
 
-    it('should return false when vote does not find in the voted list', function () {
+    it('should return false when vote does not find in the voted list', function() {
       const ring = 'hold';
       const technologyVotedIndex = 1;
       const vote = {
@@ -213,8 +242,7 @@ describe('VoteComponent', () => {
       };
       component.addVote(vote);
       const isExist = component.isAlreadyVoted('random');
-      expect(isExist).toBeFalsy()
-
+      expect(isExist).toBeFalsy();
     });
-  })
+  });
 });

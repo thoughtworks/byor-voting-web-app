@@ -27,7 +27,7 @@
 
 <div class="technology-card-list">
   <mat-card class="technology-card" *ngFor="let technology of technologiesToShow"
-    [ngClass]="technology.quadrant.substr(0,9).toLowerCase()" (click)="openVoteDialog(technology)">
+    [ngClass]="technology.quadrant.substr(0,9).toLowerCase()" (click)="technologySelected(technology)">
     <span *ngIf="technology.isNew" class="new-ribbon">
       <svg width="50" height="50" viewBox="0 0 100 100">
         <path fill="none" d="M-1-1h582v402H-1z" />

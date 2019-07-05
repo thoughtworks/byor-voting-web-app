@@ -15,6 +15,8 @@ import { Vote } from '../models/vote';
 import { JwtModule, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { apiDomain } from '../app.module';
 import { logError } from '../utils/utils';
+import { Comment } from '../models/comment';
+import { VotingEventFlow } from '../models/voting-event-flow';
 
 describe('BackendService', () => {
   let testToken;
@@ -28,7 +30,7 @@ describe('BackendService', () => {
     return {
       tokenGetter: getTestToken,
       whitelistedDomains: apiDomain()
-    }
+    };
   }
 
   const validUser = { user: 'abc', pwd: '123' };
@@ -171,7 +173,6 @@ describe('BackendService', () => {
         .subscribe({
           error: (err) => {
             logError('2.1 test the entire voting cycle ' + err);
-            done();
             throw new Error('the voting cycle does not work');
           },
           complete: () => done()
@@ -179,77 +180,77 @@ describe('BackendService', () => {
     }, 100000);
   });
 
-  describe('3 BackendService - get aggregated votes', () => {
-    // it('3.1 test the vote aggregation logic', done => {
-    //   const service: BackendService = TestBed.get(BackendService);
-    //   const votingEventName = 'theAggregationVotingEvent';
-    //   // there are 3 voters casting votes on 2 technologies, tech1 and tech2
-    //   // tech1 has 2 adopt and 1 hold
-    //   // tech2 has 1 hold and 2 assess
-    //   const techName1 = 'tech1';
-    //   const techName2 = 'tech2';
-    //   const votes1 = [
-    //     {ring: 'adopt', technology: {id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true}},
-    //     {ring: 'hold', technology: {id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false}}
-    //   ];
-    //   const credentials1: VoteCredentials = {
-    //     voterId: {firstName: 'fv1', lastName: 'lv1'},
-    //     votingEvent: null
-    //   };
-    //   const votes2 = [
-    //     {ring: 'adopt', technology: {id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true}},
-    //     {ring: 'assess', technology: {id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false}}
-    //   ];
-    //   const credentials2: VoteCredentials = {
-    //     voterId: {firstName: 'fv2', lastName: 'lv2'},
-    //     votingEvent: null
-    //   };
-    //   const votes3 = [
-    //     {ring: 'hold', technology: {id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true}},
-    //     {ring: 'assess', technology: {id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false}}
-    //   ];
-    //   const credentials3: VoteCredentials = {
-    //     voterId: {firstName: 'fv3', lastName: 'lv3'},
-    //     votingEvent: null
-    //   };
-    //   let votingEvent;
-    //   service.cancelVotingEvent(votingEventName, true)
-    //   .pipe(
-    //     switchMap(() => service.createVotingEvent(votingEventName)),
-    //     switchMap(() => service.getVotingEvents()),
-    //     tap(votingEvents => {
-    //       votingEvent = votingEvents.find(ve => ve.name === votingEventName);
-    //       credentials1.votingEvent = votingEvent;
-    //       credentials2.votingEvent = votingEvent;
-    //       credentials3.votingEvent = votingEvent;
-    //     }),
-    //     switchMap(() => service.openVotingEvent(votingEvent._id)),
-    //     switchMap(() => service.saveVote(votes1, credentials1)),
-    //     switchMap(() => service.saveVote(votes2, credentials2)),
-    //     switchMap(() => service.saveVote(votes3, credentials3)),
-    //     switchMap(() => service.getAggregatedVotes(votingEvent)),
-    //   )
-    //   .subscribe(
-    //     aggregatesVotes => {
-    //       expect(aggregatesVotes.length).toBe(4);
-    //       const aggVotesTech1 = aggregatesVotes.filter(av => av.technology.name === techName1);
-    //       expect(aggVotesTech1.length).toBe(2);
-    //       expect(aggVotesTech1.find(av => av.count === 2).ring).toBe('adopt');
-    //       expect(aggVotesTech1.find(av => av.count === 1).ring).toBe('hold');
-    //       const aggVotesTech2 = aggregatesVotes.filter(av => av.technology.name === techName2);
-    //       expect(aggVotesTech2.length).toBe(2);
-    //       expect(aggVotesTech2.find(av => av.count === 2).ring).toBe('assess');
-    //       expect(aggVotesTech2.find(av => av.count === 1).ring).toBe('hold');
-    //     },
-    //     err => {
-    //       logError('3.1 test the vote aggregation logic', err);
-    //       done();
-    //       throw(new Error('the vote aggregation logic has some issues'));
-    //     },
-    //     () => done()
-    //   );
-    // }, 20000);
-  });
+  // describe('3 BackendService - get aggregated votes', () => {
+  // it('3.1 test the vote aggregation logic', done => {
+  //   const service: BackendService = TestBed.get(BackendService);
+  //   const votingEventName = 'theAggregationVotingEvent';
+  //   // there are 3 voters casting votes on 2 technologies, tech1 and tech2
+  //   // tech1 has 2 adopt and 1 hold
+  //   // tech2 has 1 hold and 2 assess
+  //   const techName1 = 'tech1';
+  //   const techName2 = 'tech2';
+  //   const votes1 = [
+  //     {ring: 'adopt', technology: {id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true}},
+  //     {ring: 'hold', technology: {id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false}}
+  //   ];
+  //   const credentials1: VoteCredentials = {
+  //     voterId: {firstName: 'fv1', lastName: 'lv1'},
+  //     votingEvent: null
+  //   };
+  //   const votes2 = [
+  //     {ring: 'adopt', technology: {id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true}},
+  //     {ring: 'assess', technology: {id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false}}
+  //   ];
+  //   const credentials2: VoteCredentials = {
+  //     voterId: {firstName: 'fv2', lastName: 'lv2'},
+  //     votingEvent: null
+  //   };
+  //   const votes3 = [
+  //     {ring: 'hold', technology: {id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true}},
+  //     {ring: 'assess', technology: {id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false}}
+  //   ];
+  //   const credentials3: VoteCredentials = {
+  //     voterId: {firstName: 'fv3', lastName: 'lv3'},
+  //     votingEvent: null
+  //   };
+  //   let votingEvent;
+  //   service.cancelVotingEvent(votingEventName, true)
+  //   .pipe(
+  //     switchMap(() => service.createVotingEvent(votingEventName)),
+  //     switchMap(() => service.getVotingEvents()),
+  //     tap(votingEvents => {
+  //       votingEvent = votingEvents.find(ve => ve.name === votingEventName);
+  //       credentials1.votingEvent = votingEvent;
+  //       credentials2.votingEvent = votingEvent;
+  //       credentials3.votingEvent = votingEvent;
+  //     }),
+  //     switchMap(() => service.openVotingEvent(votingEvent._id)),
+  //     switchMap(() => service.saveVote(votes1, credentials1)),
+  //     switchMap(() => service.saveVote(votes2, credentials2)),
+  //     switchMap(() => service.saveVote(votes3, credentials3)),
+  //     switchMap(() => service.getAggregatedVotes(votingEvent)),
+  //   )
+  //   .subscribe(
+  //     aggregatesVotes => {
+  //       expect(aggregatesVotes.length).toBe(4);
+  //       const aggVotesTech1 = aggregatesVotes.filter(av => av.technology.name === techName1);
+  //       expect(aggVotesTech1.length).toBe(2);
+  //       expect(aggVotesTech1.find(av => av.count === 2).ring).toBe('adopt');
+  //       expect(aggVotesTech1.find(av => av.count === 1).ring).toBe('hold');
+  //       const aggVotesTech2 = aggregatesVotes.filter(av => av.technology.name === techName2);
+  //       expect(aggVotesTech2.length).toBe(2);
+  //       expect(aggVotesTech2.find(av => av.count === 2).ring).toBe('assess');
+  //       expect(aggVotesTech2.find(av => av.count === 1).ring).toBe('hold');
+  //     },
+  //     err => {
+  //       logError('3.1 test the vote aggregation logic', err);
+  //       done();
+  //       throw(new Error('the vote aggregation logic has some issues'));
+  //     },
+  //     () => done()
+  //   );
+  // }, 20000);
+  // });
 
   // describe('4 BackendService - calculate blips', () => {
   //   let httpClient: HttpClient;
@@ -344,7 +345,6 @@ describe('BackendService', () => {
         },
         (err) => {
           logError('5.1 authenticate a valid user ' + err);
-          done();
           throw new Error('the authenticate logic has some issues');
         },
         () => done()
@@ -353,83 +353,79 @@ describe('BackendService', () => {
 
     it(`5.2 tries to authenticate a user with the wrong password. 
   It assumes that the users used in the test are correctly loaded in the backend`, (done) => {
-        const service: BackendService = TestBed.get(BackendService);
-        const invalidUser = { user: 'abc', pwd: '321' };
+      const service: BackendService = TestBed.get(BackendService);
+      const invalidUser = { user: 'abc', pwd: '321' };
 
-        service.authenticate(invalidUser.user, invalidUser.pwd).subscribe(
-          (resp) => {
-            logError('5.2 authenticate a user with wrong password ' + resp);
-            done();
-            throw new Error('the authenticate logic has some issues');
-          },
-          (err) => {
-            expect(err.errorCode).toBe(ERRORS.pwdInvalid);
-            done();
-          },
-          () => done()
-        );
-      }, 10000);
+      service.authenticate(invalidUser.user, invalidUser.pwd).subscribe(
+        (resp) => {
+          logError('5.2 authenticate a user with wrong password ' + resp);
+          throw new Error('the authenticate logic has some issues');
+        },
+        (err) => {
+          expect(err.errorCode).toBe(ERRORS.pwdInvalid);
+          done();
+        },
+        () => done()
+      );
+    }, 10000);
 
     it(`5.3 tries to authenticate a user that does not exist. 
   It assumes that the users used in the test are correctly loaded in the backend`, (done) => {
-        const service: BackendService = TestBed.get(BackendService);
-        const invalidUser = { user: 'not existing user', pwd: '321' };
+      const service: BackendService = TestBed.get(BackendService);
+      const invalidUser = { user: 'not existing user', pwd: '321' };
 
-        service.authenticate(invalidUser.user, invalidUser.pwd).subscribe(
-          (resp) => {
-            logError('5.3 authenticate a user that does not exist ' + resp);
-            done();
-            throw new Error('the authenticate logic has some issues');
-          },
-          (err) => {
-            expect(err.errorCode).toBe(ERRORS.userUnknown);
-            done();
-          },
-          () => done()
-        );
-      }, 10000);
+      service.authenticate(invalidUser.user, invalidUser.pwd).subscribe(
+        (resp) => {
+          logError('5.3 authenticate a user that does not exist ' + resp);
+          throw new Error('the authenticate logic has some issues');
+        },
+        (err) => {
+          expect(err.errorCode).toBe(ERRORS.userUnknown);
+          done();
+        },
+        () => done()
+      );
+    }, 10000);
   });
 
   describe('6 BackendService - getConfiguration', () => {
     it(`6.1 retrieve the configuration without specifying a user.
   It assumes that the configuration has been correctly loaded on the backend
   This can be achieved using the command node ./dist/src/mongodb/scripts/set-configuration-collection DEV`, (done) => {
-        const service: BackendService = TestBed.get(BackendService);
+      const service: BackendService = TestBed.get(BackendService);
 
-        service.getConfiguration().subscribe(
-          (configuration) => {
-            expect(configuration.revoteToggle).toBeFalsy();
-            expect(configuration.secondValue).toBe('second');
-            expect(configuration.thirdValue).toBeUndefined();
-          },
-          (err) => {
-            logError('6.1 retrieve the configuration without specifying a user ' + err);
-            done();
-            throw new Error('the getConfiguration logic has some issues');
-          },
-          () => done()
-        );
-      }, 10000);
+      service.getConfiguration().subscribe(
+        (configuration) => {
+          expect(configuration.revoteToggle).toBeFalsy();
+          expect(configuration.secondValue).toBe('second');
+          expect(configuration.thirdValue).toBeUndefined();
+        },
+        (err) => {
+          logError('6.1 retrieve the configuration without specifying a user ' + err);
+          throw new Error('the getConfiguration logic has some issues');
+        },
+        () => done()
+      );
+    }, 10000);
 
     it(`6.2 retrieve the configuration specifying a user.
   It assumes that the configuration has been correctly loaded on the backend
   This can be achieved using the command node ./dist/src/mongodb/scripts/set-configuration-collection DEV`, (done) => {
-        const service: BackendService = TestBed.get(BackendService);
+      const service: BackendService = TestBed.get(BackendService);
 
-        service.getConfiguration('abc').subscribe(
-          (configuration) => {
-            expect(configuration.revoteToggle).toBeTruthy();
-            expect(configuration.secondValue).toBe('second');
-            expect(configuration.thirdValue).toBe('third');
-          },
-          (err) => {
-            logError('6.1 retrieve the configuration without specifying a user ' + err);
-            done();
-            throw new Error('the getConfiguration logic has some issues');
-          },
-          () => done()
-        );
-      }, 10000);
+      service.getConfiguration('abc').subscribe(
+        (configuration) => {
+          expect(configuration.revoteToggle).toBeTruthy();
+          expect(configuration.secondValue).toBe('second');
+          expect(configuration.thirdValue).toBe('third');
+        },
+        (err) => {
+          logError('6.1 retrieve the configuration without specifying a user ' + err);
+          throw new Error('the getConfiguration logic has some issues');
+        },
+        () => done()
+      );
+    }, 10000);
   });
 
   describe('7 BackendService - saveLogInfo', () => {
@@ -445,7 +441,6 @@ describe('BackendService', () => {
         },
         (err) => {
           logError('7.1 saveLogInfo should not raise an error ' + err);
-          done();
           throw new Error('the saveLogInfo logic has some issues');
         },
         () => done()
@@ -503,7 +498,6 @@ describe('BackendService', () => {
         .subscribe({
           error: (err) => {
             logError('8.1 addTechnology should not raise an error ' + err);
-            done();
             throw new Error('the addTechnology logic has some issues');
           },
           complete: () => done()
@@ -552,7 +546,6 @@ describe('BackendService', () => {
         .subscribe({
           error: (err) => {
             logError('9.1 test adding technology to an event ' + err);
-            done();
             throw new Error('adding technology to an event does not work');
           },
           complete: () => done()
@@ -641,9 +634,244 @@ describe('BackendService', () => {
         )
         .subscribe({
           error: (err) => {
-            logError('2.1 test the entire voting cycle ' + err);
-            done();
-            throw new Error('the voting cycle does not work');
+            console.error('10.1 test the entire voting cycle', err);
+            throw new Error('add and retrieve comments do not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+    it('10.2 add one vote with a comment, retrieve the vote and add a reply to the comment', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+      const votingEventName = 'a voting event with votes with comments and replies';
+      const replyText = 'this is the REPLY to the comment';
+      const replyAuthor = 'I am the author of the reply';
+      let votes1: Vote[];
+      let credentials1: VoteCredentials;
+
+      let votingEvent;
+
+      let tech1: Technology;
+
+      service
+        .authenticate(validUser.user, validUser.pwd)
+        .pipe(
+          concatMap(() => service.getVotingEvents({ all: true })), // first delete any votingEvent with the same name
+          map((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
+          }),
+          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
+        )
+        .pipe(
+          concatMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.getVotingEvents()),
+          tap((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            expect(vEvents.length).toBe(1);
+            credentials1 = {
+              voterId: { firstName: 'fReplied1', lastName: 'fReplied2' },
+              votingEvent: null
+            };
+            votingEvent = vEvents[0];
+            credentials1.votingEvent = votingEvent;
+          }),
+          concatMap(() => service.openVotingEvent(votingEvent._id)),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          // the first voter, Commenter1, saves 1 vote with a comment
+          tap((vEvent) => {
+            tech1 = vEvent.technologies[0];
+            votes1 = [{ ring: 'hold', technology: tech1, comment: { text: 'comment on the vote' } }];
+            credentials1.votingEvent = vEvent;
+          }),
+          concatMap(() => service.saveVote(votes1, credentials1)),
+          concatMap(() => service.getVotesWithCommentsForTechAndEvent(tech1._id, votingEvent._id)),
+          concatMap((votes: Vote[]) => {
+            const theVote = votes[0];
+            const theCommentId = theVote.comment.id;
+            const theReply: Comment = { text: replyText, author: replyAuthor };
+            return service.addReplyToVoteComment(theVote._id, theReply, theCommentId);
+          }),
+          concatMap(() => service.getVotesWithCommentsForTechAndEvent(tech1._id, votingEvent._id)),
+          tap((votes: Vote[]) => {
+            const theVote = votes[0];
+            expect(theVote.comment).toBeDefined();
+            expect(theVote.comment.replies).toBeDefined();
+            expect(theVote.comment.replies.length).toBe(1);
+            expect(theVote.comment.replies[0].text).toBe(replyText);
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('10.2 test the entire voting cycle', err);
+            throw new Error('add reply to a comment does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+  });
+
+  describe('11 BackendService - add comments and replies to a Technology', () => {
+    it('11.1 add a tech to a voting event and then add a comment to that technology and a reply to that comment', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+      const votingEventName = 'a voting event with a technology with one comment and one reply';
+
+      let votingEvent: VotingEvent;
+
+      const newTech: Technology = {
+        name: 'the new tech to add for comments',
+        description: 'I am the tech that receives comments',
+        isnew: true,
+        quadrant: 'tools'
+      };
+      const theComment = 'I am the comment';
+      const theAuthorOfTheComment = 'I am the author of the comment';
+      const theReplyToTheComment = 'I am the reply to the comment';
+      const theAuthorOfTheReply = 'I am the author of the reply';
+
+      service
+        .authenticate(validUser.user, validUser.pwd)
+        .pipe(
+          tap((resp) => (testToken = resp)),
+          concatMap(() => service.getVotingEvents({ all: true })),
+          map((votingEvents: any) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
+          }),
+          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
+        )
+        .pipe(
+          concatMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.getVotingEvents()),
+          tap((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            votingEvent = vEvents[0];
+          }),
+          concatMap(() => service.openVotingEvent(votingEvent._id)),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          concatMap(() => service.addTechnologyToVotingEvent(votingEvent._id, newTech)),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          map((vEvent) => vEvent.technologies.find((t) => t.description === newTech.description)),
+          concatMap((tech: Technology) => service.addCommentToTech(votingEvent._id, tech._id, theComment, theAuthorOfTheComment)),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          map((vEvent: VotingEvent) => vEvent.technologies.find((t) => t.description === newTech.description)),
+          tap((tech: Technology) => {
+            const techComments = tech.comments;
+            expect(techComments).toBeDefined();
+            expect(techComments.length).toBe(1);
+            expect(techComments[0].text).toBe(theComment);
+            expect(techComments[0].author).toBe(theAuthorOfTheComment);
+            expect(techComments[0].id).toBeDefined();
+            expect(techComments[0].timestamp).toBeDefined();
+            expect(techComments[0].replies).toBeUndefined();
+          }),
+          concatMap((tech: Technology) => {
+            const commentId = tech.comments[0].id;
+            const reply: Comment = {
+              text: theReplyToTheComment,
+              author: theAuthorOfTheReply
+            };
+            return service.addReplyToTechComment(votingEvent._id, tech._id, reply, commentId);
+          }),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          map((vEvent) => vEvent.technologies.find((t) => t.description === newTech.description)),
+          tap((tech: Technology) => {
+            const replies = tech.comments[0].replies;
+            expect(replies).toBeDefined();
+            expect(replies.length).toBe(1);
+            expect(replies[0].text).toBe(theReplyToTheComment);
+            expect(replies[0].author).toBe(theAuthorOfTheReply);
+            expect(replies[0].id).toBeDefined();
+            expect(replies[0].timestamp).toBeDefined();
+            expect(replies[0].replies).toBeUndefined();
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('11.1 add a tech to a voting event', err);
+            throw new Error('add a tech to a voting event does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+  });
+
+  describe('12 BackendService - create a user, authenticate and then delete it', () => {
+    it('12.1 create a user, authenticate and then delete it', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+      const votingEventName = 'a voting event for a user to log in';
+
+      let votingEvent: VotingEvent;
+      const user = 'A new user';
+      const pwd = 'my password';
+      const firstRole = 'architect';
+      const secondRole = 'dev';
+      const firstStepName = 'first step';
+      const secondStepName = 'second step';
+      const votingEventFlow: VotingEventFlow = {
+        steps: [
+          {
+            name: firstStepName,
+            identification: { name: 'nickname' },
+            action: { name: 'vote', commentOnVoteBlocked: false }
+          },
+          {
+            name: secondStepName,
+            identification: { name: 'login', roles: [firstRole] },
+            action: { name: 'conversation' }
+          }
+        ]
+      };
+      // at the moment the format is one object per role, and the name is repeated is the used has more than one role
+      // this is to mimic an csv format
+      const votingEventUser = [{ user, role: firstRole }, { user, role: secondRole }];
+
+      service
+        .authenticate(validUser.user, validUser.pwd)
+        .pipe(
+          tap((resp) => (testToken = resp)),
+          concatMap(() => service.deleteUsers([user])),
+          concatMap(() => service.getVotingEvents({ all: true })),
+          map((votingEvents: any) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
+          }),
+          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
+        )
+        .pipe(
+          concatMap(() => service.createVotingEvent(votingEventName, votingEventFlow)),
+          concatMap(() => service.getVotingEvents()),
+          tap((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            votingEvent = vEvents[0];
+          }),
+          concatMap(() => service.addUsersWithRole(votingEventUser)),
+          // authinticate first time
+          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id, firstStepName)),
+          tap((resp) => {
+            expect(resp.token).toBeDefined();
+            expect(resp.pwdInserted).toBeTruthy();
+            expect(resp.token === testToken).toBeFalsy();
+            testToken = resp.token;
+          }),
+          // authenticate secondtime
+          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id, firstStepName)),
+          tap((resp) => {
+            expect(resp.token).toBeDefined();
+            expect(resp.pwdInserted).toBeFalsy();
+            expect(resp.token === testToken).toBeTruthy();
+          }),
+          // delete the user and then try to authenticate
+          concatMap(() => service.deleteUsers([user])),
+          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id, firstStepName)),
+          catchError((err) => {
+            expect(err.errorCode).toBe(ERRORS.userUnknown);
+            return of(null);
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('12.1 create a user, authenticate and then delete it', err);
+            throw new Error('create a user, authenticate and then delete logic does not work');
           },
           complete: () => done()
         });
@@ -658,7 +886,7 @@ describe('redirect to radar page', () => {
     })
   );
 
-  it('should create proper query params for getting all blips', function () {
+  it('should create proper query params for getting all blips', function() {
     const service: BackendService = TestBed.get(BackendService);
     const windowOpenSpy = spyOn(window, 'open');
     service.url = 'service-url/';
@@ -670,7 +898,7 @@ describe('redirect to radar page', () => {
     );
   });
 
-  it('should create title param with default sitename when site name not given in config', function () {
+  it('should create title param with default sitename when site name not given in config', function() {
     const service: BackendService = TestBed.get(BackendService);
     const windowOpenSpy = spyOn(window, 'open');
     service.url = 'service-url/';
@@ -682,7 +910,7 @@ describe('redirect to radar page', () => {
     );
   });
 
-  it('should create proper query params for getting blips for event', function () {
+  it('should create proper query params for getting blips for event', function() {
     const service: BackendService = TestBed.get(BackendService);
     const windowOpenSpy = spyOn(window, 'open');
     service.url = 'service-url/';
@@ -705,7 +933,7 @@ describe('redirect to radar page', () => {
     );
   });
 
-  it('should create proper query params for getting blips for revote', function () {
+  it('should create proper query params for getting blips for revote', function() {
     const service: BackendService = TestBed.get(BackendService);
     const windowOpenSpy = spyOn(window, 'open');
     service.url = 'service-url';

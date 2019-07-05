@@ -17,10 +17,7 @@ import { HttpErrorHandler } from './shared/http-error-handler/http-error-handler
 import { EventsService } from './services/events.service';
 import { environment } from '../environments/environment';
 import { getToken } from './utils/get-token';
-
-// export function getToken() {
-//   return localStorage.getItem('access_token');
-// }
+import { VotingEventSelectComponent } from './components/voting-event-select/voting-event-select.component';
 
 export function apiDomain() {
   return [new URL(environment.serviceUrl).hostname + ':' + new URL(environment.serviceUrl).port];
@@ -34,7 +31,7 @@ export function jwtOptionsFactory() {
 }
 
 @NgModule({
-  declarations: [AppComponent, ErrorComponent, HeaderComponent],
+  declarations: [AppComponent, ErrorComponent, HeaderComponent, VotingEventSelectComponent],
   imports: [
     RouterModule.forRoot(appRoutes),
     BrowserModule,

@@ -21,6 +21,10 @@ import * as _ from 'lodash';
 import { TwRings } from 'src/app/models/ring';
 import { Comment } from 'src/app/models/comment';
 import { logError } from 'src/app/utils/utils';
+import { AppSessionService } from 'src/app/app-session.service';
+import { getActionName } from 'src/app/utils/voting-event-flow.util';
+import { ninvoke } from 'q';
+import { ConfigurationService } from 'src/app/services/configuration.service';
 
 @Component({
   selector: 'byor-vote',
@@ -65,7 +69,9 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
     private router: Router,
     private errorService: ErrorService,
     public dialog: MatDialog,
-    private voteService: VoteService
+    private voteService: VoteService,
+    private appSession: AppSessionService,
+    private configurationService: ConfigurationService
   ) {}
 
   ngAfterViewInit() {
@@ -109,7 +115,8 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
   }
 
   getTechnologies() {
-    const votingEvent = this.voteService.credentials.votingEvent;
+    // @todo remove "|| this.voteService.credentials.votingEvent" once the enableVotingEventFlow toggle is removed
+    const votingEvent = this.appSession.getSelectedVotingEvent() || this.voteService.credentials.votingEvent;
     return this.backEnd.getVotingEvent(votingEvent._id).pipe(
       map((event) => {
         let technologies = event.technologies;
@@ -127,8 +134,23 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
     return this.votes.filter((v) => v.ring === ring);
   }
 
+  technologySelected(technology: Technology) {
+    const votingEventRound = this.appSession.getSelectedVotingEvent().round;
+    this.appSession.setSelectedTechnology(technology);
+    const actionName = getActionName(this.appSession.getSelectedVotingEvent());
+    if (actionName === 'vote') {
+      this.openVoteDialog(technology);
+    } else if (actionName === 'conversation') {
+      this.goToConversation(technology);
+    } else if (actionName === 'recommendation') {
+      this.goToConversation(technology);
+    } else {
+      throw new Error(`No route for action name "${actionName}"`);
+    }
+  }
+
   createNewTechnology(name: string, quadrant: string) {
-    const votingEvent = this.voteService.credentials.votingEvent;
+    const votingEvent = this.appSession.getSelectedVotingEvent();
     const technology: Technology = {
       name: name,
       isnew: true,
@@ -170,6 +192,11 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
     });
   }
 
+  goToConversation(technology: Technology) {
+    this.appSession.setSelectedTechnology(technology);
+    this.router.navigate(['vote/conversation']);
+  }
+
   addVote(vote: Vote) {
     this.votes.push(vote);
     this.votes$.next(this.votes);
@@ -182,12 +209,22 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
   }
 
   saveVotes() {
-    this.backEnd.saveVote(this.votes, this.voteService.credentials).subscribe(
-      (resp) => {
+    const credentials = this.appSession.getCredentials();
+    const votingEvent = this.appSession.getSelectedVotingEvent();
+    let voterIdentification;
+    let oldCredentials: VoteCredentials;
+    if (credentials) {
+      voterIdentification = credentials.nickname || credentials.userId;
+      oldCredentials = { voterId: { firstName: voterIdentification, lastName: '' }, votingEvent };
+    } else {
+      oldCredentials = this.voteService.credentials;
+      voterIdentification = oldCredentials.voterId.firstName + ' ' + oldCredentials.voterId.lastName;
+    }
+    combineLatest(this.backEnd.saveVote(this.votes, oldCredentials), this.configurationService.defaultConfiguration()).subscribe(
+      ([resp, config]) => {
         if (resp.error) {
           if (resp.error.errorCode === 'V-01') {
-            const voterName = this.getVoterFirstLastName(this.voteService.credentials);
-            this.messageVote = `<strong> ${voterName} </strong> has already voted`;
+            this.messageVote = `<strong> ${voterIdentification} </strong> has already voted`;
           } else {
             this.messageVote = `Vote could not be saved - look at the browser console 
             - maybe there is something there`;
@@ -198,7 +235,8 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
           });
 
           dialogRef.afterClosed().subscribe((result) => {
-            this.router.navigate(['/vote']);
+            const route = config.enableVotingEventFlow ? 'nickname' : '/vote';
+            this.router.navigate([route]);
           });
         }
       },

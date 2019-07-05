@@ -31,4 +31,14 @@ export class AuthService {
     this.isLoggedIn = false;
     localStorage.removeItem('access_token');
   }
+
+  loginForVotingEvent(user: string, pwd: string, role: string, votingEventId: string) {
+    return this.backend.authenticateForVotingEvent(user, pwd, role, votingEventId).pipe(
+      tap(({ token, pwdInserted }) => {
+        if (token) {
+          localStorage.setItem('access_token', token);
+        }
+      })
+    );
+  }
 }

@@ -15,6 +15,8 @@ import { Blip } from '../models/blip';
 import { ERRORS } from './errors';
 import { logError } from '../utils/utils';
 import { inspect } from 'util';
+import { Comment } from '../models/comment';
+import { VotingEventFlow } from '../models/voting-event-flow';
 
 interface BackEndError {
   errorCode: string;
@@ -152,6 +154,19 @@ export class BackendService {
     );
   }
 
+  addReplyToVoteComment(voteId: string, reply: Comment, commentReceivingReplyId: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.addReplyToVoteComment);
+    payload['voteId'] = voteId;
+    payload['reply'] = reply;
+    payload['commentReceivingReplyId'] = commentReceivingReplyId;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        return resp.data;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
   // getAggregatedVotes(votingEvent: VotingEvent): Observable<Array<AggregatedVote>> {
   //   const payload = this.buildPostPayloadForService(ServiceNames.aggregateVotes);
   //   payload['votingEvent'] = votingEvent;
@@ -240,9 +255,10 @@ export class BackendService {
     );
   }
 
-  createVotingEvent(name: string) {
+  createVotingEvent(name: string, flow?: VotingEventFlow) {
     const payload = this.buildPostPayloadForService(ServiceNames.createVotingEvent);
     payload['name'] = name;
+    payload['flow'] = flow;
     return this.http.post(this.url, payload).pipe(
       map((resp: RespFromBackend) => {
         return resp;
@@ -289,6 +305,24 @@ export class BackendService {
     return this.http.post(this.url, payload).pipe(catchError(this.handleError));
   }
 
+  addCommentToTech(_id: string, technologyId: string, comment: string, author: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.addCommentToTech);
+    payload['_id'] = _id;
+    payload['technologyId'] = technologyId;
+    payload['comment'] = comment;
+    payload['author'] = author;
+    return this.http.post(this.url, payload).pipe(catchError(this.handleError));
+  }
+
+  addReplyToTechComment(votingEventId: string, technologyId: string, reply: Comment, commentReceivingReplyId: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.addReplyToTechComment);
+    payload['votingEventId'] = votingEventId;
+    payload['technologyId'] = technologyId;
+    payload['reply'] = reply;
+    payload['commentReceivingReplyId'] = commentReceivingReplyId;
+    return this.http.post(this.url, payload).pipe(catchError(this.handleError));
+  }
+
   getVoters(votingEvent: VotingEvent) {
     const payload = this.buildPostPayloadForService(ServiceNames.getVoters);
     payload['votingEvent'] = votingEvent;
@@ -304,6 +338,50 @@ export class BackendService {
     const payload = this.buildPostPayloadForService(ServiceNames.authenticate);
     payload['user'] = user;
     payload['pwd'] = pwd;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        const r = this.handleReponseDefault(resp);
+        return r;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  authenticateForVotingEvent(
+    user: string,
+    pwd: string,
+    votingEventId: string,
+    flowStepName: string
+  ): Observable<{ token: string; pwdInserted: boolean }> {
+    const payload = this.buildPostPayloadForService(ServiceNames.authenticateForVotingEvent);
+    payload['user'] = user;
+    payload['pwd'] = pwd;
+    payload['votingEventId'] = votingEventId;
+    payload['flowStepName'] = flowStepName;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        const r = this.handleReponseDefault(resp);
+        return r;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  addUsersWithRole(users: { user: string; role: string }[]) {
+    const payload = this.buildPostPayloadForService(ServiceNames.addUsersWithRole);
+    payload['users'] = users;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        const r = this.handleReponseDefault(resp);
+        return r;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  deleteUsers(users: string[]) {
+    const payload = this.buildPostPayloadForService(ServiceNames.deleteUsers);
+    payload['users'] = users;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
         const r = this.handleReponseDefault(resp);

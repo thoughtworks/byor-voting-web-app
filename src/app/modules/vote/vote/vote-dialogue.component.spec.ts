@@ -14,6 +14,26 @@ import {
 } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { VotingEvent } from 'src/app/models/voting-event';
+import { AppSessionService } from 'src/app/app-session.service';
+
+class MockAppSessionService {
+  private selectedVotingEvent: VotingEvent;
+
+  constructor() {
+    this.selectedVotingEvent = {
+      _id: '123',
+      name: 'an event',
+      status: 'open',
+      creationTS: 'abc',
+      flow: { steps: [{ name: 'the flow', identification: { name: 'nickname' }, action: { name: 'vote' } }] }
+    };
+  }
+
+  getSelectedVotingEvent() {
+    return this.selectedVotingEvent;
+  }
+}
 
 describe('VoteDialogueComponent', () => {
   let component: VoteDialogueComponent;
@@ -38,7 +58,8 @@ describe('VoteDialogueComponent', () => {
       providers: [
         { provide: MatDialog, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
-        { provide: MAT_DIALOG_DATA, useValue: matDialogData }
+        { provide: MAT_DIALOG_DATA, useValue: matDialogData },
+        { provide: AppSessionService, useClass: MockAppSessionService }
       ]
     }).compileComponents();
   }));

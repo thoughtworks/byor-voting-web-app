@@ -17,7 +17,7 @@
         <button *ngFor="let ring of rings" class="ring-button" color="accent" mat-flat-button (click)="vote(ring)"
             tabindex="-1">{{ring  | uppercase }}</button>
     </mat-card-actions>
-    <mat-card-content *ngIf="showComment$() | async">
+    <mat-card-content *ngIf="showComment()">
         <mat-card-subtitle>Comment</mat-card-subtitle>
         <mat-form-field class="vote-comment">
             <textarea matInput #comment matInput placeholder="Leave a comment if u want"></textarea>

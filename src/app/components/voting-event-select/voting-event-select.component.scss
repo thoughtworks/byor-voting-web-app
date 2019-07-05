@@ -1,0 +1,39 @@
+@import "../../styles/abstracts/mixins";
+
+$selection-sections-max-width: 480px;
+
+.selection-section {
+  margin: 1.3rem auto;
+  padding: 0 1.3rem;
+  max-width: $selection-sections-max-width;
+
+  .event-selection {
+    display: block;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  .voter {
+    margin-bottom: 2rem;
+
+    .voter-input {
+      width: 100%;
+      @include byor-input;
+    }
+
+    label {
+      display: block;
+      margin-bottom: .3rem;
+    }
+  }
+
+  .button-disabled {
+    border: none;
+  }
+
+  .button-text {
+    color: #ffffff;
+  }
+}
