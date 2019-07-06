@@ -33,12 +33,12 @@ export const appRoutes: Routes = [
     component: NicknameComponent
   },
   {
-    path: 'conversation',
-    component: TechnologyListComponent
-  },
-  {
     path: 'vote',
     loadChildren: './modules/vote/vote.module#VoteModule'
+  },
+  {
+    path: 'conversation',
+    loadChildren: './modules/conversation/conversation.module#ConversationModule'
   }
   // {
   //   path: '**',

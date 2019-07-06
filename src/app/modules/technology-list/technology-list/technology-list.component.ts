@@ -127,15 +127,7 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
     const votingEventRound = this.appSession.getSelectedVotingEvent().round;
     this.appSession.setSelectedTechnology(technology);
     const actionName = getActionName(this.appSession.getSelectedVotingEvent());
-    if (actionName === 'vote') {
-      this.techListService.technologySelected$.next(technology);
-    } else if (actionName === 'conversation') {
-      this.goToConversation(technology);
-    } else if (actionName === 'recommendation') {
-      this.goToConversation(technology);
-    } else {
-      throw new Error(`No route for action name "${actionName}"`);
-    }
+    this.techListService.technologySelected$.next(technology);
   }
 
   createNewTechnology(name: string, quadrant: string) {
