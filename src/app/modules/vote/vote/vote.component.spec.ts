@@ -13,6 +13,8 @@ import { BackendService } from '../../../services/backend.service';
 import { TwRings } from 'src/app/models/ring';
 import { AppSessionService } from 'src/app/app-session.service';
 import { VotingEvent } from 'src/app/models/voting-event';
+import { TechnologyListService } from '../../technology-list/services/technology-list.service';
+import { TechnologyListModule } from '../../technology-list/technology-list.module';
 
 const TEST_TECHNOLOGIES = [
   {
@@ -89,7 +91,7 @@ describe('VoteComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [VoteComponent],
-      imports: [BrowserAnimationsModule, HttpClientTestingModule, RouterTestingModule, AppMaterialModule],
+      imports: [BrowserAnimationsModule, HttpClientTestingModule, RouterTestingModule, AppMaterialModule, TechnologyListModule],
       providers: [
         { provide: BackendService, useClass: MockBackEndService },
         { provide: VoteService, useClass: MockVoteService },
@@ -108,47 +110,6 @@ describe('VoteComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('1.1 should select all the technologies emitted bythe BackEnd service since there are no filters applied', () => {
-    fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(component.technologiesToShow.length).toBe(TEST_TECHNOLOGIES.length);
-    });
-  });
-
-  it('1.2 should select just the technologies of the quadrant selected', () => {
-    const quadrantSelected = 'Tools';
-
-    component.quadrantSelected(quadrantSelected);
-    fixture.whenStable().then(() => {
-      expect(component.technologiesToShow.length).toBe(TEST_TECHNOLOGIES.filter((d) => d.quadrant === quadrantSelected).length);
-    });
-  });
-
-  it('1.3 selects all technologies since we select twice in a row the same quadrant and therefore the toggle logic is applied', () => {
-    const quadrantSelected = 'Tools';
-
-    component.quadrantSelected(quadrantSelected);
-    component.quadrantSelected(quadrantSelected);
-
-    fixture.whenStable().then(() => {
-      expect(component.technologiesToShow.length).toBe(TEST_TECHNOLOGIES.length);
-    });
-  });
-
-  it('1.4 does not select a technology which has been voted', () => {
-    const ring = 'hold';
-    const technologyVotedIndex = 1;
-    const vote = {
-      ring,
-      technology: TEST_TECHNOLOGIES[technologyVotedIndex]
-    };
-
-    component.addVote(vote);
-    fixture.whenStable().then(() => {
-      expect(component.technologiesToShow.find((t) => t.name === vote.technology.name)).toBeUndefined();
-    });
-  });
-
   it('1.5 does SELECT a technology which has been voted and then whose vote has been cancelled', () => {
     const ring = 'hold';
     const technologyVotedIndex = 1;
@@ -161,7 +122,7 @@ describe('VoteComponent', () => {
     component.removeVote(vote);
 
     fixture.whenStable().then(() => {
-      expect(component.technologiesToShow.find((t) => t.name === vote.technology.name)).toBeDefined();
+      expect(component.techList.technologiesToShow.find((t) => t.name === vote.technology.name)).toBeDefined();
     });
   });
 
@@ -190,32 +151,6 @@ describe('VoteComponent', () => {
     expect(component.getVotesByRing(TwRings.names[0])).toEqual([firstVote]);
     expect(component.getVotesByRing(TwRings.names[1])).toEqual([secondVote, thirdVote]);
     expect(component.getVotesByRing(TwRings.names[2]).length).toEqual(0);
-  });
-
-  describe('search for technology', () => {
-    it('should list down all the technologies that matches the search string', () => {
-      component.search$ = of(TEST_TECHNOLOGIES[0].name);
-      fixture.whenStable().then(() => {
-        expect(component.technologiesToShow.find((t) => t === TEST_TECHNOLOGIES[0]));
-      });
-    });
-
-    it('should list down all the technologies that matches the search character', () => {
-      component.search$ = of('c');
-      fixture.whenStable().then(() => {
-        expect(component.technologiesToShow.length).toBe(3);
-        expect(component.technologiesToShow).toContain(TEST_TECHNOLOGIES[2]);
-        expect(component.technologiesToShow).toContain(TEST_TECHNOLOGIES[3]);
-        expect(component.technologiesToShow).toContain(TEST_TECHNOLOGIES[4]);
-      });
-    });
-
-    it('should get empty list of technologies when that does not matches the search string', () => {
-      component.search$ = of('random');
-      fixture.whenStable().then(() => {
-        expect(component.technologiesToShow.length).toBe(0);
-      });
-    });
   });
 
   describe('vote exist', () => {

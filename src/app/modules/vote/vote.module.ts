@@ -10,10 +10,11 @@ import { RouterModule } from '@angular/router';
 import { routes } from './vote-routing';
 import { HelpDialogueComponent } from './vote/help-dialogue/help-dialogue.component';
 import { ConversationModule } from '../conversation/conversation.module';
+import { TechnologyListModule } from '../technology-list/technology-list.module';
 
 @NgModule({
   declarations: [VoteComponent, StartVotingSessionComponent, VoteDialogueComponent, VoteSavedDialogueComponent, HelpDialogueComponent],
-  imports: [RouterModule.forChild(routes), CommonModule, AppMaterialModule, ConversationModule],
+  imports: [RouterModule.forChild(routes), CommonModule, AppMaterialModule, ConversationModule, TechnologyListModule],
   entryComponents: [VoteDialogueComponent, VoteSavedDialogueComponent, HelpDialogueComponent],
   providers: [VoteService],
   exports: [StartVotingSessionComponent]

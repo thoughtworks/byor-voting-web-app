@@ -9,6 +9,7 @@ import { TechnologyListService } from './services/technology-list.service';
 @NgModule({
   declarations: [TechnologyListComponent],
   imports: [CommonModule, AppMaterialModule],
-  providers: [TechnologyListService]
+  providers: [TechnologyListService],
+  exports: [TechnologyListComponent]
 })
 export class TechnologyListModule {}

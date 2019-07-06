@@ -211,8 +211,7 @@ describe('add a new technology', () => {
     const theQuadrant = 'tools';
     component.createNewTechnology(newTechName, theQuadrant);
     fixture.whenStable().then(() => {
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>', component.technologiesToShow);
-      expect(component.technologiesToShow.find((t) => t.name === newTechName)).toBeDefined;
+      expect(component.technologiesToShow.find((t) => t.name === newTechName)).toBeDefined();
       expect(component.technologiesToShow.find((t) => t.name === newTechName).quadrant).toBe(theQuadrant);
     });
   });
