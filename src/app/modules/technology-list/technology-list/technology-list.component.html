@@ -39,3 +39,13 @@
     </span>
     {{truncatedName(technology.name)}}
   </mat-card>
+</div>
+
+
+<div *ngFor="let quadrant of quadrants">
+  <mat-card class="technology-card" [ngClass]="quadrant.substr(0,9).toLowerCase()"
+    (click)="createNewTechnology(searchField.value, quadrant)"
+    *ngIf="searchField.value !== '' && technologiesToShow.length === 0">
+    <span id="add-technology"> {{truncatedName('Add as a new '+ quadrant)}} </span>
+  </mat-card>
+</div>

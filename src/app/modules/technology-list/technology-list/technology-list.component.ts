@@ -2,7 +2,7 @@ import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnInit, Inp
 import { Router } from '@angular/router';
 
 import { BehaviorSubject, combineLatest, Observable, fromEvent, concat, of, Subject, merge, EMPTY, Subscription } from 'rxjs';
-import { map, catchError, switchMap, scan, shareReplay, delay, tap } from 'rxjs/operators';
+import { map, catchError, switchMap, scan, shareReplay, delay, tap, concatMap } from 'rxjs/operators';
 
 import { BackendService } from '../../../services/backend.service';
 import { ErrorService } from '../../../services/error.service';
@@ -146,9 +146,12 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
       description: '',
       quadrant: quadrant
     };
-    this.backEnd.addTechnologyToVotingEvent(votingEvent._id, technology).subscribe((resp) => {
-      this.techListService.newTechnologyAdded$.next(technology);
-    });
+    this.backEnd
+      .addTechnologyToVotingEvent(votingEvent._id, technology)
+      .pipe(concatMap(() => this.getTechnologies()))
+      .subscribe((resp) => {
+        this.techListService.newTechnologyAdded$.next(technology);
+      });
   }
 
   goToConversation(technology: Technology) {

@@ -12,6 +12,7 @@ import { AppSessionService } from 'src/app/app-session.service';
 import { VotingEvent } from 'src/app/models/voting-event';
 import { VoteService } from '../../vote/services/vote.service';
 import { TechnologyListService } from '../services/technology-list.service';
+import { Technology } from 'src/app/models/technology';
 
 const TEST_TECHNOLOGIES = [
   {
@@ -167,6 +168,52 @@ describe('TechnologyListComponent', () => {
       fixture.whenStable().then(() => {
         expect(component.technologiesToShow.length).toBe(0);
       });
+    });
+  });
+});
+
+describe('add a new technology', () => {
+  const TECHS = [...TEST_TECHNOLOGIES];
+
+  let component: TechnologyListComponent;
+  let fixture: ComponentFixture<TechnologyListComponent>;
+  class MockStatefullBackEndService {
+    getVotingEvent() {
+      const votingEvent = { technologies: TECHS, name: null, status: 'closed', _id: null, creationTS: null };
+      return of(votingEvent).pipe(observeOn(asyncScheduler));
+    }
+    addTechnologyToVotingEvent(votingEventId: any, technology: any) {
+      TECHS.push(technology);
+      return of(technology).pipe(observeOn(asyncScheduler));
+    }
+  }
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [TechnologyListComponent],
+      imports: [BrowserAnimationsModule, HttpClientTestingModule, RouterTestingModule, AppMaterialModule],
+      providers: [
+        { provide: BackendService, useClass: MockStatefullBackEndService },
+        { provide: VoteService, useClass: MockVoteService },
+        { provide: AppSessionService, useClass: MockAppSessionService },
+        TechnologyListService
+      ]
+    }).compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TechnologyListComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should get empty list of technologies when that does not matches the search string', () => {
+    const newTechName = 'The brand new tech';
+    const theQuadrant = 'tools';
+    component.createNewTechnology(newTechName, theQuadrant);
+    fixture.whenStable().then(() => {
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>', component.technologiesToShow);
+      expect(component.technologiesToShow.find((t) => t.name === newTechName)).toBeDefined;
+      expect(component.technologiesToShow.find((t) => t.name === newTechName).quadrant).toBe(theQuadrant);
     });
   });
 });
