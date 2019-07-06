@@ -1,14 +1,13 @@
 import { Component, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 import { Comment } from 'src/app/models/comment';
 import { BackendService } from 'src/app/services/backend.service';
-import { VoteService } from '../../vote/services/vote.service';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { Vote } from 'src/app/models/vote';
-import { VoteCredentials } from 'src/app/models/vote-credentials';
 import { AppSessionService } from 'src/app/app-session.service';
 import { AuthService } from '../../login/auth.service';
 
@@ -53,7 +52,12 @@ export class ConversationComponent implements OnDestroy {
   showAddReplyButton = true;
   errorMessage: string;
 
-  constructor(private backEnd: BackendService, private authService: AuthService, public appSession: AppSessionService) {
+  constructor(
+    private backEnd: BackendService,
+    private router: Router,
+    private authService: AuthService,
+    public appSession: AppSessionService
+  ) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<CommentFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);

@@ -14,6 +14,7 @@ import { Vote } from 'src/app/models/vote';
 import { AppSessionService } from 'src/app/app-session.service';
 import { Technology } from 'src/app/models/technology';
 import { VotingEvent } from 'src/app/models/voting-event';
+import { RouterTestingModule } from '@angular/router/testing';
 
 const TEST_TECHNOLOGIES = [
   {
@@ -140,7 +141,7 @@ describe('ConversationComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ConversationComponent, CommentCardComponent],
-      imports: [AppMaterialModule, MatTreeModule, HttpClientTestingModule],
+      imports: [AppMaterialModule, RouterTestingModule, MatTreeModule, HttpClientTestingModule],
       providers: [
         { provide: BackendService, useClass: MockBackEndService },
         { provide: VoteService, useClass: MockVoteService },

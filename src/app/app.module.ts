@@ -18,6 +18,7 @@ import { EventsService } from './services/events.service';
 import { environment } from '../environments/environment';
 import { getToken } from './utils/get-token';
 import { VotingEventSelectComponent } from './components/voting-event-select/voting-event-select.component';
+import { TechnologyListModule } from './modules/technology-list/technology-list.module';
 
 export function apiDomain() {
   return [new URL(environment.serviceUrl).hostname + ':' + new URL(environment.serviceUrl).port];
@@ -46,7 +47,8 @@ export function jwtOptionsFactory() {
         provide: JWT_OPTIONS,
         useFactory: jwtOptionsFactory
       }
-    })
+    }),
+    TechnologyListModule
   ],
   providers: [HttpErrorHandler, EventsService],
   bootstrap: [AppComponent]

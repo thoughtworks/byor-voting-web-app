@@ -1,36 +1,27 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
 
 import { BehaviorSubject, combineLatest, Observable, fromEvent, concat, of, Subject, merge, EMPTY, Subscription } from 'rxjs';
 import { map, catchError, switchMap, scan, shareReplay, delay, tap } from 'rxjs/operators';
 
-import { environment } from '../../../../environments/environment';
-
-import { VoteDialogueComponent } from './vote-dialogue.component';
-import { VoteSavedDialogueComponent } from './vote-saved-dialogue.component';
-
 import { BackendService } from '../../../services/backend.service';
 import { ErrorService } from '../../../services/error.service';
 import { Technology } from '../../../models/technology';
-import { Vote } from '../../../models/vote';
 import { QUADRANT_NAMES } from '../../../models/quadrant';
-import { VoteService } from '../services/vote.service';
-import { VoteCredentials } from '../../../models/vote-credentials';
+import { VoteService } from '../../vote/services/vote.service';
 import * as _ from 'lodash';
 import { TwRings } from 'src/app/models/ring';
-import { Comment } from 'src/app/models/comment';
 import { logError } from 'src/app/utils/utils';
 import { AppSessionService } from 'src/app/app-session.service';
 import { getActionName } from 'src/app/utils/voting-event-flow.util';
-import { ConfigurationService } from 'src/app/services/configuration.service';
+import { TechnologyListService } from '../services/technology-list.service';
 
 @Component({
-  selector: 'byor-vote',
-  templateUrl: './vote.component.html',
-  styleUrls: ['./vote.component.scss']
+  selector: 'byor-technology-list',
+  templateUrl: './technology-list.component.html',
+  styleUrls: ['./technology-list.component.scss']
 })
-export class VoteComponent implements AfterViewInit, OnDestroy {
+export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('searchField') searchField: ElementRef;
   quadrants = QUADRANT_NAMES;
   rings = TwRings.names;
@@ -38,8 +29,6 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
   private technologiesToShowSubscription: Subscription;
   technologiesToShow: Technology[];
 
-  votes = new Array<Vote>();
-  votes$ = new BehaviorSubject<Array<Vote>>(this.votes);
   search$: Observable<any>;
   clearSearch$ = new Subject<any>();
   quadrantSelected$ = new BehaviorSubject<string>('');
@@ -58,20 +47,24 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
     // and one to support the highlight of the selected quadrant button with toggling
     shareReplay(1)
   );
+  private technolgiesToExclude$ = new BehaviorSubject<Technology[]>([]);
+  @Input('technolgiesToExclude')
+  set technolgiesToExclude(technologies: Technology[]) {
+    this.setTechnolgiesToExclude(technologies);
+  }
 
   votingEventId$: Observable<any>;
-
-  messageVote: string;
 
   constructor(
     private backEnd: BackendService,
     private router: Router,
     private errorService: ErrorService,
-    public dialog: MatDialog,
     private voteService: VoteService,
     private appSession: AppSessionService,
-    private configurationService: ConfigurationService
+    private techListService: TechnologyListService
   ) {}
+
+  ngOnInit() {}
 
   ngAfterViewInit() {
     this.search$ = merge(concat(of(''), fromEvent(this.searchField.nativeElement, 'keyup')), this.clearSearch$).pipe(
@@ -92,17 +85,17 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
     return this.getTechnologies().pipe(
       tap((techs) => (technologies = techs)),
       switchMap(() => {
-        return combineLatest([this.votes$, this.search$, this.quadrantSelectedToggle$]);
+        return combineLatest([this.search$, this.quadrantSelectedToggle$, this.technolgiesToExclude$]);
       }),
       // delay is needed to avoid the error ExpressionChangedAfterItHasBeenCheckedError
       // @todo see if it is possible to remove delay
       delay(0),
-      // show in the list only the technologies for which the user has not already cast a vote
-      map(([votes, search, quadrant]) => {
+      // show in the list only the technologies serach criteria and quadrant selected
+      map(([search, quadrant, technolgiesToExclude]) => {
         return technologies
-          .filter((technology) => votes.find((vote) => vote.technology.name === technology.name) === undefined)
           .filter((technology) => search === '' || technology.name.toLowerCase().includes(search.toLowerCase()))
-          .filter((technology) => quadrant === '' || technology.quadrant.toLowerCase() === quadrant.toLowerCase());
+          .filter((technology) => quadrant === '' || technology.quadrant.toLowerCase() === quadrant.toLowerCase())
+          .filter((technology) => !technolgiesToExclude.includes(technology));
       }),
       catchError((err) => {
         logError(err);
@@ -113,15 +106,16 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
     );
   }
 
+  setTechnolgiesToExclude(technoogies: Technology[]) {
+    this.technolgiesToExclude$.next(technoogies);
+  }
+
   getTechnologies() {
     // @todo remove "|| this.voteService.credentials.votingEvent" once the enableVotingEventFlow toggle is removed
     const votingEvent = this.appSession.getSelectedVotingEvent() || this.voteService.credentials.votingEvent;
     return this.backEnd.getVotingEvent(votingEvent._id).pipe(
       map((event) => {
-        let technologies = event.technologies;
-        if (votingEvent.openForRevote) {
-          technologies = technologies.filter((t) => t.forRevote);
-        }
+        const technologies = event.technologies;
         return _.sortBy(technologies, function(item: Technology) {
           return item.name.toLowerCase();
         });
@@ -129,16 +123,12 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
     );
   }
 
-  getVotesByRing(ring: string): Vote[] {
-    return this.votes.filter((v) => v.ring === ring);
-  }
-
   technologySelected(technology: Technology) {
     const votingEventRound = this.appSession.getSelectedVotingEvent().round;
     this.appSession.setSelectedTechnology(technology);
     const actionName = getActionName(this.appSession.getSelectedVotingEvent());
     if (actionName === 'vote') {
-      this.openVoteDialog(technology);
+      this.techListService.technologySelected$.next(technology);
     } else if (actionName === 'conversation') {
       this.goToConversation(technology);
     } else if (actionName === 'recommendation') {
@@ -157,99 +147,13 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
       quadrant: quadrant
     };
     this.backEnd.addTechnologyToVotingEvent(votingEvent._id, technology).subscribe((resp) => {
-      this.openVoteDialog(technology);
-    });
-  }
-
-  openVoteDialog(technology: Technology): void {
-    let message: string;
-    if (this.votes.length === environment.maxNumberOfVotes) {
-      message = 'You have already given the max number of votes - cancel one vote if you want to vote for ' + technology.name;
-    }
-    const dialogRef = this.dialog.open(VoteDialogueComponent, {
-      width: '400px',
-      maxWidth: '90vw',
-      data: { technology, message }
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const vote: Vote = {
-          ring: result.ring,
-          technology
-        };
-        if (result.comment) {
-          const voteComment: Comment = {
-            text: result.comment
-          };
-          vote.comment = voteComment;
-        }
-        if (vote.ring) {
-          this.addVote(vote);
-        }
-      }
+      this.techListService.newTechnologyAdded$.next(technology);
     });
   }
 
   goToConversation(technology: Technology) {
     this.appSession.setSelectedTechnology(technology);
     this.router.navigate(['vote/conversation']);
-  }
-
-  addVote(vote: Vote) {
-    this.votes.push(vote);
-    this.votes$.next(this.votes);
-  }
-
-  removeVote(vote: Vote) {
-    const index = this.votes.indexOf(vote);
-    this.votes.splice(index, 1);
-    this.votes$.next(this.votes);
-  }
-
-  saveVotes() {
-    const credentials = this.appSession.getCredentials();
-    const votingEvent = this.appSession.getSelectedVotingEvent();
-    let voterIdentification;
-    let oldCredentials: VoteCredentials;
-    if (credentials) {
-      voterIdentification = credentials.nickname || credentials.userId;
-      oldCredentials = { voterId: { firstName: voterIdentification, lastName: '' }, votingEvent };
-    } else {
-      oldCredentials = this.voteService.credentials;
-      voterIdentification = oldCredentials.voterId.firstName + ' ' + oldCredentials.voterId.lastName;
-    }
-    combineLatest(this.backEnd.saveVote(this.votes, oldCredentials), this.configurationService.defaultConfiguration()).subscribe(
-      ([resp, config]) => {
-        if (resp.error) {
-          if (resp.error.errorCode === 'V-01') {
-            this.messageVote = `<strong> ${voterIdentification} </strong> has already voted`;
-          } else {
-            this.messageVote = `Vote could not be saved - look at the browser console 
-            - maybe there is something there`;
-          }
-        } else {
-          const dialogRef = this.dialog.open(VoteSavedDialogueComponent, {
-            width: '400px'
-          });
-
-          dialogRef.afterClosed().subscribe((result) => {
-            const route = config.enableVotingEventFlow ? 'nickname' : '/vote';
-            this.router.navigate([route]);
-          });
-        }
-      },
-      (err) => {
-        logError(err);
-        this.messageVote = `Vote could not be saved - look at the browser console 
-        - maybe there is something there`;
-      }
-    );
-  }
-  getVoterFirstLastName(cred: VoteCredentials) {
-    const firstName = cred.voterId.firstName;
-    const lastName = cred.voterId.lastName;
-    return firstName + ' ' + lastName;
   }
 
   clearSearch() {
@@ -276,10 +180,5 @@ export class VoteComponent implements AfterViewInit, OnDestroy {
           .join(' ') + '...';
     }
     return shortName;
-  }
-
-  isAlreadyVoted(value: string) {
-    const existingVote = this.votes.filter((vote) => vote.technology.name === value);
-    return existingVote.length !== 0;
   }
 }

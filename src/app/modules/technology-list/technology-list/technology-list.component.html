@@ -1,0 +1,41 @@
+<div>
+
+  <div class="search-section">
+    <mat-form-field class="search-field">
+      <input #searchField matInput type="text" placeholder="Search" class="input-field">
+      <button *ngIf="searchField.value !== ''" mat-button mat-icon-button matSuffix aria-label="Clear"
+        (click)="clearSearch()">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <div class="quadrant-buttons">
+    <button *ngFor="let quadrant of quadrants" (click)="quadrantSelected(quadrant)"
+      [ngClass]="quadrant.substr(0,9).toLowerCase()" class="quadrant-button" mat-flat-button
+      [class.selected-quadrant-button]="isQuadrantSelected(quadrant) | async">
+      <span *ngIf="technologiesToShow && technologiesToShow.length !== 0">
+        {{quadrant | uppercase}}
+      </span>
+    </button>
+  </div>
+</div>
+
+<mat-divider></mat-divider>
+
+<div class="technology-card-list">
+  <mat-card class="technology-card" *ngFor="let technology of technologiesToShow"
+    [ngClass]="technology.quadrant.substr(0,9).toLowerCase()" (click)="technologySelected(technology)">
+    <span *ngIf="technology.isNew" class="new-ribbon">
+      <svg width="50" height="50" viewBox="0 0 100 100">
+        <path fill="none" d="M-1-1h582v402H-1z" />
+        <g>
+          <path d="M-1.167-1h582v402h-582V-1z" fill="none" />
+          <path fill="#62437a" d="M0 0l100 100V40L60 0H0z" />
+          <text fill="#fff" font-family="Helvetica" font-size="20" x="41.845" y="42.063"
+            transform="rotate(45.001 65.161 35.133)">NEW</text>
+        </g>
+      </svg>
+    </span>
+    {{truncatedName(technology.name)}}
+  </mat-card>
