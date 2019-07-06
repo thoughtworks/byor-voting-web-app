@@ -19,6 +19,7 @@ import { environment } from '../environments/environment';
 import { getToken } from './utils/get-token';
 import { VotingEventSelectComponent } from './components/voting-event-select/voting-event-select.component';
 import { TechnologyListModule } from './modules/technology-list/technology-list.module';
+import { CanActivateStart } from './can-activate-start';
 
 export function apiDomain() {
   return [new URL(environment.serviceUrl).hostname + ':' + new URL(environment.serviceUrl).port];
@@ -50,7 +51,7 @@ export function jwtOptionsFactory() {
     }),
     TechnologyListModule
   ],
-  providers: [HttpErrorHandler, EventsService],
+  providers: [HttpErrorHandler, EventsService, CanActivateStart],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

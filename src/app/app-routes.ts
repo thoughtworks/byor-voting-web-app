@@ -5,6 +5,7 @@ import { VotingEventSelectComponent } from './components/voting-event-select/vot
 import { LoginVotingEventComponent } from './modules/login/login-voting-event/login-voting-event.component';
 import { NicknameComponent } from './modules/login/nickname/nickname.component';
 import { TechnologyListComponent } from './modules/technology-list/technology-list/technology-list.component';
+import { AppComponent } from './app.component';
 
 export const appRoutes: Routes = [
   {
@@ -31,6 +32,10 @@ export const appRoutes: Routes = [
   {
     path: 'nickname',
     component: NicknameComponent
+  },
+  {
+    path: 'refresh',
+    component: AppComponent
   },
   {
     path: 'vote',
