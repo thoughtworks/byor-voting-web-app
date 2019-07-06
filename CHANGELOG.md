@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/thoughtworks/byor-voting-web-app/compare/v1.1.0...v1.1.1) (2019-07-06)
+
+
+### Bug Fixes
+
+* **VoteDialogueComponent:** check actionStep params not undefined ([bce96f3](https://github.com/thoughtworks/byor-voting-web-app/commit/bce96f3))
+
 # [1.1.0](https://github.com/thoughtworks/byor-voting-web-app/compare/v1.0.1...v1.1.0) (2019-07-05)
 
 
