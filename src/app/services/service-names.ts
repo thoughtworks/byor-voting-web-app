@@ -11,6 +11,7 @@ export enum ServiceNames {
   getVotesWithCommentsForTechAndEvent,
   addReplyToVoteComment,
   getVotingEvents,
+  getVotingEventWithNumberOfCommentsAndVotes,
   getVotingEvent,
   createVotingEvent,
   openVotingEvent,

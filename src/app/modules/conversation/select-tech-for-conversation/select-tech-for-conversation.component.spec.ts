@@ -13,7 +13,14 @@ class MockVoteService {
   constructor() {
     this.credentials = {
       voterId: null,
-      votingEvent: { technologies: [], name: null, status: 'closed', _id: null, creationTS: null }
+      votingEvent: {
+        technologies: [],
+        name: null,
+        status: 'closed',
+        _id: null,
+        creationTS: null,
+        flow: { steps: [{ name: 'the flow', identification: { name: 'nickname' }, action: { name: 'vote' } }] }
+      }
     };
   }
 }

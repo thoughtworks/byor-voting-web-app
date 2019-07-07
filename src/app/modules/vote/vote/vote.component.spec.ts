@@ -13,7 +13,6 @@ import { BackendService } from '../../../services/backend.service';
 import { TwRings } from 'src/app/models/ring';
 import { AppSessionService } from 'src/app/app-session.service';
 import { VotingEvent } from 'src/app/models/voting-event';
-import { TechnologyListService } from '../../technology-list/services/technology-list.service';
 import { TechnologyListModule } from '../../technology-list/technology-list.module';
 
 const TEST_TECHNOLOGIES = [
@@ -73,7 +72,13 @@ class MockAppSessionService {
   private selectedVotingEvent: VotingEvent;
 
   constructor() {
-    this.selectedVotingEvent = { _id: '123', name: 'an event', status: 'open', creationTS: 'abc' };
+    this.selectedVotingEvent = {
+      _id: '123',
+      name: 'an event',
+      status: 'open',
+      creationTS: 'abc',
+      flow: { steps: [{ name: 'the flow', identification: { name: 'nickname' }, action: { name: 'vote' } }] }
+    };
   }
 
   getSelectedVotingEvent() {

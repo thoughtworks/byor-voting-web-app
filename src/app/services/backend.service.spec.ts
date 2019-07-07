@@ -630,6 +630,16 @@ describe('BackendService', () => {
             expect(votesWithComments.length).toBe(2);
             expect(votesWithComments.filter((v) => v.comment.text === commentOnVote1).length).toBe(1);
             expect(votesWithComments.filter((v) => v.comment.text === commentOnVote2).length).toBe(1);
+          }),
+          concatMap(() => service.getVotingEventWithNumberOfCommentsAndVotes(votingEvent._id)),
+          tap((vEvent: VotingEvent) => {
+            const techs = vEvent.technologies;
+            const t1 = techs.find((t) => t.name === tech1.name);
+            const t2 = techs.find((t) => t.name === tech2.name);
+            expect(t1.numberOfVotes).toBe(2);
+            expect(t1.numberOfComments).toBe(0);
+            expect(t2.numberOfVotes).toBe(2);
+            expect(t2.numberOfComments).toBe(2);
           })
         )
         .subscribe({

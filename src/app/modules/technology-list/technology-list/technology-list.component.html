@@ -37,7 +37,11 @@
         </g>
       </svg>
     </span>
-    {{truncatedName(technology.name)}}
+    <mat-icon *ngIf="technology.numberOfVotes > 0" [matBadge]="technology.numberOfVotes">how_to_vote</mat-icon>
+    <span>
+      {{truncatedName(technology.name)}}
+    </span>
+    <mat-icon *ngIf="technology.numberOfComments > 0" [matBadge]="technology.numberOfComments">comment</mat-icon>
   </mat-card>
 </div>
 

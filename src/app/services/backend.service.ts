@@ -255,6 +255,17 @@ export class BackendService {
     );
   }
 
+  getVotingEventWithNumberOfCommentsAndVotes(eventId: string): Observable<VotingEvent> {
+    const payload = this.buildPostPayloadForService(ServiceNames.getVotingEventWithNumberOfCommentsAndVotes);
+    payload['_id'] = eventId;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        return this.handleReponseDefault(resp);
+      }),
+      catchError(this.handleError)
+    );
+  }
+
   createVotingEvent(name: string, flow?: VotingEventFlow) {
     const payload = this.buildPostPayloadForService(ServiceNames.createVotingEvent);
     payload['name'] = name;

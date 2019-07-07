@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 import { TwRings } from 'src/app/models/ring';
 import { logError } from 'src/app/utils/utils';
 import { AppSessionService } from 'src/app/app-session.service';
-import { getActionName } from 'src/app/utils/voting-event-flow.util';
+import { getActionName, getAction } from 'src/app/utils/voting-event-flow.util';
 import { TechnologyListService } from '../services/technology-list.service';
 
 @Component({
@@ -113,7 +113,13 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
   getTechnologies() {
     // @todo remove "|| this.voteService.credentials.votingEvent" once the enableVotingEventFlow toggle is removed
     const votingEvent = this.appSession.getSelectedVotingEvent() || this.voteService.credentials.votingEvent;
-    return this.backEnd.getVotingEvent(votingEvent._id).pipe(
+
+    const actionParams = getAction(votingEvent).parameters;
+    const getVotingEventObs =
+      actionParams && actionParams.displayVotesAndCommentNumbers
+        ? this.backEnd.getVotingEventWithNumberOfCommentsAndVotes(votingEvent._id)
+        : this.backEnd.getVotingEvent(votingEvent._id);
+    return getVotingEventObs.pipe(
       map((event) => {
         const technologies = event.technologies;
         return _.sortBy(technologies, function(item: Technology) {
