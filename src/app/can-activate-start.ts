@@ -12,7 +12,7 @@ export class CanActivateStart implements CanActivate {
     // @todo remove "|| this.voteService.credentials.votingEvent" once the enableVotingEventFlow toggle is removed
     const votingEvent =
       this.appSession.getSelectedVotingEvent() || (this.voteService.credentials && this.voteService.credentials.votingEvent);
-    if (!votingEvent) {
+    if (!votingEvent && !(route.parent.component === AppComponent)) {
       this._router.navigateByUrl('/refresh');
     }
     return true;
