@@ -81,6 +81,10 @@ export class VotingEventComponent implements OnInit {
         }
       },
       (err) => {
+        if (err.errorCode === ERRORS.unauthorized) {
+          this.unauthorized();
+          return;
+        }
         this.messageCreate = `Event <strong> ${inputValue}  </strong> could not be created - look at the browser console 
         - maybe there is something there`;
       },
@@ -137,9 +141,14 @@ export class VotingEventComponent implements OnInit {
     const selectedEventId = this.getSelectedEvent()._id;
     this.backend.openVotingEvent(selectedEventId).subscribe(
       () => (this.messageAction = `Event <strong> ${this.selectedName} </strong> opened`),
-      (err) =>
-        (this.messageAction = `Event <strong> ${this.selectedName} </strong> could not be opened - 
-      look at the browser console to see if there is any detail`),
+      (err) => {
+        if (err.errorCode === ERRORS.unauthorized) {
+          this.unauthorized();
+          return;
+        }
+        this.messageAction = `Event <strong> ${this.selectedName} </strong> could not be opened - 
+      look at the browser console to see if there is any detail`;
+      },
       () => this.refreshVotingEvents()
     );
   }
@@ -148,9 +157,14 @@ export class VotingEventComponent implements OnInit {
     const selectedEventId = this.getSelectedEvent()._id;
     this.backend.closeVotingEvent(selectedEventId).subscribe(
       () => (this.messageAction = `Event <strong> ${this.selectedName} </strong> closed`),
-      (err) =>
-        (this.messageAction = `Event <strong> ${this.selectedName} </strong> could not be closed - 
-      look at the browser console to see if there is any detail`),
+      (err) => {
+        if (err.errorCode === ERRORS.unauthorized) {
+          this.unauthorized();
+          return;
+        }
+        this.messageAction = `Event <strong> ${this.selectedName} </strong> could not be closed - 
+      look at the browser console to see if there is any detail`;
+      },
       () => this.refreshVotingEvents()
     );
   }
@@ -177,9 +191,14 @@ export class VotingEventComponent implements OnInit {
     const selectedEvent = this.getSelectedEvent();
     this.backend.openForRevote(selectedEvent).subscribe(
       () => (this.messageAction = `Event <strong> ${this.selectedName} </strong> open for revote`),
-      (err) =>
-        (this.messageAction = `Event <strong> ${this.selectedName} </strong> could not be opened for revote - 
-      look at the browser console to see if there is any detail`),
+      (err) => {
+        if (err.errorCode === ERRORS.unauthorized) {
+          this.unauthorized();
+          return;
+        }
+        this.messageAction = `Event <strong> ${this.selectedName} </strong> could not be opened for revote - 
+      look at the browser console to see if there is any detail`;
+      },
       () => this.refreshVotingEvents()
     );
   }
@@ -188,9 +207,14 @@ export class VotingEventComponent implements OnInit {
     const selectedEvent = this.getSelectedEvent();
     this.backend.closeForRevote(selectedEvent).subscribe(
       () => (this.messageAction = `Event <strong> ${this.selectedName} </strong> closed for revote`),
-      (err) =>
-        (this.messageAction = `Event <strong> ${this.selectedName} </strong> could not be closed for revote - 
-      look at the browser console to see if there is any detail`),
+      (err) => {
+        if (err.errorCode === ERRORS.unauthorized) {
+          this.unauthorized();
+          return;
+        }
+        this.messageAction = `Event <strong> ${this.selectedName} </strong> could not be closed for revote - 
+      look at the browser console to see if there is any detail`;
+      },
       () => this.refreshVotingEvents()
     );
   }
@@ -213,5 +237,11 @@ export class VotingEventComponent implements OnInit {
     this.configuration$.subscribe((config) => {
       this.backend.getBlipsForAllEvent(config);
     });
+  }
+
+  unauthorized() {
+    this.authenticationService.logout();
+    this.authenticationService.setMessage('Request not authorized - pls login and try again');
+    this.router.navigate(['login']);
   }
 }

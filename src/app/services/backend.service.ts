@@ -439,6 +439,10 @@ export class BackendService {
       logError('Server is unreacheable ...');
       logError('The error details: ' + inspect(error));
       return throwError({ message: 'Server is unreacheable ...', errorCode: ERRORS.serverUnreacheable });
+    } else if (error.status === 401) {
+      logError('Unauthorized');
+      logError('The error details: ' + inspect(error));
+      return throwError({ message: `Unauthorized - error ${JSON.stringify(error.error)}`, errorCode: ERRORS.unauthorized });
     } else if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
       errorMessage = 'An error occurred: ' + error.error.message;

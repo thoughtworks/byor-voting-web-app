@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject, ReplaySubject } from 'rxjs';
 import { tap, delay } from 'rxjs/operators';
 import { BackendService } from 'src/app/services/backend.service';
 
@@ -9,6 +9,7 @@ import { BackendService } from 'src/app/services/backend.service';
 export class AuthService {
   user: string;
   isLoggedIn = false;
+  message$ = new ReplaySubject<string>(1);
 
   constructor(private backend: BackendService) {}
 
@@ -40,5 +41,9 @@ export class AuthService {
         }
       })
     );
+  }
+
+  setMessage(msg: string) {
+    this.message$.next(msg);
   }
 }

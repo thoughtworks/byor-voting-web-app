@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { Observable, Subject, fromEvent, combineLatest, never, Subscription, merge, throwError } from 'rxjs';
-import { map, share, switchMap, catchError } from 'rxjs/operators';
+import { map, share, switchMap, catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 import { AuthService } from './auth.service';
@@ -19,7 +19,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   inputData$: Observable<any>;
   isValidInputData$: Observable<boolean>;
   clickOnLogin$: Observable<{ user: string; password: string }>;
-  message$ = new Subject<string>();
+  message$: Observable<string>;
+  _message$ = new Subject<string>();
 
   loginSubscription: Subscription;
 
@@ -33,6 +34,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     if (getToken()) {
       this.router.navigate(['admin']);
     }
+    this.message$ = merge(this._message$, this.authService.message$);
   }
 
   ngAfterViewInit() {
@@ -109,7 +111,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
           return throwError(err.message);
         }
         if (err.message) {
-          this.message$.next(err.message);
+          this._message$.next(err.message);
           return caught;
         }
       })
