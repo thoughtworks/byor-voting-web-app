@@ -4,7 +4,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { BackendService } from './backend.service';
 import { of, forkJoin } from 'rxjs';
-import { tap, switchMap, catchError, map, concatMap } from 'rxjs/operators';
+import { tap, switchMap, catchError, map, concatMap, delay } from 'rxjs/operators';
 
 import { VoteCredentials } from '../models/vote-credentials';
 import { ERRORS } from './errors';
@@ -868,7 +868,6 @@ describe('BackendService', () => {
           tap((resp) => {
             expect(resp.token).toBeDefined();
             expect(resp.pwdInserted).toBeFalsy();
-            expect(resp.token === testToken).toBeTruthy();
           }),
           // delete the user and then try to authenticate
           concatMap(() => service.deleteUsers([user])),
