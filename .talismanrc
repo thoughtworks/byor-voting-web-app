@@ -44,5 +44,5 @@ fileignoreconfig:
   checksum: f2831155da2da77b3250aebaff38937804c23dd2c4f7365f59f1e1cd936d79c5
   ignore_detectors: []
 - filename: .make/utils/get_byor_env.sh
-  checksum: bc21d6fe5eba70eda5823d13bf32b5225bf98027bf7bbf05c5c3546c685ccde0
+  checksum: a74ff7ddc0f41d0a1049ecf63912f35ea2e0123b514ce9c130c7647e2589a2db
   ignore_detectors: []
