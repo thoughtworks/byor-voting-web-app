@@ -10,6 +10,7 @@ docker run \
        -v /usr/src/.git/ \
        -v /usr/src/config \
        -v /usr/src/dist \
+       -v /usr/src/logs \
        byoritaly/talisman-checks-runner:0.4.6 \
        /bin/bash -c "git init &> /dev/null && talisman --pattern \"**\""
 echo "...no secrets found, ok!"

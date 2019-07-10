@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/thoughtworks/byor-voting-web-app/compare/v1.1.1...v1.2.0) (2019-07-08)
+
+
+### Bug Fixes
+
+* **CanActivateStart:** fix the behavior when starting the app ([b803bcd](https://github.com/thoughtworks/byor-voting-web-app/commit/b803bcd))
+* **VotingEventComponent:** token expired managed ([4626823](https://github.com/thoughtworks/byor-voting-web-app/commit/4626823))
+
+
+### Features
+
+* **CanActivateStart:** CanActivateStart to protect from browser refresh ([e4be912](https://github.com/thoughtworks/byor-voting-web-app/commit/e4be912))
+* **TechnologyListComponent:** number of voted and comments shown ([64a70d7](https://github.com/thoughtworks/byor-voting-web-app/commit/64a70d7))
+
 ## [1.1.1](https://github.com/thoughtworks/byor-voting-web-app/compare/v1.1.0...v1.1.1) (2019-07-06)
 
 
