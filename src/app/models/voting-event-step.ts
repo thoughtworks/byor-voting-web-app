@@ -8,6 +8,12 @@ export interface VotingEventStep {
   identification: { name: IdentificationTypeNames; roles?: string[] };
   action: {
     name: ActionNames;
-    parameters?: { commentOnVoteBlocked?: boolean; techSelectLogic?: TechSelectLogic; displayVotesAndCommentNumbers?: boolean };
+    parameters?: {
+      commentOnVoteBlocked?: boolean;
+      techSelectLogic?: TechSelectLogic;
+      displayVotesAndCommentNumbers?: boolean;
+      tags?: string[];
+      allowTagsOnVote?: boolean;
+    };
   };
 }

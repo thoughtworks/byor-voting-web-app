@@ -91,6 +91,9 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
           };
           vote.comment = voteComment;
         }
+        if (result.tags) {
+          vote.tags = result.tags;
+        }
         if (vote.ring) {
           this.addVote(vote);
         }

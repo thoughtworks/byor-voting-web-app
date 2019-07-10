@@ -7,4 +7,5 @@ export interface Vote {
   technology: Technology;
   eventRound?: any;
   comment?: Comment;
+  tags?: string[];
 }

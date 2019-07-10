@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule, MatExpansionModule } from '@angular/material';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   imports: [
@@ -24,7 +25,8 @@ import { MatBadgeModule, MatExpansionModule } from '@angular/material';
     MatDividerModule,
     MatInputModule,
     MatSelectModule,
-    MatListModule
+    MatListModule,
+    MatAutocompleteModule
   ],
   exports: [
     MatCardModule,
@@ -38,6 +40,7 @@ import { MatBadgeModule, MatExpansionModule } from '@angular/material';
     MatListModule,
     MatBadgeModule,
     MatExpansionModule,
+    MatAutocompleteModule
   ]
 })
-export class AppMaterialModule { }
+export class AppMaterialModule {}

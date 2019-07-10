@@ -16,6 +16,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { VotingEvent } from 'src/app/models/voting-event';
 import { AppSessionService } from 'src/app/app-session.service';
+import { AppMaterialModule } from 'src/app/app-material.module';
 
 class MockAppSessionService {
   private selectedVotingEvent: VotingEvent;
@@ -46,15 +47,7 @@ describe('VoteDialogueComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [VoteDialogueComponent],
-      imports: [
-        MatCardModule,
-        MatIconModule,
-        MatDialogModule,
-        MatFormFieldModule,
-        MatInputModule,
-        BrowserAnimationsModule,
-        HttpClientTestingModule
-      ],
+      imports: [AppMaterialModule, BrowserAnimationsModule, HttpClientTestingModule],
       providers: [
         { provide: MatDialog, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
