@@ -3,9 +3,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-import { SelectTechForConversationComponent } from './select-tech-for-conversation.component';
-import { TechnologyListModule } from '../../technology-list/technology-list.module';
+import { AppMaterialModule } from 'src/app/app-material.module';
+
+import { SelectTechComponent } from './select-tech.component';
 import { VoteService } from '../../vote/services/vote.service';
+import { TechnologyListService } from '../services/technology-list.service';
+import { TechnologyListComponent } from '../technology-list/technology-list.component';
 
 class MockVoteService {
   credentials;
@@ -25,20 +28,20 @@ class MockVoteService {
   }
 }
 
-describe('SelectTechForConversationComponent', () => {
-  let component: SelectTechForConversationComponent;
-  let fixture: ComponentFixture<SelectTechForConversationComponent>;
+describe('SelectTechComponent', () => {
+  let component: SelectTechComponent;
+  let fixture: ComponentFixture<SelectTechComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SelectTechForConversationComponent],
-      imports: [BrowserAnimationsModule, RouterTestingModule, HttpClientTestingModule, TechnologyListModule],
-      providers: [{ provide: VoteService, useClass: MockVoteService }]
+      declarations: [SelectTechComponent, TechnologyListComponent],
+      imports: [BrowserAnimationsModule, RouterTestingModule, HttpClientTestingModule, AppMaterialModule],
+      providers: [{ provide: VoteService, useClass: MockVoteService }, TechnologyListService]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SelectTechForConversationComponent);
+    fixture = TestBed.createComponent(SelectTechComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

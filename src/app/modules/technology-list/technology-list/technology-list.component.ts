@@ -152,11 +152,6 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
       });
   }
 
-  goToConversation(technology: Technology) {
-    this.appSession.setSelectedTechnology(technology);
-    this.router.navigate(['vote/conversation']);
-  }
-
   clearSearch() {
     this.searchField.nativeElement.value = '';
     this.clearSearch$.next('');

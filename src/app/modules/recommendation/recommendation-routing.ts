@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
-import { ConversationComponent } from './conversation/conversation.component';
+import { RecommendationComponent } from './recommendation/recommendation.component';
 import { SelectTechComponent } from '../technology-list/select-tech/select-tech.component';
 import { CanActivateStart } from '../../can-activate-start';
 
 export const routes: Routes = [
   {
-    path: 'conversation',
+    path: '',
     canActivate: [CanActivateStart],
-    children: [{ path: '', component: SelectTechComponent }, { path: 'conversation', component: ConversationComponent }]
+    children: [{ path: '', component: SelectTechComponent }, { path: 'recommendation', component: RecommendationComponent }]
   }
 ];

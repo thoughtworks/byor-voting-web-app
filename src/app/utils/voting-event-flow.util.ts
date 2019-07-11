@@ -32,6 +32,8 @@ export function getActionRoute(votingEvent: VotingEvent) {
     route = 'vote';
   } else if (actionName === 'conversation') {
     route = 'conversation';
+  } else if (actionName === 'recommendation') {
+    route = 'recommendation';
   } else {
     throw new Error(`No route defined for action name "${actionName}"`);
   }
