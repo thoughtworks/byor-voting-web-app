@@ -6,11 +6,11 @@ import { of, asyncScheduler } from 'rxjs';
 import { observeOn } from 'rxjs/operators';
 
 import { TechnologyListComponent } from './technology-list.component';
-import { AppMaterialModule } from '../../../app-material.module';
-import { BackendService } from '../../../services/backend.service';
+import { AppMaterialModule } from '../../../../app-material.module';
+import { BackendService } from '../../../../services/backend.service';
 import { AppSessionService } from 'src/app/app-session.service';
 import { VotingEvent } from 'src/app/models/voting-event';
-import { VoteService } from '../../vote/services/vote.service';
+import { VoteService } from '../../../vote/services/vote.service';
 import { TechnologyListService } from '../services/technology-list.service';
 import { Technology } from 'src/app/models/technology';
 

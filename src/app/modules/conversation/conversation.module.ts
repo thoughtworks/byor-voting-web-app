@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { MatTreeModule } from '@angular/material/tree';
 
 import { AppMaterialModule } from '../../app-material.module';
-import { TechnologyListModule } from '../technology-list/technology-list.module';
+import { TechnologyListModule } from '../shared/technology-list/technology-list.module';
 import { routes } from './conversation-routing';
 
 import { ConversationComponent } from './conversation/conversation.component';

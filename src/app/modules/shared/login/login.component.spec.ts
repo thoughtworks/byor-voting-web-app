@@ -5,7 +5,7 @@ import { of, throwError, Subject } from 'rxjs';
 
 import { marbles } from 'rxjs-marbles/jasmine';
 
-import { AppMaterialModule } from '../../app-material.module';
+import { AppMaterialModule } from '../../../app-material.module';
 
 import { LoginComponent } from './login.component';
 import { AuthService } from './auth.service';

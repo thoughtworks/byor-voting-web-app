@@ -21,8 +21,8 @@ import { Comment } from 'src/app/models/comment';
 import { logError } from 'src/app/utils/utils';
 import { AppSessionService } from 'src/app/app-session.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
-import { TechnologyListService } from '../../technology-list/services/technology-list.service';
-import { TechnologyListComponent } from '../../technology-list/technology-list/technology-list.component';
+import { TechnologyListService } from '../../shared/technology-list/services/technology-list.service';
+import { TechnologyListComponent } from '../../shared/technology-list/technology-list/technology-list.component';
 
 @Component({
   selector: 'byor-vote',

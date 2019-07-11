@@ -1,26 +1,27 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { Observable, Subject, fromEvent, combineLatest, never, Subscription, merge, throwError } from 'rxjs';
-import { map, share, switchMap, catchError, tap } from 'rxjs/operators';
+import { map, share, switchMap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
-import { AuthService } from './auth.service';
+import { AuthService } from './../auth.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { ERRORS } from 'src/app/services/errors';
-import { getToken } from '../../utils/get-token';
+import { getToken } from '../../../../utils/get-token';
+import { getActionRoute } from 'src/app/utils/voting-event-flow.util';
+import { AppSessionService } from 'src/app/app-session.service';
 
 @Component({
-  selector: 'byor-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  selector: 'byor-login-voting-event',
+  templateUrl: './login-voting-event.component.html',
+  styleUrls: ['./login-voting-event.component.scss']
 })
-export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
+export class LoginVotingEventComponent implements AfterViewInit, OnDestroy {
   user$: Observable<string>;
   password$: Observable<string>;
   inputData$: Observable<any>;
   isValidInputData$: Observable<boolean>;
   clickOnLogin$: Observable<{ user: string; password: string }>;
-  message$: Observable<string>;
-  _message$ = new Subject<string>();
+  message$ = new Subject<string>();
 
   loginSubscription: Subscription;
 
@@ -28,14 +29,12 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('pwd') pwd: ElementRef;
   @ViewChild('loginButton', { read: ElementRef }) loginButtonRef: ElementRef;
 
-  constructor(public authService: AuthService, public router: Router, public errorService: ErrorService) {}
-
-  ngOnInit() {
-    if (getToken()) {
-      this.router.navigate(['admin']);
-    }
-    this.message$ = merge(this._message$, this.authService.message$);
-  }
+  constructor(
+    public authService: AuthService,
+    public router: Router,
+    public errorService: ErrorService,
+    public appSession: AppSessionService
+  ) {}
 
   ngAfterViewInit() {
     const _user$ = fromEvent(this.userid.nativeElement, 'keyup').pipe(map(() => this.userid.nativeElement.value));
@@ -45,7 +44,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loginSubscription = this.logIn$(_user$, _password$, _loginButtonClick$).subscribe(
       (authResp) => {
         this.authService.isLoggedIn = authResp;
-        const redirect = this.authService.redirectUrl ? this.authService.redirectUrl : '/admin';
+        const redirect = getActionRoute(this.appSession.getSelectedVotingEvent());
         this.router.navigate([redirect]);
       },
       (error) => {
@@ -111,7 +110,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
           return throwError(err.message);
         }
         if (err.message) {
-          this._message$.next(err.message);
+          this.message$.next(err.message);
           return caught;
         }
       })

@@ -10,7 +10,7 @@ import { RouterModule } from '@angular/router';
 import { routes } from './vote-routing';
 import { HelpDialogueComponent } from './vote/help-dialogue/help-dialogue.component';
 import { ConversationModule } from '../conversation/conversation.module';
-import { TechnologyListModule } from '../technology-list/technology-list.module';
+import { TechnologyListModule } from '../shared/technology-list/technology-list.module';
 
 @NgModule({
   declarations: [VoteComponent, StartVotingSessionComponent, VoteDialogueComponent, VoteSavedDialogueComponent, HelpDialogueComponent],

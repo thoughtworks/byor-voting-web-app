@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './modules/login/login.component';
+import { LoginComponent } from './modules/shared/login/login.component';
 import { ErrorComponent } from './components/error/error.component';
 import { VotingEventSelectComponent } from './components/voting-event-select/voting-event-select.component';
-import { LoginVotingEventComponent } from './modules/login/login-voting-event/login-voting-event.component';
-import { NicknameComponent } from './modules/login/nickname/nickname.component';
+import { LoginVotingEventComponent } from './modules/shared/login/login-voting-event/login-voting-event.component';
+import { NicknameComponent } from './modules/shared/login/nickname/nickname.component';
 import { AppComponent } from './app.component';
 
 export const appRoutes: Routes = [

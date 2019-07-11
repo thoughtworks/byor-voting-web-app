@@ -9,7 +9,7 @@ import { BackendService } from 'src/app/services/backend.service';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { Vote } from 'src/app/models/vote';
 import { AppSessionService } from 'src/app/app-session.service';
-import { AuthService } from '../../login/auth.service';
+import { AuthService } from '../../shared/login/auth.service';
 
 /** Flat comment node with expandable and level information */
 export class CommentFlatNode {

@@ -9,7 +9,7 @@ import { AppMaterialModule } from './app-material.module';
 import { AppComponent } from './app.component';
 import { ErrorComponent } from './components/error/error.component';
 import { HeaderComponent } from './components/header/header.component';
-import { LoginModule } from './modules/login/login.module';
+import { LoginModule } from './modules/shared/login/login.module';
 import { RouterModule } from '@angular/router';
 import { appRoutes } from './app-routes';
 import { VoteModule } from './modules/vote/vote.module';
@@ -18,7 +18,6 @@ import { EventsService } from './services/events.service';
 import { environment } from '../environments/environment';
 import { getToken } from './utils/get-token';
 import { VotingEventSelectComponent } from './components/voting-event-select/voting-event-select.component';
-import { TechnologyListModule } from './modules/technology-list/technology-list.module';
 import { CanActivateStart } from './can-activate-start';
 
 export function apiDomain() {
@@ -48,8 +47,7 @@ export function jwtOptionsFactory() {
         provide: JWT_OPTIONS,
         useFactory: jwtOptionsFactory
       }
-    }),
-    TechnologyListModule
+    })
   ],
   providers: [HttpErrorHandler, EventsService, CanActivateStart],
   bootstrap: [AppComponent]

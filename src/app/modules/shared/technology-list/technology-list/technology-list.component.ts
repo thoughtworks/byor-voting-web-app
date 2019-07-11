@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, fromEvent, concat, of, Subject, merge, EMPTY, Subscription } from 'rxjs';
 import { map, catchError, switchMap, scan, shareReplay, delay, tap, concatMap } from 'rxjs/operators';
 
-import { BackendService } from '../../../services/backend.service';
-import { ErrorService } from '../../../services/error.service';
-import { Technology } from '../../../models/technology';
-import { QUADRANT_NAMES } from '../../../models/quadrant';
-import { VoteService } from '../../vote/services/vote.service';
+import { BackendService } from '../../../../services/backend.service';
+import { ErrorService } from '../../../../services/error.service';
+import { Technology } from '../../../../models/technology';
+import { QUADRANT_NAMES } from '../../../../models/quadrant';
+import { VoteService } from '../../../vote/services/vote.service';
 import * as _ from 'lodash';
 import { TwRings } from 'src/app/models/ring';
 import { logError } from 'src/app/utils/utils';

@@ -13,7 +13,7 @@ import { BackendService } from '../../../services/backend.service';
 import { TwRings } from 'src/app/models/ring';
 import { AppSessionService } from 'src/app/app-session.service';
 import { VotingEvent } from 'src/app/models/voting-event';
-import { TechnologyListModule } from '../../technology-list/technology-list.module';
+import { TechnologyListModule } from '../../shared/technology-list/technology-list.module';
 
 const TEST_TECHNOLOGIES = [
   {

@@ -6,7 +6,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AppMaterialModule } from 'src/app/app-material.module';
 
 import { SelectTechComponent } from './select-tech.component';
-import { VoteService } from '../../vote/services/vote.service';
+import { VoteService } from '../../../vote/services/vote.service';
 import { TechnologyListService } from '../services/technology-list.service';
 import { TechnologyListComponent } from '../technology-list/technology-list.component';
 

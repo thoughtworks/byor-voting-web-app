@@ -9,7 +9,7 @@ import { VotingEvent } from '../../../models/voting-event';
 import { ErrorService } from 'src/app/services/error.service';
 import { ERRORS } from 'src/app/services/errors';
 import { ConfigurationService } from 'src/app/services/configuration.service';
-import { AuthService } from '../../login/auth.service';
+import { AuthService } from '../../shared/login/auth.service';
 import { EventsService } from '../../../services/events.service';
 import { VoteCloudService } from '../vote-cloud/vote-cloud.service';
 

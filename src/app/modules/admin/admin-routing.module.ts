@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-
-import {AdminDashboardComponent} from './admin-dashboard/admin-dashboard.component';
-import {VotersListComponent} from './voters-list/voters-list.component';
-import { AuthGuard } from '../login/auth.guard';
+import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
+import { VotersListComponent } from './voters-list/voters-list.component';
+import { AuthGuard } from '../shared/login/auth.guard';
 import { VoteCloudComponent } from './vote-cloud/vote-cloud.component';
 
 const routes: Routes = [
@@ -27,4 +26,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class AdminRoutingModule { }
+export class AdminRoutingModule {}
