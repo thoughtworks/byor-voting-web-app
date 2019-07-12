@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppMaterialModule } from '../../../app-material.module';
 import { MatTreeModule } from '@angular/material/tree';
 
-import { ConversationComponent, CommentWithVoteIdNode } from './conversation.component';
+import { ConversationComponent } from './conversation.component';
 import { CommentCardComponent } from './comment-card.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of, asyncScheduler } from 'rxjs';

@@ -15,6 +15,7 @@ import { logError } from 'src/app/utils/utils';
 import { AppSessionService } from 'src/app/app-session.service';
 import { getActionName, getAction } from 'src/app/utils/voting-event-flow.util';
 import { TechnologyListService } from '../services/technology-list.service';
+import { VotingEvent } from 'src/app/models/voting-event';
 
 @Component({
   selector: 'byor-technology-list',
@@ -59,7 +60,6 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
     private backEnd: BackendService,
     private router: Router,
     private errorService: ErrorService,
-    private voteService: VoteService,
     private appSession: AppSessionService,
     private techListService: TechnologyListService
   ) {}
@@ -111,17 +111,9 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   getTechnologies() {
-    // @todo remove "|| this.voteService.credentials.votingEvent" once the enableVotingEventFlow toggle is removed
-    const votingEvent = this.appSession.getSelectedVotingEvent() || this.voteService.credentials.votingEvent;
-
-    const actionParams = getAction(votingEvent).parameters;
-    const getVotingEventObs =
-      actionParams && actionParams.displayVotesAndCommentNumbers
-        ? this.backEnd.getVotingEventWithNumberOfCommentsAndVotes(votingEvent._id)
-        : this.backEnd.getVotingEvent(votingEvent._id);
-    return getVotingEventObs.pipe(
-      map((event) => {
-        const technologies = event.technologies;
+    return this.techListService.technologies$.pipe(
+      map((techs) => {
+        const technologies = techs;
         return _.sortBy(technologies, function(item: Technology) {
           return item.name.toLowerCase();
         });
@@ -130,9 +122,7 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   technologySelected(technology: Technology) {
-    const votingEventRound = this.appSession.getSelectedVotingEvent().round;
     this.appSession.setSelectedTechnology(technology);
-    const actionName = getActionName(this.appSession.getSelectedVotingEvent());
     this.techListService.technologySelected$.next(technology);
   }
 

@@ -5,12 +5,11 @@ import { AppMaterialModule } from 'src/app/app-material.module';
 
 import { TechnologyListComponent } from './technology-list/technology-list.component';
 import { TechnologyListService } from './services/technology-list.service';
-import { SelectTechComponent } from './select-tech/select-tech.component';
 
 @NgModule({
-  declarations: [TechnologyListComponent, SelectTechComponent],
+  declarations: [TechnologyListComponent],
   imports: [CommonModule, AppMaterialModule],
   providers: [TechnologyListService],
-  exports: [TechnologyListComponent, SelectTechComponent]
+  exports: [TechnologyListComponent]
 })
 export class TechnologyListModule {}

@@ -23,6 +23,8 @@ import { AppSessionService } from 'src/app/app-session.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { TechnologyListService } from '../../shared/technology-list/services/technology-list.service';
 import { TechnologyListComponent } from '../../shared/technology-list/technology-list/technology-list.component';
+import { getVotingEventFull$ } from 'src/app/utils/voting-event-flow.util';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'byor-vote',
@@ -43,7 +45,6 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private backEnd: BackendService,
     private router: Router,
-    private errorService: ErrorService,
     public dialog: MatDialog,
     private voteService: VoteService,
     private appSession: AppSessionService,
@@ -52,6 +53,9 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.technologyListService.technologies$ = getVotingEventFull$(this.appSession.getSelectedVotingEvent(), this.backEnd).pipe(
+      map((event) => event.technologies)
+    );
     this.technologyListSubscription = merge(
       this.technologyListService.technologySelected$,
       this.technologyListService.newTechnologyAdded$

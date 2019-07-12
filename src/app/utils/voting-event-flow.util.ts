@@ -1,4 +1,5 @@
 import { VotingEvent } from '../models/voting-event';
+import { BackendService } from '../services/backend.service';
 
 export function getIdentificationType(votingEvent: VotingEvent) {
   return getFlowStep(votingEvent).identification.name;
@@ -49,4 +50,13 @@ function getFlowStep(votingEvent: VotingEvent) {
     throw new Error(`Voting Event ${votingEvent.name} does not have a step defined in its flow for round ${round}`);
   }
   return votingEvent.flow.steps[round - 1];
+}
+
+// starting from a skinny VotingEvent, i.e. a VotingEvent which has just an id and its VotingEventFlow,
+// reads all data of the VotingEvent inlcuding its technologies
+export function getVotingEventFull$(skinnyVotingEvent: VotingEvent, backend: BackendService) {
+  const actionParams = getAction(skinnyVotingEvent).parameters;
+  return actionParams && actionParams.displayVotesAndCommentNumbers
+    ? backend.getVotingEventWithNumberOfCommentsAndVotes(skinnyVotingEvent._id)
+    : backend.getVotingEvent(skinnyVotingEvent._id);
 }
