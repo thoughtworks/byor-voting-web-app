@@ -12,7 +12,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       </mat-card-actions>
     </mat-card>
   `,
-  styleUrls: ['./conversation.component.scss'],
+  styleUrls: ['./comment-trees.component.scss'],
   styles: []
 })
 export class CommentCardComponent {

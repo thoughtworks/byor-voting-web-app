@@ -3,15 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { VoteDialogueComponent } from './vote-dialogue.component';
 
 import { MatCardModule } from '@angular/material/card';
-import {
-  MatDialogRef,
-  MatDialog,
-  MAT_DIALOG_DATA,
-  MatIconModule,
-  MatDialogModule,
-  MatFormFieldModule,
-  MatInputModule
-} from '@angular/material';
+import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { VotingEvent } from 'src/app/models/voting-event';

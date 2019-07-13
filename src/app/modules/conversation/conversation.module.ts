@@ -9,10 +9,10 @@ import { TechnologyListModule } from '../shared/technology-list/technology-list.
 import { routes } from './conversation-routing';
 
 import { ConversationComponent } from './conversation/conversation.component';
-import { CommentCardComponent } from './conversation/comment-card.component';
 import { SelectTechForConversationComponent } from './select-tech-for-conversation/select-tech-for-conversation.component';
+import { CommentTreesModule } from '../shared/comment-trees/comment-trees.module';
 @NgModule({
-  declarations: [ConversationComponent, CommentCardComponent, SelectTechForConversationComponent],
-  imports: [RouterModule.forChild(routes), CommonModule, MatTreeModule, AppMaterialModule, TechnologyListModule]
+  declarations: [ConversationComponent, SelectTechForConversationComponent],
+  imports: [RouterModule.forChild(routes), CommonModule, AppMaterialModule, MatTreeModule, TechnologyListModule, CommentTreesModule]
 })
 export class ConversationModule {}
