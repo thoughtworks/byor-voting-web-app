@@ -10,23 +10,7 @@ import { VotingEvent } from 'src/app/models/voting-event';
 import { AppSessionService } from 'src/app/app-session.service';
 import { AppMaterialModule } from 'src/app/app-material.module';
 
-class MockAppSessionService {
-  private selectedVotingEvent: VotingEvent;
-
-  constructor() {
-    this.selectedVotingEvent = {
-      _id: '123',
-      name: 'an event',
-      status: 'open',
-      creationTS: 'abc',
-      flow: { steps: [{ name: 'the flow', identification: { name: 'nickname' }, action: { name: 'vote' } }] }
-    };
-  }
-
-  getSelectedVotingEvent() {
-    return this.selectedVotingEvent;
-  }
-}
+import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 
 describe('VoteDialogueComponent', () => {
   let component: VoteDialogueComponent;

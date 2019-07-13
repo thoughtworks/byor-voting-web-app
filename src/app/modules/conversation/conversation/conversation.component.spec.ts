@@ -10,31 +10,7 @@ import { AppSessionService } from 'src/app/app-session.service';
 import { Technology } from 'src/app/models/technology';
 import { VotingEvent } from 'src/app/models/voting-event';
 
-const TEST_TECHNOLOGY = {
-  id: '0001',
-  name: 'Babel',
-  quadrant: 'tools',
-  isnew: true,
-  description: 'Description of <strong>Babel</strong>'
-};
-
-class MockAppSessionService {
-  private selectedTechnology: Technology;
-  private selectedVotingEvent: VotingEvent;
-
-  constructor() {
-    this.selectedTechnology = TEST_TECHNOLOGY;
-    this.selectedVotingEvent = { _id: '123', name: 'an event', status: 'open', creationTS: 'abc' };
-  }
-
-  getSelectedTechnology() {
-    return this.selectedTechnology;
-  }
-
-  getSelectedVotingEvent() {
-    return this.selectedVotingEvent;
-  }
-}
+import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 
 describe('ConversationComponent', () => {
   let component: ConversationComponent;

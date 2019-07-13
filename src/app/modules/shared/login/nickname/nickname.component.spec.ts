@@ -8,17 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { VotingEvent } from 'src/app/models/voting-event';
 import { AppSessionService } from 'src/app/app-session.service';
 
-class MockAppSessionService {
-  private votingEvent: VotingEvent;
-
-  constructor() {
-    this.votingEvent = { _id: '123', name: 'an event', status: 'open', creationTS: 'abc' };
-  }
-
-  getSelectedVotingEvent() {
-    return this.votingEvent;
-  }
-}
+import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 
 describe('NicknameComponent', () => {
   let component: NicknameComponent;

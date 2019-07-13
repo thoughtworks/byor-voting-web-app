@@ -13,43 +13,8 @@ import { SelectTechForRecommendationComponent } from './select-tech-for-recommen
 import { VotingEvent } from 'src/app/models/voting-event';
 import { AppSessionService } from 'src/app/app-session.service';
 
-class MockVoteService {
-  credentials;
-
-  constructor() {
-    this.credentials = {
-      voterId: null,
-      votingEvent: {
-        technologies: [],
-        name: null,
-        status: 'closed',
-        _id: null,
-        creationTS: null,
-        flow: { steps: [{ name: 'the flow', identification: { name: 'nickname' }, action: { name: 'vote' } }] }
-      }
-    };
-  }
-}
-class MockAppSessionService {
-  private selectedVotingEvent: VotingEvent;
-
-  constructor() {
-    this.selectedVotingEvent = {
-      _id: '123',
-      name: 'an event',
-      status: 'open',
-      creationTS: 'abc',
-      flow: { steps: [{ name: 'the flow', identification: { name: 'nickname' }, action: { name: 'vote' } }] }
-    };
-  }
-
-  getSelectedVotingEvent() {
-    return this.selectedVotingEvent;
-  }
-  getSelectedTechnology() {
-    return null;
-  }
-}
+import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
+import { MockVoteService } from 'src/app/modules/test-mocks/mock-vote-service';
 
 describe('SelectTechForRecommendationComponent', () => {
   let component: SelectTechForRecommendationComponent;

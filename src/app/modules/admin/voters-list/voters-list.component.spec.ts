@@ -11,15 +11,9 @@ import { BackendService } from '../../../services/backend.service';
 import { EventsService } from '../../../services/events.service';
 import { logError } from 'src/app/utils/utils';
 
-describe('VotersListComponent', () => {
-  const VOTERS = ['First Voter', 'Second Voter', 'Third Voter', 'Fourth Voter', 'Fifth Voter'];
-  class MockBackEndService {
-    getVoters() {
-      // need to make it async to avoid error 'ExpressionChangedAfterItHasBeenCheckedError'
-      return of(VOTERS).pipe(observeOn(asyncScheduler));
-    }
-  }
+import { MockBackEndService, VOTERS } from 'src/app/modules/test-mocks/mock-back-end-service';
 
+describe('VotersListComponent', () => {
   let component: VotersListComponent;
   let fixture: ComponentFixture<VotersListComponent>;
 

@@ -7,17 +7,7 @@ import { VotingEventSelectComponent } from './voting-event-select.component';
 import { AppSessionService } from 'src/app/app-session.service';
 import { VotingEvent } from 'src/app/models/voting-event';
 
-class MockAppSessionService {
-  private votingEvents: VotingEvent[];
-
-  constructor() {
-    this.votingEvents = [{ _id: '123', name: 'an event', status: 'open', creationTS: 'abc' }];
-  }
-
-  getVotingEvents() {
-    return this.votingEvents;
-  }
-}
+import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 
 describe('VotingEventSelectComponent', () => {
   let component: VotingEventSelectComponent;

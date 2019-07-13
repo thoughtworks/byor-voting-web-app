@@ -15,79 +15,12 @@ import { AppSessionService } from 'src/app/app-session.service';
 import { VotingEvent } from 'src/app/models/voting-event';
 import { TechnologyListModule } from '../../shared/technology-list/technology-list.module';
 
-const TEST_TECHNOLOGIES = [
-  {
-    id: '0001',
-    name: 'Babel',
-    quadrant: 'Tools',
-    isnew: true,
-    description: 'Description of <strong>Babel</strong>'
-  },
-  {
-    id: '0002',
-    name: 'Ember.js',
-    quadrant: 'Languages & Frameworks',
-    isnew: true,
-    description: 'Description of <strong>Ember.js</strong>'
-  },
-  {
-    id: '0003',
-    name: 'Docker',
-    quadrant: 'Platforms',
-    isnew: false,
-    description: 'Description of <strong>Docker</strong>'
-  },
-  {
-    id: '0004',
-    name: 'Consumer-driven contract testing',
-    quadrant: 'Techniques',
-    isnew: true,
-    description: 'Description of <strong>Consumer-driven contract testin</strong>'
-  },
-  {
-    id: '0005',
-    name: 'LambdaCD',
-    quadrant: 'Tools',
-    isnew: true,
-    description: 'Description of <strong>LambdaCD</strong>'
-  }
-];
-class MockBackEndService {
-  getVotingEvent() {
-    const votingEvent = { technologies: TEST_TECHNOLOGIES, name: null, status: 'closed', _id: null, creationTS: null };
-    return of(votingEvent).pipe(observeOn(asyncScheduler));
-  }
-}
-class MockVoteService {
-  credentials;
+import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
+import { MockVoteService, TEST_TECHNOLOGIES } from 'src/app/modules/test-mocks/mock-vote-service';
+import { MockBackEndService } from 'src/app/modules/test-mocks/mock-back-end-service';
 
-  constructor() {
-    this.credentials = {
-      voterId: null,
-      votingEvent: { technologies: TEST_TECHNOLOGIES, name: null, status: 'closed', _id: null, creationTS: null }
-    };
-  }
-}
-class MockAppSessionService {
-  private selectedVotingEvent: VotingEvent;
-
-  constructor() {
-    this.selectedVotingEvent = {
-      _id: '123',
-      name: 'an event',
-      status: 'open',
-      creationTS: 'abc',
-      flow: { steps: [{ name: 'the flow', identification: { name: 'nickname' }, action: { name: 'vote' } }] }
-    };
-  }
-
-  getSelectedVotingEvent() {
-    return this.selectedVotingEvent;
-  }
-  getSelectedTechnology() {
-    return null;
-  }
-}
+const mockBackendService = new MockBackEndService();
+mockBackendService.techsForVotingEvent = TEST_TECHNOLOGIES;
 
 describe('VoteComponent', () => {
   let component: VoteComponent;
@@ -98,7 +31,7 @@ describe('VoteComponent', () => {
       declarations: [VoteComponent],
       imports: [BrowserAnimationsModule, HttpClientTestingModule, RouterTestingModule, AppMaterialModule, TechnologyListModule],
       providers: [
-        { provide: BackendService, useClass: MockBackEndService },
+        { provide: BackendService, useValue: mockBackendService },
         { provide: VoteService, useClass: MockVoteService },
         { provide: AppSessionService, useClass: MockAppSessionService }
       ]

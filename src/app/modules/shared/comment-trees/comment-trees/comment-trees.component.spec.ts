@@ -16,123 +16,51 @@ import { Technology } from 'src/app/models/technology';
 import { VotingEvent } from 'src/app/models/voting-event';
 import { RouterTestingModule } from '@angular/router/testing';
 
-const TEST_TECHNOLOGIES = [
-  {
-    id: '0001',
-    name: 'Babel',
-    quadrant: 'tools',
-    isnew: true,
-    description: 'Description of <strong>Babel</strong>'
-  },
-  {
-    id: '0002',
-    name: 'Ember.js',
-    quadrant: 'languages & frameworks',
-    isnew: true,
-    description: 'Description of <strong>Ember.js</strong>'
-  },
-  {
-    id: '0003',
-    name: 'Docker',
-    quadrant: 'platforms',
-    isnew: false,
-    description: 'Description of <strong>Docker</strong>'
-  },
-  {
-    id: '0004',
-    name: 'Consumer-driven contract testing',
-    quadrant: 'techniques',
-    isnew: true,
-    description: 'Description of <strong>Consumer-driven contract testin</strong>'
-  },
-  {
-    id: '0005',
-    name: 'LambdaCD',
-    quadrant: 'tools',
-    isnew: true,
-    description: 'Description of <strong>LambdaCD</strong>'
-  }
-];
-
-const TEST_TECHNOLOGY = {
-  id: '0001',
-  name: 'Babel',
-  quadrant: 'tools',
-  isnew: true,
-  description: 'Description of <strong>Babel</strong>'
-};
-
-class MockAppSessionService {
-  private selectedTechnology: Technology;
-  private selectedVotingEvent: VotingEvent;
-
-  constructor() {
-    this.selectedTechnology = TEST_TECHNOLOGY;
-    this.selectedVotingEvent = { _id: '123', name: 'an event', status: 'open', creationTS: 'abc' };
-  }
-
-  getSelectedTechnology() {
-    return this.selectedTechnology;
-  }
-
-  getSelectedVotingEvent() {
-    return this.selectedVotingEvent;
-  }
-}
+import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
+import { MockVoteService, TEST_TECHNOLOGY } from 'src/app/modules/test-mocks/mock-vote-service';
+import { MockBackEndService } from 'src/app/modules/test-mocks/mock-back-end-service';
 
 const firsCommentId = 'firsCommentId';
 const replyToFirsCommentId = 'replyToFirsCommentId';
 const secondReplyToReplyToFirsCommentId = 'replyToReplyToFirsCommentId';
-class MockBackEndService {
-  votes: Vote[] = [
-    {
-      technology: TEST_TECHNOLOGY,
-      ring: 'adopt',
-      comment: {
-        text: 'first comment',
-        id: firsCommentId,
-        author: 'Auth 1',
-        timestamp: '2019-06-12T17:36:19.281Z',
-        replies: [
-          {
-            text: 'first reply to first comment',
-            id: 'replyToFirsCommentId',
-            author: 'Auth 1.1',
-            timestamp: '2019-06-12T17:46:19.281Z',
-            replies: [
-              {
-                text: 'first reply to first first reply to first comment',
-                id: '1.1.1',
-                author: 'Auth 1.1.1',
-                timestamp: '2019-06-12T17:47:19.281Z'
-              },
-              {
-                text: 'second reply to first first reply to first comment',
-                id: secondReplyToReplyToFirsCommentId,
-                author: 'Auth 1.1.2',
-                timestamp: '2019-06-12T17:47:29.281Z'
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ];
-  getVotesWithCommentsForTechAndEvent() {
-    return of(this.votes).pipe(observeOn(asyncScheduler));
-  }
-}
-class MockVoteService {
-  credentials;
-  technology = TEST_TECHNOLOGY;
 
-  constructor() {
-    this.credentials = {
-      voterId: null,
-      votingEvent: { technologies: TEST_TECHNOLOGIES, name: null, status: 'closed', _id: null, creationTS: null }
-    };
+const votes: Vote[] = [
+  {
+    technology: TEST_TECHNOLOGY,
+    ring: 'adopt',
+    comment: {
+      text: 'first comment',
+      id: firsCommentId,
+      author: 'Auth 1',
+      timestamp: '2019-06-12T17:36:19.281Z',
+      replies: [
+        {
+          text: 'first reply to first comment',
+          id: 'replyToFirsCommentId',
+          author: 'Auth 1.1',
+          timestamp: '2019-06-12T17:46:19.281Z',
+          replies: [
+            {
+              text: 'first reply to first first reply to first comment',
+              id: '1.1.1',
+              author: 'Auth 1.1.1',
+              timestamp: '2019-06-12T17:47:19.281Z'
+            },
+            {
+              text: 'second reply to first first reply to first comment',
+              id: secondReplyToReplyToFirsCommentId,
+              author: 'Auth 1.1.2',
+              timestamp: '2019-06-12T17:47:29.281Z'
+            }
+          ]
+        }
+      ]
+    }
   }
-}
+];
+
+const mockBackendService = new MockBackEndService();
+mockBackendService.votes = votes;
 
 describe('CommentTreesComponent', () => {
   let component: CommentTreesComponent;
@@ -143,7 +71,7 @@ describe('CommentTreesComponent', () => {
       declarations: [CommentTreesComponent, CommentCardComponent],
       imports: [AppMaterialModule, RouterTestingModule, MatTreeModule, HttpClientTestingModule],
       providers: [
-        { provide: BackendService, useClass: MockBackEndService },
+        { provide: BackendService, useValue: mockBackendService },
         { provide: VoteService, useClass: MockVoteService },
         { provide: AppSessionService, useClass: MockAppSessionService }
       ]

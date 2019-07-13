@@ -8,9 +8,9 @@ import { routes } from './recommendation-routing';
 
 import { RecommendationComponent } from './recommendation/recommendation.component';
 import { SelectTechForRecommendationComponent } from './select-tech-for-recommendation/select-tech-for-recommendation.component';
-
+import { CommentTreesModule } from '../shared/comment-trees/comment-trees.module';
 @NgModule({
   declarations: [RecommendationComponent, SelectTechForRecommendationComponent],
-  imports: [RouterModule.forChild(routes), CommonModule, AppMaterialModule, TechnologyListModule]
+  imports: [RouterModule.forChild(routes), CommonModule, AppMaterialModule, TechnologyListModule, CommentTreesModule]
 })
 export class RecommendationModule {}

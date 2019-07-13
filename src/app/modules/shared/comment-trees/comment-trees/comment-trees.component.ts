@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, Input } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -33,6 +33,8 @@ export interface CommentWithVoteIdNode extends Comment {
   styleUrls: ['./comment-trees.component.scss']
 })
 export class CommentTreesComponent implements OnDestroy {
+  @Input() allowAddComment = true;
+
   /** Map from flat node to nested node. This helps us finding the nested node to be modified */
   flatNodeMap = new Map<CommentFlatNode, CommentWithVoteIdNode>();
 
@@ -48,7 +50,7 @@ export class CommentTreesComponent implements OnDestroy {
   comments: CommentWithVoteIdNode[];
   triggerCommentRetrieval = new BehaviorSubject<CommentFlatNode>(null);
   commentRetrievalSubscription: Subscription;
-  showAddReplyButton = true;
+  private _showAddReplyButton = true;
   errorMessage: string;
 
   constructor(private backEnd: BackendService, private authService: AuthService, public appSession: AppSessionService) {
@@ -181,7 +183,7 @@ export class CommentTreesComponent implements OnDestroy {
     this.dataSource.data = this.comments;
     const thePotentiallyNewFlatNode = this.nestedNodeMap.get(parentNode);
     this.treeControl.expand(thePotentiallyNewFlatNode);
-    this.showAddReplyButton = false;
+    this._showAddReplyButton = false;
   }
 
   /** Save the node to database */
@@ -197,12 +199,12 @@ export class CommentTreesComponent implements OnDestroy {
       .addReplyToVoteComment(node.voteId, { text, author }, nestedNode.parentCommentId)
       .pipe(
         tap(() => this.triggerCommentRetrieval.next(node)),
-        tap(() => (this.showAddReplyButton = true))
+        tap(() => (this._showAddReplyButton = true))
       )
       .subscribe({ error: (err) => this.setError(err.message) });
   }
   cancelComment(node: CommentFlatNode) {
-    this.showAddReplyButton = true;
+    this._showAddReplyButton = true;
     this.triggerCommentRetrieval.next(node);
   }
 
@@ -225,5 +227,9 @@ export class CommentTreesComponent implements OnDestroy {
   }
   resetError() {
     this.errorMessage = null;
+  }
+
+  showAddReplyButton() {
+    return this._showAddReplyButton && this.allowAddComment;
   }
 }
