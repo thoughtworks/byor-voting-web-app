@@ -1,3 +1,11 @@
+# [1.3.0](https://github.com/thoughtworks/byor-voting-web-app/compare/v1.2.0...v1.3.0) (2019-07-13)
+
+
+### Features
+
+* **RecommendationComponent:** support for recommendation step ([dfa007f](https://github.com/thoughtworks/byor-voting-web-app/commit/dfa007f))
+* **VoteDialogueComponent:** Support for tagging ([4a6d1ce](https://github.com/thoughtworks/byor-voting-web-app/commit/4a6d1ce))
+
 # [1.2.0](https://github.com/thoughtworks/byor-voting-web-app/compare/v1.1.1...v1.2.0) (2019-07-08)
 
 
