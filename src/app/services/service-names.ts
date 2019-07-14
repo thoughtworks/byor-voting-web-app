@@ -25,6 +25,7 @@ export enum ServiceNames {
   calculateBlipsFromAllEvents,
   openForRevote,
   closeForRevote,
+  moveToNexFlowStep,
   getConfiguration,
   authenticate,
   authenticateForVotingEvent,

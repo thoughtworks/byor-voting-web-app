@@ -518,4 +518,15 @@ export class BackendService {
     const radarUrl = environment.radarURL + '?title=' + votingEvent.name + '&subtitle=' + subtitle + '&sheetId=' + backendUrlWithParams;
     window.open(radarUrl, '_blank');
   }
+
+  moveToNexFlowStep(id: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.moveToNexFlowStep);
+    payload['_id'] = id;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        return resp.data;
+      }),
+      catchError(this.handleError)
+    );
+  }
 }

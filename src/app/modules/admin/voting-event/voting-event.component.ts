@@ -12,6 +12,7 @@ import { ConfigurationService } from 'src/app/services/configuration.service';
 import { AuthService } from '../../shared/login/auth.service';
 import { EventsService } from '../../../services/events.service';
 import { VoteCloudService } from '../vote-cloud/vote-cloud.service';
+import { getNextActionName, getActionName, getNextAction } from 'src/app/utils/voting-event-flow.util';
 
 @Component({
   selector: 'byor-voting-event',
@@ -243,5 +244,36 @@ export class VotingEventComponent implements OnInit {
     this.authenticationService.logout();
     this.authenticationService.setMessage('Request not authorized - pls login and try again');
     this.router.navigate(['login']);
+  }
+
+  getNextStepButtonText() {
+    const nextStepName = getNextActionName(this.getSelectedEvent());
+    if (!nextStepName) {
+      throw new Error(
+        `No next step for event ${this.getSelectedEvent().name} which is already at step ${getActionName(this.getSelectedEvent())}`
+      );
+    }
+    return `Go to "${nextStepName}"`;
+  }
+  isNextStepAvailable() {
+    return !!getNextAction(this.getSelectedEvent());
+  }
+
+  goToNextStep() {
+    this.backend.moveToNexFlowStep(this.getSelectedEvent()._id).subscribe(
+      () =>
+        (this.messageAction = `Event <strong> ${this.selectedName} </strong> moved to step "${getNextActionName(
+          this.getSelectedEvent()
+        )}"`),
+      (err) => {
+        if (err.errorCode === ERRORS.unauthorized) {
+          this.unauthorized();
+          return;
+        }
+        this.messageAction = `Event <strong> ${this.selectedName} </strong> could not be moved to next step - 
+      look at the browser console to see if there is any detail`;
+      },
+      () => this.refreshVotingEvents()
+    );
   }
 }

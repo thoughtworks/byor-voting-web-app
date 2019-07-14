@@ -886,6 +886,120 @@ describe('BackendService', () => {
         });
     }, 100000);
   });
+
+  describe('13 BackendService - vote and then move to the next step', () => {
+    it('13.1 add some votes and then move to the next step in the VotingEvent flow', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+      const votingEventName = 'a voting event to be moved to the next step';
+      let votes1;
+      let credentials1: VoteCredentials;
+      let votes2;
+      let credentials2: VoteCredentials;
+
+      let votingEvent;
+
+      let tech1: Technology;
+      let tech2: Technology;
+      const productionTag = 'Production';
+      const trainingTag = 'Training';
+
+      service
+        .authenticate(validUser.user, validUser.pwd)
+        .pipe(
+          tap((resp) => (testToken = resp)),
+          concatMap(() => service.getVotingEvents({ all: true })),
+          map((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
+          }),
+          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
+        )
+        .pipe(
+          concatMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.getVotingEvents()),
+          tap((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            expect(vEvents.length).toBe(1);
+            credentials1 = {
+              voterId: { firstName: 'fVoter1', lastName: 'lVoter1' },
+              votingEvent: null
+            };
+            credentials2 = {
+              voterId: { firstName: 'fVoter2', lastName: 'lVoter2' },
+              votingEvent: null
+            };
+            votingEvent = vEvents[0];
+            credentials1.votingEvent = votingEvent;
+          }),
+          concatMap(() => service.openVotingEvent(votingEvent._id)),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          // the first voter, Voter1, saves 2 votes,
+          // the second voter, Voter2, saves 2 votes,
+          // tech1 gets 2 "adopt" while tech2 gets 1 "hold" and 1 "trial"
+          // tech1 gets also 2 production tags and 1 training and tech2 gets 1 training tag
+          tap((vEvent) => {
+            tech1 = vEvent.technologies[0];
+            tech2 = vEvent.technologies[1];
+            votes1 = [
+              { ring: 'adopt', technology: tech1, tags: [productionTag, trainingTag] },
+              {
+                ring: 'hold',
+                technology: tech2
+              }
+            ];
+            votes2 = [
+              { ring: 'adopt', technology: tech1, tags: [productionTag] },
+              {
+                ring: 'trial',
+                technology: tech2,
+                tags: [trainingTag]
+              }
+            ];
+            credentials1.votingEvent = vEvent;
+            credentials2.votingEvent = vEvent;
+          }),
+          concatMap(() => service.saveVote(votes1, credentials1)),
+          concatMap(() => service.saveVote(votes2, credentials2)),
+          concatMap(() => service.moveToNexFlowStep(votingEvent._id)),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          tap((vEvent: VotingEvent) => {
+            const techs = vEvent.technologies;
+            const t1 = techs.find((t) => t.name === tech1.name);
+            const t2 = techs.find((t) => t.name === tech2.name);
+            expect(t1.votingResult).toBeDefined();
+            expect(t1.votingResult.votesForRing).toBeDefined();
+            expect(t1.votingResult.votesForRing.length).toBe(1);
+            expect(t1.votingResult.votesForRing[0].count).toBe(2);
+            expect(t1.votingResult.votesForRing[0].ring).toBe('adopt');
+            expect(t1.votingResult.votesForTag).toBeDefined();
+            expect(t1.votingResult.votesForTag.length).toBe(2);
+            const prodTagRes1 = t1.votingResult.votesForTag.find((t) => t.tag === productionTag);
+            const trainingTagRes1 = t1.votingResult.votesForTag.find((t) => t.tag === trainingTag);
+            expect(prodTagRes1.count).toBe(2);
+            expect(trainingTagRes1.count).toBe(1);
+
+            expect(t2.votingResult).toBeDefined();
+            expect(t2.votingResult.votesForRing).toBeDefined();
+            expect(t2.votingResult.votesForRing.length).toBe(2);
+            const holdRingRes2 = t2.votingResult.votesForRing.find((v) => v.ring === 'hold');
+            const trialRingRes2 = t2.votingResult.votesForRing.find((v) => v.ring === 'trial');
+            expect(holdRingRes2.count).toBe(1);
+            expect(trialRingRes2.count).toBe(1);
+            expect(t2.votingResult.votesForTag).toBeDefined();
+            expect(t2.votingResult.votesForTag.length).toBe(1);
+            const trainingTagRes2 = t2.votingResult.votesForTag.find((t) => t.tag === trainingTag);
+            expect(trainingTagRes2.count).toBe(1);
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('13.1 test "add some votes and then move to the next step in the VotingEvent flow"', err);
+            throw new Error('"add some votes and then move to the next step in the VotingEvent flow" does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+  });
 });
 
 describe('redirect to radar page', () => {

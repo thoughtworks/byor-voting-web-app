@@ -26,6 +26,11 @@
       <button mat-flat-button color="accent" (click)="viewVoteCloud()">Word cloud</button>
       <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="voters()">Voters</button>
       <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="viewRadarForSelectedEvent()">Tech radar</button>
+      
+      <span mat-flat-button *ngIf="(configuration$ | async)?.enableVotingEventFlow">
+        <button mat-flat-button *ngIf="isNextStepAvailable()" color="accent" (click)="goToNextStep()">{{getNextStepButtonText()}}</button>
+      </span>
+
       <span mat-flat-button *ngIf="(configuration$ | async)?.revoteToggle">
         <button mat-flat-button *ngIf="showTechnologiesForRevote()" color="accent" (click)="techForRevote()">Tech for
           Revote</button>

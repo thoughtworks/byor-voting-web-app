@@ -26,6 +26,15 @@ export function getActionName(votingEvent: VotingEvent) {
   return getFlowStep(votingEvent).action.name;
 }
 
+export function getNextAction(votingEvent: VotingEvent) {
+  const nextFlowStep = getNextFlowStep(votingEvent);
+  return nextFlowStep ? nextFlowStep.action : null;
+}
+export function getNextActionName(votingEvent: VotingEvent) {
+  const nextAction = getNextAction(votingEvent);
+  return nextAction ? nextAction.name : null;
+}
+
 export function getActionRoute(votingEvent: VotingEvent) {
   const actionName = getActionName(votingEvent);
   let route: string;
@@ -50,6 +59,13 @@ function getFlowStep(votingEvent: VotingEvent) {
     throw new Error(`Voting Event ${votingEvent.name} does not have a step defined in its flow for round ${round}`);
   }
   return votingEvent.flow.steps[round - 1];
+}
+function getNextFlowStep(votingEvent: VotingEvent) {
+  if (!votingEvent.flow) {
+    throw new Error(`Voting Event ${votingEvent.name} does not have a flow defined`);
+  }
+  const round = votingEvent.round ? votingEvent.round : 1;
+  return votingEvent.flow.steps.length > round ? votingEvent.flow.steps[round] : null;
 }
 
 // starting from a skinny VotingEvent, i.e. a VotingEvent which has just an id and its VotingEventFlow,
