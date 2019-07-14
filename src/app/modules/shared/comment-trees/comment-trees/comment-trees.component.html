@@ -1,4 +1,4 @@
-<span class="title">{{appSession.getSelectedTechnology().name}}</span>
+
 <div *ngIf="errorMessage" class="conversation-message" [innerHTML]="errorMessage"></div>
 
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
@@ -27,7 +27,7 @@
   for the user to fill it with some text  -->
   <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
     <mat-form-field class="new-comment">
-      <input matInput #commentText placeholder="New comment...">
+      <textarea matInput #commentText placeholder="New comment..."></textarea>
     </mat-form-field>
     <button mat-button (click)="saveComment(node, commentText.value)">Save</button>
     <button mat-button (click)="cancelComment(node)">Cancel</button>

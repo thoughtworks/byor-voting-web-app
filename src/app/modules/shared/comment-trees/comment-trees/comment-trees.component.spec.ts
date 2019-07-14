@@ -6,14 +6,11 @@ import { MatTreeModule } from '@angular/material/tree';
 import { CommentTreesComponent } from './comment-trees.component';
 import { CommentCardComponent } from './comment-card.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { of, asyncScheduler } from 'rxjs';
-import { observeOn, skip, take, map, tap } from 'rxjs/operators';
+import { skip, take, map, tap } from 'rxjs/operators';
 import { BackendService } from 'src/app/services/backend.service';
 import { VoteService } from '../../../vote/services/vote.service';
 import { Vote } from 'src/app/models/vote';
 import { AppSessionService } from 'src/app/app-session.service';
-import { Technology } from 'src/app/models/technology';
-import { VotingEvent } from 'src/app/models/voting-event';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';

@@ -7,8 +7,7 @@ import { ConversationComponent } from './conversation.component';
 import { CommentTreesModule } from '../../shared/comment-trees/comment-trees.module';
 import { MatTreeModule } from '@angular/material/tree';
 import { AppSessionService } from 'src/app/app-session.service';
-import { Technology } from 'src/app/models/technology';
-import { VotingEvent } from 'src/app/models/voting-event';
+import { TechnologyVotingResultsModule } from '../../shared/technology-voting-results/technology-voting-results.module';
 
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 
@@ -19,7 +18,7 @@ describe('ConversationComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ConversationComponent],
-      imports: [AppMaterialModule, MatTreeModule, HttpClientTestingModule, CommentTreesModule],
+      imports: [AppMaterialModule, MatTreeModule, HttpClientTestingModule, CommentTreesModule, TechnologyVotingResultsModule],
       providers: [{ provide: AppSessionService, useClass: MockAppSessionService }]
     }).compileComponents();
   }));

@@ -7,6 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CommentTreesModule } from '../../shared/comment-trees/comment-trees.module';
 import { AppSessionService } from 'src/app/app-session.service';
+import { TechnologyVotingResultsModule } from '../../shared/technology-voting-results/technology-voting-results.module';
 
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 
@@ -17,7 +18,7 @@ describe('RecommendationComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [RecommendationComponent],
-      imports: [AppMaterialModule, RouterTestingModule, HttpClientTestingModule, CommentTreesModule],
+      imports: [AppMaterialModule, RouterTestingModule, HttpClientTestingModule, CommentTreesModule, TechnologyVotingResultsModule],
       providers: [VoteService, { provide: AppSessionService, useClass: MockAppSessionService }]
     }).compileComponents();
   }));
