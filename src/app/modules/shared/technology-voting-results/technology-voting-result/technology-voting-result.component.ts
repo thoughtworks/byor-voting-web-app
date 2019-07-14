@@ -19,7 +19,34 @@ export class TechnologyVotingResultComponent implements OnInit {
   ngOnInit() {}
 
   nameAndRing() {
-    return `<span> ${this.appSession.getSelectedTechnology().name} </span> ${this.numberOfVotesAndComments()}`;
+    return `<span> ${
+      this.appSession.getSelectedTechnology().name
+    } </span> <span>${this.mostVotedRings()}</span> <span>${this.numberOfVotesAndComments()}</span>`;
+  }
+  mostVotedRings() {
+    let ret: string;
+    const selectedTech = this.appSession.getSelectedTechnology();
+    if (selectedTech.votingResult) {
+      const votes = selectedTech.votingResult.votesForRing;
+      let max = 0;
+      const maxVotes = votes.reduce((ringsWithMaxVotes, ring) => {
+        if (max < ring.count) {
+          ringsWithMaxVotes = [ring];
+          max = ring.count;
+        } else if (max === ring.count) {
+          ringsWithMaxVotes.push(ring);
+        }
+        return ringsWithMaxVotes;
+      }, []);
+      if (maxVotes.length === 1) {
+        ret = `<span>Ring most voted is ${maxVotes[0].ring}</span>`;
+      } else if (maxVotes.length > 1) {
+        ret = `<span>The rings most voted are`;
+        maxVotes.forEach((v) => (ret = ret + `<span>${v.ring}</span>`));
+        ret = ret + `</span>`;
+      }
+    }
+    return ret;
   }
   numberOfVotesAndComments() {
     let ret: string;
