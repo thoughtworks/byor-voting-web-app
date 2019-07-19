@@ -1,0 +1,56 @@
+
+@import "../../../../styles/theme/colors";
+
+.tech-name {
+    font-weight: bolder;
+}
+
+.most-voted-rings-text {
+    color: grey;
+    font-size: smaller;
+    font-weight: lighter;
+    margin-left: 40px;
+}
+
+.most-voted-rings {
+    color: grey;
+    font-size: smaller;
+    font-weight: normal;
+    margin-left: 10px;
+}
+
+.number-votes-comments-text {
+    color: darkgray;
+    font-size: small;
+    font-weight: lighter;
+    margin-left: 30px;
+}
+
+.number-votes-comments {
+    color: darkgray;
+    font-size: small;
+    font-weight: normal;
+    margin-left: 10px;
+}
+
+.ring-votes {
+    margin-right: 15px;
+}
+.ring {
+    margin-left: 5px;
+}
+.number-of-votes {
+    margin-left: 5px;
+    margin-right: 10px;
+}
+
+.tags {
+    margin-right: 15px;
+}
+.tag {
+    margin-left: 5px;
+}
+.number-of-tags {
+    margin-left: 5px;
+    margin-right: 10px;
+}

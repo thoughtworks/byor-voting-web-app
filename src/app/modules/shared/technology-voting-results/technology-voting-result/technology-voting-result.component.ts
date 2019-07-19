@@ -6,9 +6,36 @@ import { AppSessionService } from 'src/app/app-session.service';
   selector: 'byor-technology-voting-result',
   template: `
     <mat-card class="voting-results-card">
-      <mat-card-title [innerHTML]="nameAndRing()"></mat-card-title>
-      <mat-card-subtitle [innerHTML]="numberOfVotesPerRing()"></mat-card-subtitle>
-      <mat-card-subtitle [innerHTML]="numberOfTagsPerTag()"></mat-card-subtitle>
+      <mat-card-title>
+        <span class="tech-name"> {{ technologyName() }} </span>
+        <span class="most-voted-rings-text">
+          {{ this.mostVotedRingsText() }}
+          <span *ngFor="let maxVote of mostVotedRings()" class="most-voted-rings">{{ maxVote.ring }}</span>
+        </span>
+        <span class="number-votes-comments-text" *ngIf="numberOfVotes()">
+          #votes <span class="number-votes-comments">{{ numberOfVotes() }}</span>
+        </span>
+        <span class="number-votes-comments-text" *ngIf="numberOfComments()">
+          #comments <span class="number-votes-comments">{{ numberOfComments() }}</span>
+        </span>
+        <span class="number-votes-comments-text" *ngIf="!numberOfVotes()">
+          no votes for this Technology
+        </span>
+      </mat-card-title>
+      <mat-card-subtitle *ngIf="numberOfVotesPerRing()">
+        <span class="ring-votes">Votes per ring</span>
+        <span *ngFor="let v of numberOfVotesPerRing()">
+          <span class="ring">{{ v.ring }}</span>
+          <span class="number-of-votes">{{ v.count }}</span>
+        </span>
+      </mat-card-subtitle>
+      <mat-card-subtitle *ngIf="numberOfTagsPerTag()">
+        <span class="tags">Tags</span>
+        <span *ngFor="let t of numberOfTagsPerTag()">
+          <span class="tag">{{ t.tag }}</span>
+          <span class="number-of-tags">{{ t.count }}</span>
+        </span>
+      </mat-card-subtitle>
     </mat-card>
   `,
   styleUrls: ['./technology-voting-result.component.scss']
@@ -18,54 +45,40 @@ export class TechnologyVotingResultComponent implements OnInit {
 
   ngOnInit() {}
 
-  nameAndRing() {
-    return `<span> ${
-      this.appSession.getSelectedTechnology().name
-    } </span> <span>${this.mostVotedRings()}</span> <span>${this.numberOfVotesAndComments()}</span>`;
+  technologyName() {
+    return this.appSession.getSelectedTechnology().name;
   }
-  mostVotedRings() {
+  mostVotedRingsText() {
     let ret = '';
     const selectedTech = this.appSession.getSelectedTechnology();
     const maxVotes = mostVotedRings(selectedTech);
     if (maxVotes.length === 1) {
-      ret = `<span>Ring most voted is ${maxVotes[0].ring}</span>`;
+      ret = `Ring most voted is`;
     } else if (maxVotes.length > 1) {
-      ret = `<span>The rings most voted are`;
-      maxVotes.forEach((v) => (ret = ret + `<span>${v.ring}</span>`));
-      ret = ret + `</span>`;
+      ret = `The rings most voted are`;
     }
     return ret;
   }
-  numberOfVotesAndComments() {
-    let ret = '';
-    ret = this.appSession.getSelectedTechnology().numberOfVotes
-      ? `<span> #votes ${this.appSession.getSelectedTechnology().numberOfVotes} </span>`
-      : ret;
-    ret = this.appSession.getSelectedTechnology().numberOfComments
-      ? ret + `<span> #comments ${this.appSession.getSelectedTechnology().numberOfComments} </span>`
-      : ret;
-    return ret;
+  mostVotedRings() {
+    const selectedTech = this.appSession.getSelectedTechnology();
+    return mostVotedRings(selectedTech);
   }
+  numberOfVotes() {
+    return this.appSession.getSelectedTechnology().numberOfVotes;
+  }
+  numberOfComments() {
+    return this.appSession.getSelectedTechnology().numberOfComments;
+  }
+
   numberOfVotesPerRing() {
-    let ret: string;
-    const selectedTech = this.appSession.getSelectedTechnology();
-    if (selectedTech.numberOfVotes) {
-      ret = this.appSession.getSelectedTechnology().votingResult.votesForRing.reduce((text, v) => {
-        text = text + `<span> #${v.ring} </span> <span>${v.count} </span> `;
-        return text;
-      }, '<span>Votes per ring</span>');
+    if (this.appSession.getSelectedTechnology().votingResult) {
+      return this.appSession.getSelectedTechnology().votingResult.votesForRing;
     }
-    return ret;
   }
+
   numberOfTagsPerTag() {
-    let ret: string;
-    const selectedTech = this.appSession.getSelectedTechnology();
-    if (selectedTech.votingResult && selectedTech.votingResult.votesForTag) {
-      ret = this.appSession.getSelectedTechnology().votingResult.votesForTag.reduce((text, t) => {
-        text = text + `<span> #${t.tag} </span> <span>${t.count} </span> `;
-        return text;
-      }, '<span>Tags </span>');
+    if (this.appSession.getSelectedTechnology().votingResult) {
+      return this.appSession.getSelectedTechnology().votingResult.votesForTag;
     }
-    return ret;
   }
 }
