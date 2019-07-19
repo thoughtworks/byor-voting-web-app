@@ -1,3 +1,5 @@
+import { ReplaySubject } from 'rxjs';
+
 import { Injectable } from '@angular/core';
 import { VotingEvent } from 'src/app/models/voting-event';
 import { Technology } from './models/technology';
@@ -10,6 +12,7 @@ export class AppSessionService {
   private votingEvents: VotingEvent[];
   private selectedVotingEvent: VotingEvent;
   private selectedTechnology: Technology;
+  selectedTechnology$ = new ReplaySubject<Technology>(1);
   private credentials: Credentials;
 
   constructor() {}
@@ -33,6 +36,7 @@ export class AppSessionService {
   }
   setSelectedTechnology(technology: Technology) {
     this.selectedTechnology = technology;
+    this.selectedTechnology$.next(technology);
   }
 
   getCredentials() {

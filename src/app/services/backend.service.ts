@@ -7,7 +7,7 @@ import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { ServiceNames } from './service-names';
 
-import { Technology } from '../models/technology';
+import { Technology, Recommendation } from '../models/technology';
 import { Vote } from '../models/vote';
 import { VotingEvent } from '../models/voting-event';
 import { VoteCredentials } from '../models/vote-credentials';
@@ -113,7 +113,7 @@ export class BackendService {
     payload['credentials'] = _credentials;
     return this.http.post(this.url, payload).pipe(
       map((resp: RespFromBackend) => {
-        return resp.data;
+        return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)
     );
@@ -124,7 +124,7 @@ export class BackendService {
     payload['eventId'] = votingEventId;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
-        return resp.data;
+        return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)
     );
@@ -148,7 +148,7 @@ export class BackendService {
     payload['eventId'] = eventId;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
-        return resp.data;
+        return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)
     );
@@ -161,7 +161,7 @@ export class BackendService {
     payload['commentReceivingReplyId'] = commentReceivingReplyId;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
-        return resp.data;
+        return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)
     );
@@ -174,7 +174,7 @@ export class BackendService {
   //     .post(this.url, payload)
   //     .pipe(
   //       map((resp: any) => {
-  //         return resp.data;
+  //         return this.handleReponseDefault(resp);
   //       }),
   //       catchError(this.handleError),
   //     );
@@ -213,7 +213,7 @@ export class BackendService {
     payload['round'] = votingEvent.round;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
-        return resp.data;
+        return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)
     );
@@ -225,7 +225,7 @@ export class BackendService {
     payload['_id'] = votingEvent._id;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
-        return resp.data;
+        return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)
     );
@@ -283,7 +283,7 @@ export class BackendService {
     payload['_id'] = id;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
-        return resp.data;
+        return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)
     );
@@ -294,7 +294,7 @@ export class BackendService {
     payload['_id'] = id;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
-        return resp.data;
+        return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)
     );
@@ -339,7 +339,7 @@ export class BackendService {
     payload['votingEvent'] = votingEvent;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
-        return resp.data;
+        return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)
     );
@@ -524,7 +524,46 @@ export class BackendService {
     payload['_id'] = id;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
-        return resp.data;
+        return this.handleReponseDefault(resp);
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  setRecommendationAuthor(votingEventId: string, technologyName: string, author: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.setRecommendationAuthor);
+    payload['votingEventId'] = votingEventId;
+    payload['technologyName'] = technologyName;
+    payload['author'] = author;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        return this.handleReponseDefault(resp);
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  setRecommendation(votingEventId: string, technologyName: string, recommendation: Recommendation) {
+    const payload = this.buildPostPayloadForService(ServiceNames.setRecommendation);
+    payload['votingEventId'] = votingEventId;
+    payload['technologyName'] = technologyName;
+    payload['recommendation'] = recommendation;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        return this.handleReponseDefault(resp);
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  resetRecommendation(votingEventId: string, technologyName: string, requester: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.resetRecommendation);
+    payload['votingEventId'] = votingEventId;
+    payload['technologyName'] = technologyName;
+    payload['requester'] = requester;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)
     );

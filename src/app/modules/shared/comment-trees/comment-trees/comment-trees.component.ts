@@ -16,12 +16,18 @@ export class CommentFlatNode {
   level: number;
   expandable: boolean;
   commentId: string;
-  vote?: Vote;
+  // vote?: Vote;
+  voteId: string;
+  voteRing: string;
+  voteTags: string[];
   author: string;
   timestamp: string;
 }
 export interface CommentWithVoteIdNode extends Comment {
-  vote?: Vote;
+  voteId?: string;
+  voteRing?: string;
+  voteTags?: string[];
+  // vote?: Vote;
   parentCommentId?: string;
 }
 
@@ -67,7 +73,9 @@ export class CommentTreesComponent implements OnDestroy {
           const commentsEnriched = votes.map((vote) => {
             const cmt: CommentWithVoteIdNode = vote.comment;
             this.setAdditionalInfoInReplies(cmt, vote);
-            cmt.vote = vote;
+            // cmt.vote = vote;
+            // cmt.voteRing = vote.ring;
+            cmt.voteTags = vote.tags;
             return cmt;
           });
           return { comments: commentsEnriched, flatNode };
@@ -125,7 +133,9 @@ export class CommentTreesComponent implements OnDestroy {
     if (cmt.replies) {
       cmt.replies = cmt.replies.map((rep) => this.setAdditionalInfoInReplies(rep, vote));
     }
-    cmt.vote = vote;
+    // cmt.vote = vote;
+    cmt.voteId = vote._id;
+    cmt.voteRing = vote.ring;
     return cmt;
   }
 
@@ -156,7 +166,10 @@ export class CommentTreesComponent implements OnDestroy {
     flatNode.level = level;
     flatNode.expandable = !!node.replies;
     flatNode.commentId = node.id;
-    flatNode.vote = node.vote;
+    // flatNode.vote = node.vote;
+    flatNode.voteId = node.voteId;
+    flatNode.voteRing = node.voteRing;
+    flatNode.voteTags = node.voteTags;
     flatNode.author = node.author;
     flatNode.timestamp = node.timestamp;
     this.flatNodeMap.set(flatNode, node);
@@ -171,7 +184,9 @@ export class CommentTreesComponent implements OnDestroy {
     parentNode.replies = parentNode.replies ? parentNode.replies : [];
     const newComment: CommentWithVoteIdNode = {
       text: '',
-      vote: parentNode.vote,
+      // vote: parentNode.vote,
+      voteId: parentNode.voteId,
+      voteRing: parentNode.voteRing,
       parentCommentId: parentNode.id
     };
     parentNode.replies.unshift(newComment);
@@ -191,7 +206,8 @@ export class CommentTreesComponent implements OnDestroy {
     const nestedNode = this.flatNodeMap.get(node);
     const author = this.authService.user;
     this.backEnd
-      .addReplyToVoteComment(node.vote._id, { text, author }, nestedNode.parentCommentId)
+      // .addReplyToVoteComment(node.vote._id, { text, author }, nestedNode.parentCommentId)
+      .addReplyToVoteComment(node.voteId, { text, author }, nestedNode.parentCommentId)
       .pipe(
         tap(() => this.triggerCommentRetrieval.next(node)),
         tap(() => (this._showAddReplyButton = true))
@@ -204,9 +220,11 @@ export class CommentTreesComponent implements OnDestroy {
   }
 
   getTitle(node: CommentFlatNode) {
-    let title = node.level > 0 ? `${node.author}   -  ${node.vote.ring}` : node.author;
+    // let title = node.level > 0 ? `${node.author}   -  ${node.vote.ring}` : node.author;
+    let title = node.level > 0 ? `${node.author}   -  ${node.voteRing}` : node.author;
     if (node.level === 0) {
-      title = `${node.author}   -  ${node.vote.ring}`;
+      // title = `${node.author}   -  ${node.vote.ring}`;
+      title = `${node.author}   -  ${node.voteRing}`;
     } else {
       title = node.author;
     }

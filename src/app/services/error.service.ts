@@ -25,39 +25,26 @@ export class ErrorService {
     return this.error$.asObservable();
   }
   setError(error: Error) {
+    console.error(error);
     this.error$.next(error);
-  }
-
-  setErrorMessage(error: Error) {
-    if (error.message) {
-      this.errorMessage = error.message;
-    }
-
-    this.errorMessage = "Error occurred, please try again"
-  }
-
-  getErrorMessage() {
-    return this.errorMessage;
   }
 
   saveErrorInfo(reason: string, logInfo: string) {
     const payload = {
       service: ServiceNames[ServiceNames.saveLogInfo],
       logInfo: logInfo,
-      reason: reason,
+      reason: reason
     };
 
     this.http
       .post(environment.serviceUrl, payload)
-      .pipe(
-        catchError(this.handleError<string>(this.defaultMessage)),
-      ).subscribe();
+      .pipe(catchError(this.handleError<string>(this.defaultMessage)))
+      .subscribe();
   }
 
-  getErrorMessageHtml() {
-    return this.error$
-    .pipe(
-      map(e => {
+  getErrorMessageHtml$() {
+    return this.error$.pipe(
+      map((e) => {
         if (e.message) {
           return e.message;
         }
@@ -65,5 +52,4 @@ export class ErrorService {
       })
     );
   }
-
 }

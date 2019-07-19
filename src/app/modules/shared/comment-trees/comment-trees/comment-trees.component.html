@@ -6,7 +6,7 @@
   <mat-tree-node *matTreeNodeDef="let node; when: !hasChild" matTreeNodeToggle matTreeNodePadding>
     <button mat-icon-button disabled></button>
     <byor-comment-card class="comment" [title]="getTitle(node)" [timestamp]="getTimestamp(node)" 
-      [showAddReplyButton]="showAddReplyButton()" [text]="node.text" [vote]="node.vote" (addNewItemClicked)="addNewItem(node)">
+      [showAddReplyButton]="showAddReplyButton()" [text]="node.text" [tags]="node.voteTags" (addNewItemClicked)="addNewItem(node)">
     </byor-comment-card>
   </mat-tree-node>
 
@@ -19,7 +19,7 @@
       </mat-icon>
     </button>
     <byor-comment-card class="comment" [title]="getTitle(node)" [timestamp]="getTimestamp(node)" 
-      [showAddReplyButton]="showAddReplyButton()" [text]="node.text" [vote]="node.vote" (addNewItemClicked)="addNewItem(node)">
+      [showAddReplyButton]="showAddReplyButton()" [text]="node.text" [tags]="node.voteTags" (addNewItemClicked)="addNewItem(node)">
     </byor-comment-card>
   </mat-tree-node>
 

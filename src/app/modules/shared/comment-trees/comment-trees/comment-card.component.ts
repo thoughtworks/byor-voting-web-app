@@ -1,6 +1,4 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Comment } from 'src/app/models/comment';
-import { Vote } from 'src/app/models/vote';
 
 @Component({
   selector: 'byor-comment-card',
@@ -11,7 +9,7 @@ import { Vote } from 'src/app/models/vote';
       <mat-card-content>{{ text }}</mat-card-content>
       <mat-card-subtitle *ngIf="showTags()">
         <mat-chip-list #tagsList>
-          <mat-chip *ngFor="let tag of vote.tags"> {{ tag }} </mat-chip>
+          <mat-chip *ngFor="let tag of tags"> {{ tag }} </mat-chip>
         </mat-chip-list>
       </mat-card-subtitle>
       <mat-card-actions *ngIf="showAddReplyButton">
@@ -26,7 +24,7 @@ export class CommentCardComponent {
   @Input() title: string;
   @Input() timestamp: string;
   @Input() text: string;
-  @Input() vote: Vote;
+  @Input() tags: string[];
   @Input() showAddReplyButton: boolean;
   @Output() addNewItemClicked = new EventEmitter<any>();
 
@@ -35,6 +33,6 @@ export class CommentCardComponent {
   }
 
   showTags() {
-    return this.vote && this.vote.tags;
+    return this.tags;
   }
 }

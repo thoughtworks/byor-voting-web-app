@@ -1,3 +1,5 @@
+import { ReplaySubject } from 'rxjs';
+
 import { Technology } from 'src/app/models/technology';
 import { VotingEvent } from 'src/app/models/voting-event';
 
@@ -14,6 +16,7 @@ export const TEST_TECHNOLOGY = {
 
 export class MockAppSessionService {
   private selectedTechnology: Technology;
+  selectedTechnology$ = new ReplaySubject<Technology>(1);
   private selectedVotingEvent: VotingEvent;
   private votingEvents: VotingEvent[];
 

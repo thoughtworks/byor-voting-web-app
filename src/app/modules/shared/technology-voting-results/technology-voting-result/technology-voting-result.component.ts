@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Technology } from 'src/app/models/technology';
+import { Technology, mostVotedRings } from 'src/app/models/technology';
 import { AppSessionService } from 'src/app/app-session.service';
 
 @Component({
@@ -24,32 +24,20 @@ export class TechnologyVotingResultComponent implements OnInit {
     } </span> <span>${this.mostVotedRings()}</span> <span>${this.numberOfVotesAndComments()}</span>`;
   }
   mostVotedRings() {
-    let ret: string;
+    let ret = '';
     const selectedTech = this.appSession.getSelectedTechnology();
-    if (selectedTech.votingResult) {
-      const votes = selectedTech.votingResult.votesForRing;
-      let max = 0;
-      const maxVotes = votes.reduce((ringsWithMaxVotes, ring) => {
-        if (max < ring.count) {
-          ringsWithMaxVotes = [ring];
-          max = ring.count;
-        } else if (max === ring.count) {
-          ringsWithMaxVotes.push(ring);
-        }
-        return ringsWithMaxVotes;
-      }, []);
-      if (maxVotes.length === 1) {
-        ret = `<span>Ring most voted is ${maxVotes[0].ring}</span>`;
-      } else if (maxVotes.length > 1) {
-        ret = `<span>The rings most voted are`;
-        maxVotes.forEach((v) => (ret = ret + `<span>${v.ring}</span>`));
-        ret = ret + `</span>`;
-      }
+    const maxVotes = mostVotedRings(selectedTech);
+    if (maxVotes.length === 1) {
+      ret = `<span>Ring most voted is ${maxVotes[0].ring}</span>`;
+    } else if (maxVotes.length > 1) {
+      ret = `<span>The rings most voted are`;
+      maxVotes.forEach((v) => (ret = ret + `<span>${v.ring}</span>`));
+      ret = ret + `</span>`;
     }
     return ret;
   }
   numberOfVotesAndComments() {
-    let ret: string;
+    let ret = '';
     ret = this.appSession.getSelectedTechnology().numberOfVotes
       ? `<span> #votes ${this.appSession.getSelectedTechnology().numberOfVotes} </span>`
       : ret;

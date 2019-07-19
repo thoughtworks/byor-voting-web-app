@@ -95,7 +95,6 @@ export class StartVotingSessionComponent implements AfterViewInit, OnDestroy, On
             _errMsg = error.message;
           }
           this.errorService.setError(_errMsg);
-          this.errorService.setErrorMessage(error);
           this.router.navigate(['error']);
         }
       );

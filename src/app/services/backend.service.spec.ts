@@ -1000,6 +1000,205 @@ describe('BackendService', () => {
         });
     }, 100000);
   });
+
+  describe('14 BackendService - Recommendations', () => {
+    let votingEvent;
+    let tech1: Technology;
+    let tech2: Technology;
+
+    it('14.1 set the recommendation author', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+      const votingEventName = '14.1 - set the recommendation author';
+
+      const recommendationAuthor = 'The author of the recommendation';
+
+      setUpTestContext(service, votingEventName)
+        .pipe(
+          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name, recommendationAuthor)),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          tap((vEvent: VotingEvent) => {
+            const techs = vEvent.technologies;
+            const t2 = techs.find((t) => t.name === tech2.name);
+            expect(t2.recommendandation).toBeDefined();
+            expect(t2.recommendandation.author).toBe(recommendationAuthor);
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('14.1 test "set the recommendation author"', err);
+            throw new Error('"set the recommendation author" does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+
+    it('14.2 try to set another recommendation author and get an error', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+      const votingEventName = '14.2 - try to set another recommendation author and get an error';
+
+      let setAnotherAuthorErrorEncountered = false;
+
+      setUpTestContext(service, votingEventName)
+        .pipe(
+          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name, 'The real recommendation author')),
+          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name, 'another author')),
+          catchError((err) => {
+            setAnotherAuthorErrorEncountered = true;
+            expect(err.errorCode).toBe(ERRORS.recommendationAuthorAlreadySet);
+            return of(null);
+          })
+        )
+        .subscribe({
+          next: () => {
+            expect(setAnotherAuthorErrorEncountered).toBeTruthy();
+          },
+          error: (err) => {
+            console.error('14.2 test "try to set another recommendation author and get an error"', err);
+            throw new Error('"try to set another recommendation author and get an error" does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+
+    it('14.3 - set the recommendation', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+
+      const votingEventName = '14.3 - set the recommendation';
+
+      const recommendationAuthor = 'The author of the recommendation';
+      const recommendationRing = 'adopt';
+      const recommendationText = 'I am the detailed explanation of the recommendation';
+
+      setUpTestContext(service, votingEventName)
+        .pipe(
+          concatMap(() =>
+            service.setRecommendation(votingEvent._id, tech2.name, {
+              author: recommendationAuthor,
+              ring: recommendationRing,
+              text: recommendationText
+            })
+          ),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          tap((vEvent: VotingEvent) => {
+            const techs = vEvent.technologies;
+            const t2 = techs.find((t) => t.name === tech2.name);
+            expect(t2.recommendandation).toBeDefined();
+            expect(t2.recommendandation.author).toBe(recommendationAuthor);
+            expect(t2.recommendandation.ring).toBe(recommendationRing);
+            expect(t2.recommendandation.text).toBe(recommendationText);
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('14.3 - set the recommendation"', err);
+            throw new Error('"set the recommendation" does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+
+    it('14.4 a different author-wanna-be tries to reset the recommendation and gets an error', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+
+      const votingEventName = '14.4 - a voting event where a recommendation will be set';
+
+      const recommendationAuthor = 'The author of the recommendation';
+      const recommendationRing = 'adopt';
+      const recommendationText = 'I am the detailed explanation of the recommendation';
+      let recommendationAuthorDifferentErrorEncountered = false;
+
+      setUpTestContext(service, votingEventName)
+        .pipe(
+          concatMap(() =>
+            service.setRecommendation(votingEvent._id, tech2.name, {
+              author: recommendationAuthor,
+              ring: recommendationRing,
+              text: recommendationText
+            })
+          ),
+          concatMap(() => service.resetRecommendation(votingEvent._id, tech2.name, 'author-wanna-be')),
+          catchError((err) => {
+            recommendationAuthorDifferentErrorEncountered = true;
+            expect(err.errorCode).toBe(ERRORS.recommendationAuthorDifferent);
+            return of(null);
+          })
+        )
+        .subscribe({
+          next: () => {
+            expect(recommendationAuthorDifferentErrorEncountered).toBeTruthy();
+          },
+          error: (err) => {
+            console.error('14.4 test "a different author-wanna-be tries to reset the recommendation and gets an error"', err);
+            throw new Error('"a different author-wanna-be tries to reset the recommendation and gets an error" does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+
+    function setUpTestContext(service: BackendService, votingEventName: string) {
+      let votes1;
+      let credentials1: VoteCredentials;
+      let votes2;
+      let credentials2: VoteCredentials;
+
+      return service
+        .authenticate(validUser.user, validUser.pwd)
+        .pipe(
+          tap((resp) => (testToken = resp)),
+          concatMap(() => service.getVotingEvents({ all: true })),
+          map((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
+          }),
+          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
+        )
+        .pipe(
+          concatMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.getVotingEvents()),
+          tap((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            expect(vEvents.length).toBe(1);
+            credentials1 = {
+              voterId: { nickname: 'nick1' },
+              votingEvent: null
+            };
+            credentials2 = {
+              voterId: { nickname: 'nick2' },
+              votingEvent: null
+            };
+            votingEvent = vEvents[0];
+            credentials1.votingEvent = votingEvent;
+          }),
+          concatMap(() => service.openVotingEvent(votingEvent._id)),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          // the first voter, Voter1, saves 2 votes,
+          // the second voter, Voter2, saves 2 votes,
+          // tech1 gets 2 "adopt" while tech2 gets 1 "hold" and 1 "trial"
+          tap((vEvent) => {
+            tech1 = vEvent.technologies[0];
+            tech2 = vEvent.technologies[1];
+            votes1 = [
+              { ring: 'adopt', technology: tech1 },
+              {
+                ring: 'hold',
+                technology: tech2
+              }
+            ];
+            votes2 = [
+              { ring: 'adopt', technology: tech1 },
+              {
+                ring: 'trial',
+                technology: tech2
+              }
+            ];
+            credentials1.votingEvent = vEvent;
+            credentials2.votingEvent = vEvent;
+          }),
+          concatMap(() => service.saveVote(votes1, credentials1)),
+          concatMap(() => service.saveVote(votes2, credentials2))
+        );
+    }
+  });
 });
 
 describe('redirect to radar page', () => {

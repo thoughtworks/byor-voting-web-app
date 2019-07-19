@@ -10,8 +10,9 @@ import { RecommendationComponent } from './recommendation/recommendation.compone
 import { SelectTechForRecommendationComponent } from './select-tech-for-recommendation/select-tech-for-recommendation.component';
 import { CommentTreesModule } from '../shared/comment-trees/comment-trees.module';
 import { TechnologyVotingResultsModule } from '../shared/technology-voting-results/technology-voting-results.module';
+import { RecommendationCardComponent } from './recommendation-card/recommendation-card.component';
 @NgModule({
-  declarations: [RecommendationComponent, SelectTechForRecommendationComponent],
+  declarations: [RecommendationComponent, SelectTechForRecommendationComponent, RecommendationCardComponent],
   imports: [
     RouterModule.forChild(routes),
     CommonModule,

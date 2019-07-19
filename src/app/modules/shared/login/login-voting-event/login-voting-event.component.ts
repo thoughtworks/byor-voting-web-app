@@ -42,8 +42,9 @@ export class LoginVotingEventComponent implements AfterViewInit, OnDestroy {
     const _loginButtonClick$ = fromEvent(this.loginButtonRef.nativeElement, 'click');
 
     this.loginSubscription = this.logIn$(_user$, _password$, _loginButtonClick$).subscribe(
-      (authResp) => {
-        this.authService.isLoggedIn = authResp;
+      ({ isLoggedIn, userId }) => {
+        this.authService.isLoggedIn = isLoggedIn;
+        this.appSession.setCredentials({ userId });
         const redirect = getActionRoute(this.appSession.getSelectedVotingEvent());
         this.router.navigate([redirect]);
       },
@@ -103,7 +104,9 @@ export class LoginVotingEventComponent implements AfterViewInit, OnDestroy {
     return this.clickOnLogin$.pipe(
       switchMap((_credentials) => {
         credentials = _credentials;
-        return this.authService.login(credentials.user, credentials.password);
+        return this.authService
+          .login(credentials.user, credentials.password)
+          .pipe(map((isLoggedIn) => ({ isLoggedIn, userId: credentials.user })));
       }),
       catchError((err, caught) => {
         if (err.errorCode === ERRORS.serverUnreacheable) {

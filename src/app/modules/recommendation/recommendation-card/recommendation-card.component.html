@@ -1,0 +1,10 @@
+<mat-card class="recommnedation-card">
+  <mat-form-field class="recommnedation-text">
+    <textarea matInput #commentText placeholder="{{placeholderText}}" value="{{getCommentTextSelectedTech$() | async}}"></textarea>
+  </mat-form-field>
+  <!-- <mat-card-actions>
+    <button mat-icon-button *ngIf="showConfirmButton$ | async" (click)="confirmRing()">Save</button>
+  </mat-card-actions> -->
+</mat-card>
+
+<!-- <div *ngIf="message$ | async as message" class="message" [innerHTML]="message"></div> -->
