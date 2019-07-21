@@ -39,7 +39,7 @@ export function getActionRoute(votingEvent: VotingEvent) {
   const actionName = getActionName(votingEvent);
   let route: string;
   if (actionName === 'vote') {
-    route = 'vote';
+    route = 'vote/start';
   } else if (actionName === 'conversation') {
     route = 'conversation';
   } else if (actionName === 'recommendation') {

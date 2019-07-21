@@ -17,6 +17,7 @@ import { logError } from '../utils/utils';
 import { inspect } from 'util';
 import { Comment } from '../models/comment';
 import { VotingEventFlow } from '../models/voting-event-flow';
+import { Credentials } from '../models/credentials';
 
 interface BackEndError {
   errorCode: string;
@@ -119,9 +120,10 @@ export class BackendService {
     );
   }
 
-  getVotes(votingEventId: string): Observable<Array<Vote>> {
+  getVotes(votingEventId: string, voterId?: Credentials): Observable<Array<Vote>> {
     const payload = this.buildPostPayloadForService(ServiceNames.getVotes);
     payload['eventId'] = votingEventId;
+    payload['voterId'] = voterId;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
         return this.handleReponseDefault(resp);
@@ -130,10 +132,13 @@ export class BackendService {
     );
   }
 
-  saveVote(votes: Array<Vote>, credentials: VoteCredentials) {
+  saveVote(votes: Array<Vote>, credentials: VoteCredentials, override?: boolean) {
     const payload = this.buildPostPayloadForService(ServiceNames.saveVotes);
     payload['votes'] = votes;
     payload['credentials'] = credentials;
+    if (override) {
+      payload['override'] = override;
+    }
     return this.http.post(this.url, payload).pipe(
       map((resp: RespFromBackend) => {
         return this.handleReponseDefault(resp);

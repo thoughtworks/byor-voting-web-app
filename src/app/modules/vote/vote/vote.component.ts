@@ -40,7 +40,7 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
 
   messageVote: string;
 
-  technologyListSubscription: Subscription;
+  voteTechnologySubscription: Subscription;
 
   constructor(
     private backEnd: BackendService,
@@ -56,15 +56,15 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
     this.technologyListService.technologies$ = getVotingEventFull$(this.appSession.getSelectedVotingEvent(), this.backEnd).pipe(
       map((event) => event.technologies)
     );
-    this.technologyListSubscription = merge(
+    this.voteTechnologySubscription = merge(
       this.technologyListService.technologySelected$,
       this.technologyListService.newTechnologyAdded$
     ).subscribe((tech) => this.openVoteDialog(tech));
   }
   ngAfterViewInit() {}
   ngOnDestroy() {
-    if (this.technologyListSubscription) {
-      this.technologyListSubscription.unsubscribe();
+    if (this.voteTechnologySubscription) {
+      this.voteTechnologySubscription.unsubscribe();
     }
   }
 

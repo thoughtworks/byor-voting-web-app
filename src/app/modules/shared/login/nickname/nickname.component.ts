@@ -10,6 +10,7 @@ import { BackendService } from 'src/app/services/backend.service';
 import { VoteCredentials } from 'src/app/models/vote-credentials';
 import { ErrorService } from 'src/app/services/error.service';
 import { logError } from 'src/app/utils/utils';
+import { getActionRoute } from 'src/app/utils/voting-event-flow.util';
 
 @Component({
   selector: 'byor-nickname',
@@ -48,7 +49,8 @@ export class NicknameComponent implements AfterViewInit, OnDestroy, OnInit {
     this.goToVoteSubscription = this.goToVote$(nickname$, startButtonClick$).subscribe(
       (nickname) => {
         this.appSession.setCredentials({ nickname });
-        this.router.navigate(['vote/start']);
+        const redirect = getActionRoute(this.appSession.getSelectedVotingEvent());
+        this.router.navigate([redirect]);
       },
       (error) => {
         logError(error);
@@ -68,8 +70,7 @@ export class NicknameComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  // this method takes in input all Observable created out of DOM events which are relevant for this Component
-  // in this way we can easily test this logic with marble tests
+  // this method takes in input all Observables created out of DOM events which are relevant for this Component
   goToVote$(nickname$: Observable<string>, startButtonClick$: Observable<any>) {
     // notifies when the input data provided changes - the value notified is true of false
     // depending on the fact that the input data is valid or not
@@ -78,27 +79,7 @@ export class NicknameComponent implements AfterViewInit, OnDestroy, OnInit {
       share() // share() is used since this Observable is used also on the Html template
     );
 
-    const clickOnVote$ = nickname$.pipe(
-      switchMap((nickname) => (this.isNicknameValid(nickname) ? startButtonClick$.pipe(map(() => nickname)) : NEVER))
-    );
-
-    // notifies when the user has clicked to go to voting session and he has not voted yet
-    return clickOnVote$.pipe(
-      switchMap((nickname) => {
-        const votingEvent = this.appSession.getSelectedVotingEvent();
-        // to remove when we refactor hasAlreadyVoted
-        const oldCredentials: VoteCredentials = { voterId: { firstName: nickname, lastName: '' }, votingEvent };
-        return this.backend.hasAlreadyVoted(oldCredentials).pipe(
-          tap((hasAlreadyVoted) => {
-            if (hasAlreadyVoted) {
-              this.message$.next(`You have already voted for <strong>${votingEvent.name}</strong>`);
-            }
-          }),
-          filter((hasAlreadyVoted) => !hasAlreadyVoted),
-          map(() => nickname)
-        );
-      })
-    );
+    return nickname$.pipe(switchMap((nickname) => (this.isNicknameValid(nickname) ? startButtonClick$.pipe(map(() => nickname)) : NEVER)));
   }
 
   isNicknameValid(nickname: string) {

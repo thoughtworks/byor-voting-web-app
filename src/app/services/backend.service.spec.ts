@@ -17,6 +17,7 @@ import { apiDomain } from '../app.module';
 import { logError } from '../utils/utils';
 import { Comment } from '../models/comment';
 import { VotingEventFlow } from '../models/voting-event-flow';
+import { Credentials } from '../models/credentials';
 
 describe('BackendService', () => {
   let testToken;
@@ -1010,7 +1011,7 @@ describe('BackendService', () => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = '14.1 - set the recommendation author';
 
-      const recommendationAuthor = 'The author of the recommendation';
+      const recommendationAuthor = 'The author of the recommendation 1';
 
       setUpTestContext(service, votingEventName)
         .pipe(
@@ -1065,7 +1066,7 @@ describe('BackendService', () => {
 
       const votingEventName = '14.3 - set the recommendation';
 
-      const recommendationAuthor = 'The author of the recommendation';
+      const recommendationAuthor = 'The author of the recommendation 3';
       const recommendationRing = 'adopt';
       const recommendationText = 'I am the detailed explanation of the recommendation';
 
@@ -1102,7 +1103,7 @@ describe('BackendService', () => {
 
       const votingEventName = '14.4 - a voting event where a recommendation will be set';
 
-      const recommendationAuthor = 'The author of the recommendation';
+      const recommendationAuthor = 'The author of the recommendation 4';
       const recommendationRing = 'adopt';
       const recommendationText = 'I am the detailed explanation of the recommendation';
       let recommendationAuthorDifferentErrorEncountered = false;
@@ -1198,6 +1199,225 @@ describe('BackendService', () => {
           concatMap(() => service.saveVote(votes2, credentials2))
         );
     }
+  });
+
+  describe('15 BackendService - vote and then retrieve the votes of one specific voter', () => {
+    it('15.1 vote and then retrieve the votes of one specific voter', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+      const votingEventName = 'a voting event where we get the votes of a specific voter';
+      let votes1;
+      let credentials1: VoteCredentials;
+      let votes2;
+      let credentials2: VoteCredentials;
+
+      let votingEvent;
+
+      const voter1: Credentials = { nickname: 'Nick 1' };
+      const voter2 = { userId: 'user 2' };
+
+      let tech1: Technology;
+      let tech2: Technology;
+      const ring1 = 'adopt';
+      const ring2 = 'hold';
+      const productionTag = 'Production';
+      const trainingTag = 'Training';
+
+      service
+        .authenticate(validUser.user, validUser.pwd)
+        .pipe(
+          tap((resp) => (testToken = resp)),
+          concatMap(() => service.getVotingEvents({ all: true })),
+          map((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
+          }),
+          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
+        )
+        .pipe(
+          concatMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.getVotingEvents()),
+          tap((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            expect(vEvents.length).toBe(1);
+            credentials1 = {
+              voterId: voter1,
+              votingEvent: null
+            };
+            credentials2 = {
+              voterId: voter2,
+              votingEvent: null
+            };
+            votingEvent = vEvents[0];
+            credentials1.votingEvent = votingEvent;
+          }),
+          concatMap(() => service.openVotingEvent(votingEvent._id)),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          // the first voter, Voter1, saves 2 votes,
+          // the second voter, Voter2, saves 2 votes,
+          // tech1 gets 2 "adopt" while tech2 gets 1 "hold" and 1 "trial"
+          // tech1 gets also 2 production tags and 1 training and tech2 gets 1 training tag
+          tap((vEvent) => {
+            tech1 = vEvent.technologies[0];
+            tech2 = vEvent.technologies[1];
+            votes1 = [
+              { ring: ring1, technology: tech1, tags: [productionTag, trainingTag] },
+              {
+                ring: ring2,
+                technology: tech2
+              }
+            ];
+            votes2 = [
+              { ring: 'assess', technology: tech1, tags: [productionTag] },
+              {
+                ring: 'trial',
+                technology: tech2,
+                tags: [trainingTag]
+              }
+            ];
+            credentials1.votingEvent = vEvent;
+            credentials2.votingEvent = vEvent;
+          }),
+          concatMap(() => service.saveVote(votes1, credentials1)),
+          concatMap(() => service.saveVote(votes2, credentials2)),
+
+          concatMap(() => service.getVotes(votingEvent._id, voter1)),
+          tap((votes: Vote[]) => {
+            expect(votes.length).toBe(2);
+            const v11 = votes.find((v) => v.technology.name === tech1.name);
+            expect(v11.ring).toBe(ring1);
+            const v12 = votes.find((v) => v.technology.name === tech2.name);
+            expect(v12.ring).toBe(ring2);
+          }),
+          concatMap(() => service.getVotes(votingEvent._id)),
+          tap((votes: Vote[]) => {
+            expect(votes.length).toBe(4);
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('15.1 test "vote and then retrieve the votes of one specific voter"', err);
+            throw new Error('"vote and then retrieve the votes of one specific voter" does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+  });
+
+  describe('16 BackendService - vote and override the vote with a second vote', () => {
+    it('16.1 vote and override the vote with a second vote', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+      const votingEventName = 'a voting event where we override a vote with a second vote';
+      let votes1;
+      let credentials1: VoteCredentials;
+      let votes2;
+      let credentials2: VoteCredentials;
+
+      let votingEvent;
+
+      const voter1: Credentials = { nickname: 'Nick 1' };
+      const voter2 = { userId: 'user 2' };
+
+      let tech1: Technology;
+      let tech2: Technology;
+      const ring1 = 'adopt';
+      const ring2 = 'hold';
+      const ringOfVoter2 = 'assess';
+      const ringForSecondVote = 'trial';
+      const productionTag = 'Production';
+      const trainingTag = 'Training';
+
+      service
+        .authenticate(validUser.user, validUser.pwd)
+        .pipe(
+          tap((resp) => (testToken = resp)),
+          concatMap(() => service.getVotingEvents({ all: true })),
+          map((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
+          }),
+          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
+        )
+        .pipe(
+          concatMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.getVotingEvents()),
+          tap((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            expect(vEvents.length).toBe(1);
+            credentials1 = {
+              voterId: voter1,
+              votingEvent: null
+            };
+            credentials2 = {
+              voterId: voter2,
+              votingEvent: null
+            };
+            votingEvent = vEvents[0];
+            credentials1.votingEvent = votingEvent;
+          }),
+          concatMap(() => service.openVotingEvent(votingEvent._id)),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          // the first voter, Voter1, saves 2 votes,
+          // the second voter, Voter2, saves 2 votes,
+          // tech1 gets 2 "adopt" while tech2 gets 1 "hold" and 1 "trial"
+          // tech1 gets also 2 production tags and 1 training and tech2 gets 1 training tag
+          tap((vEvent) => {
+            tech1 = vEvent.technologies[0];
+            tech2 = vEvent.technologies[1];
+            votes1 = [
+              { ring: ring1, technology: tech1, tags: [productionTag, trainingTag] },
+              {
+                ring: ring2,
+                technology: tech2
+              }
+            ];
+            votes2 = [
+              { ring: ringOfVoter2, technology: tech1, tags: [productionTag] },
+              {
+                ring: ringOfVoter2,
+                technology: tech2,
+                tags: [trainingTag]
+              }
+            ];
+            credentials1.votingEvent = vEvent;
+            credentials2.votingEvent = vEvent;
+          }),
+          // firtst time the voters vote
+          concatMap(() => service.saveVote(votes1, credentials1)),
+          concatMap(() => service.saveVote(votes2, credentials2)),
+
+          // the first voter votes for a second time
+          tap((vEvent) => {
+            votes1 = [
+              { ring: ringForSecondVote, technology: tech1 },
+              {
+                ring: ringForSecondVote,
+                technology: tech2
+              }
+            ];
+          }),
+          // second time the first Voter votes specifying the override option
+          concatMap(() => service.saveVote(votes1, credentials1, true)),
+
+          concatMap(() => service.getVotes(votingEvent._id, voter1)),
+          tap((votes: Vote[]) => {
+            expect(votes.length).toBe(2);
+            votes.forEach((v) => expect(v.ring).toBe(ringForSecondVote));
+          }),
+          // the votes of the second voter remain the same
+          concatMap(() => service.getVotes(votingEvent._id, voter2)),
+          tap((votes: Vote[]) => {
+            expect(votes.length).toBe(2);
+            votes.forEach((v) => expect(v.ring).toBe(ringOfVoter2));
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('16.1 test "vote and override the vote with a second vote"', err);
+            throw new Error('"vote and override the vote with a second vote" does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
   });
 });
 
