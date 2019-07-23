@@ -14,6 +14,8 @@ export interface VotingEventStep {
       displayVotesAndCommentNumbers?: boolean;
       tags?: string[];
       allowTagsOnVote?: boolean;
+      voteOnlyOnce?: boolean; // if true the voter can vote only once and can not override the vote
+      maxNumberOfVotes?: number;
     };
   };
 }

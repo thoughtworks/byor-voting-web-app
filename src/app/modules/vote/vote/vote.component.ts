@@ -10,7 +10,6 @@ import { VoteDialogueComponent } from './vote-dialogue.component';
 import { VoteSavedDialogueComponent } from './vote-saved-dialogue.component';
 
 import { BackendService } from '../../../services/backend.service';
-import { ErrorService } from '../../../services/error.service';
 import { Technology } from '../../../models/technology';
 import { Vote } from '../../../models/vote';
 import { VoteService } from '../services/vote.service';
@@ -23,8 +22,8 @@ import { AppSessionService } from 'src/app/app-session.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { TechnologyListService } from '../../shared/technology-list/services/technology-list.service';
 import { TechnologyListComponent } from '../../shared/technology-list/technology-list/technology-list.component';
-import { getVotingEventFull$ } from 'src/app/utils/voting-event-flow.util';
-import { map } from 'rxjs/operators';
+import { getVotingEventFull$, getAction, getIdentificationRoute } from 'src/app/utils/voting-event-flow.util';
+import { map, tap, concatMap } from 'rxjs/operators';
 
 @Component({
   selector: 'byor-vote',
@@ -53,13 +52,19 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.technologyListService.technologies$ = getVotingEventFull$(this.appSession.getSelectedVotingEvent(), this.backEnd).pipe(
-      map((event) => event.technologies)
-    );
-    this.voteTechnologySubscription = merge(
-      this.technologyListService.technologySelected$,
-      this.technologyListService.newTechnologyAdded$
-    ).subscribe((tech) => this.openVoteDialog(tech));
+    const votingEvent = this.appSession.getSelectedVotingEvent();
+    this.technologyListService.technologies$ = getVotingEventFull$(votingEvent, this.backEnd).pipe(map((event) => event.technologies));
+    const voterId = this.appSession.getCredentials();
+    this.voteTechnologySubscription = this.backEnd
+      .getVotes(votingEvent._id, voterId)
+      .pipe(
+        tap((votes) => {
+          this.votes = votes;
+          this.excludeTechnologiesVoted();
+        }),
+        concatMap(() => merge(this.technologyListService.technologySelected$, this.technologyListService.newTechnologyAdded$))
+      )
+      .subscribe((tech) => this.openVoteDialog(tech));
   }
   ngAfterViewInit() {}
   ngOnDestroy() {
@@ -125,15 +130,19 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
     const credentials = this.appSession.getCredentials();
     const votingEvent = this.appSession.getSelectedVotingEvent();
     let voterIdentification;
-    let oldCredentials: VoteCredentials;
+    let voteCredentials: VoteCredentials;
     if (credentials) {
       voterIdentification = credentials.nickname || credentials.userId;
-      oldCredentials = { voterId: { firstName: voterIdentification, lastName: '' }, votingEvent };
+      voteCredentials = { voterId: credentials, votingEvent };
     } else {
-      oldCredentials = this.voteService.credentials;
-      voterIdentification = oldCredentials.voterId.firstName + ' ' + oldCredentials.voterId.lastName;
+      voteCredentials = this.voteService.credentials;
+      voterIdentification = voteCredentials.voterId.firstName + ' ' + voteCredentials.voterId.lastName;
     }
-    combineLatest(this.backEnd.saveVote(this.votes, oldCredentials), this.configurationService.defaultConfiguration()).subscribe(
+    const allowVoteOverride = !getAction(votingEvent).parameters.voteOnlyOnce;
+    combineLatest(
+      this.backEnd.saveVote(this.votes, voteCredentials, allowVoteOverride),
+      this.configurationService.defaultConfiguration()
+    ).subscribe(
       ([resp, config]) => {
         if (resp.error) {
           if (resp.error.errorCode === 'V-01') {
@@ -148,7 +157,9 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
           });
 
           dialogRef.afterClosed().subscribe((result) => {
-            const route = config.enableVotingEventFlow ? 'nickname' : '/vote';
+            // enableVotingEventFlow is on, then it means we are using the new version of the app which
+            // uses the identification component set as parameter of the current step of the flow
+            const route = config.enableVotingEventFlow ? getIdentificationRoute(this.appSession.getSelectedVotingEvent()) : '/vote';
             this.router.navigate([route]);
           });
         }

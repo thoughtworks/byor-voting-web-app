@@ -95,7 +95,7 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
         return technologies
           .filter((technology) => search === '' || technology.name.toLowerCase().includes(search.toLowerCase()))
           .filter((technology) => quadrant === '' || technology.quadrant.toLowerCase() === quadrant.toLowerCase())
-          .filter((technology) => !technolgiesToExclude.includes(technology));
+          .filter((technology) => !technolgiesToExclude.find((t) => t.name === technology.name));
       }),
       catchError((err) => {
         logError(err);

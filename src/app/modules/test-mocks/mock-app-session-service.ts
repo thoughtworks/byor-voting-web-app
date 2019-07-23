@@ -2,6 +2,7 @@ import { ReplaySubject } from 'rxjs';
 
 import { Technology } from 'src/app/models/technology';
 import { VotingEvent } from 'src/app/models/voting-event';
+import { Credentials } from 'src/app/models/credentials';
 
 export const TEST_TECHNOLOGY = {
   id: '0001',
@@ -19,6 +20,7 @@ export class MockAppSessionService {
   selectedTechnology$ = new ReplaySubject<Technology>(1);
   private selectedVotingEvent: VotingEvent;
   private votingEvents: VotingEvent[];
+  private credentials: Credentials = { nickname: 'The Nick' };
 
   constructor() {
     this.selectedTechnology = TEST_TECHNOLOGY;
@@ -50,5 +52,9 @@ export class MockAppSessionService {
 
   getVotingEvents() {
     return this.votingEvents;
+  }
+
+  getCredentials() {
+    return this.credentials;
   }
 }
