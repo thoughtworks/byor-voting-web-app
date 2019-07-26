@@ -18,6 +18,7 @@ import { logError } from '../utils/utils';
 import { Comment } from '../models/comment';
 import { VotingEventFlow } from '../models/voting-event-flow';
 import { Credentials } from '../models/credentials';
+import { Blip } from '../models/blip';
 
 describe('BackendService', () => {
   let testToken;
@@ -181,162 +182,6 @@ describe('BackendService', () => {
     }, 100000);
   });
 
-  // describe('3 BackendService - get aggregated votes', () => {
-  // it('3.1 test the vote aggregation logic', done => {
-  //   const service: BackendService = TestBed.get(BackendService);
-  //   const votingEventName = 'theAggregationVotingEvent';
-  //   // there are 3 voters casting votes on 2 technologies, tech1 and tech2
-  //   // tech1 has 2 adopt and 1 hold
-  //   // tech2 has 1 hold and 2 assess
-  //   const techName1 = 'tech1';
-  //   const techName2 = 'tech2';
-  //   const votes1 = [
-  //     {ring: 'adopt', technology: {id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true}},
-  //     {ring: 'hold', technology: {id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false}}
-  //   ];
-  //   const credentials1: VoteCredentials = {
-  //     voterId: {firstName: 'fv1', lastName: 'lv1'},
-  //     votingEvent: null
-  //   };
-  //   const votes2 = [
-  //     {ring: 'adopt', technology: {id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true}},
-  //     {ring: 'assess', technology: {id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false}}
-  //   ];
-  //   const credentials2: VoteCredentials = {
-  //     voterId: {firstName: 'fv2', lastName: 'lv2'},
-  //     votingEvent: null
-  //   };
-  //   const votes3 = [
-  //     {ring: 'hold', technology: {id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true}},
-  //     {ring: 'assess', technology: {id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false}}
-  //   ];
-  //   const credentials3: VoteCredentials = {
-  //     voterId: {firstName: 'fv3', lastName: 'lv3'},
-  //     votingEvent: null
-  //   };
-  //   let votingEvent;
-  //   service.cancelVotingEvent(votingEventName, true)
-  //   .pipe(
-  //     switchMap(() => service.createVotingEvent(votingEventName)),
-  //     switchMap(() => service.getVotingEvents()),
-  //     tap(votingEvents => {
-  //       votingEvent = votingEvents.find(ve => ve.name === votingEventName);
-  //       credentials1.votingEvent = votingEvent;
-  //       credentials2.votingEvent = votingEvent;
-  //       credentials3.votingEvent = votingEvent;
-  //     }),
-  //     switchMap(() => service.openVotingEvent(votingEvent._id)),
-  //     switchMap(() => service.saveVote(votes1, credentials1)),
-  //     switchMap(() => service.saveVote(votes2, credentials2)),
-  //     switchMap(() => service.saveVote(votes3, credentials3)),
-  //     switchMap(() => service.getAggregatedVotes(votingEvent)),
-  //   )
-  //   .subscribe(
-  //     aggregatesVotes => {
-  //       expect(aggregatesVotes.length).toBe(4);
-  //       const aggVotesTech1 = aggregatesVotes.filter(av => av.technology.name === techName1);
-  //       expect(aggVotesTech1.length).toBe(2);
-  //       expect(aggVotesTech1.find(av => av.count === 2).ring).toBe('adopt');
-  //       expect(aggVotesTech1.find(av => av.count === 1).ring).toBe('hold');
-  //       const aggVotesTech2 = aggregatesVotes.filter(av => av.technology.name === techName2);
-  //       expect(aggVotesTech2.length).toBe(2);
-  //       expect(aggVotesTech2.find(av => av.count === 2).ring).toBe('assess');
-  //       expect(aggVotesTech2.find(av => av.count === 1).ring).toBe('hold');
-  //     },
-  //     err => {
-  //       logError('3.1 test the vote aggregation logic', err);
-  //       done();
-  //       throw(new Error('the vote aggregation logic has some issues'));
-  //     },
-  //     () => done()
-  //   );
-  // }, 20000);
-  // });
-
-  // describe('4 BackendService - calculate blips', () => {
-  //   let httpClient: HttpClient;
-
-  //   beforeEach(() => {
-  //     TestBed.configureTestingModule({
-  //       imports: [HttpClientModule],
-  //       providers: [HttpClient]
-  //     });
-  //     inject([HttpClient], (service1: HttpClient) => {
-  //       httpClient = service1;
-  //     })();
-  //   });
-
-  //   it('4.1 test the blip calculation logic', (done) => {
-  //     const service: BackendService = TestBed.get(BackendService);
-  //     const votingEventName = 'theCalculateBlipsEvent';
-  //     // there are 3 voters casting votes on 2 technologies, tech1 and tech2
-  //     // tech1 has 2 adopt and 1 hold
-  //     // tech2 has 1 hold and 2 assess
-  //     const techName1 = 'tech1';
-  //     const techName2 = 'tech2';
-  //     const votes1 = [
-  //       { ring: 'adopt', technology: { id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true } },
-  //       { ring: 'hold', technology: { id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false } }
-  //     ];
-  //     const credentials1: VoteCredentials = {
-  //       voterId: { firstName: 'fv1', lastName: 'lv1' },
-  //       votingEvent: null
-  //     };
-  //     const votes2 = [
-  //       { ring: 'adopt', technology: { id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true } },
-  //       { ring: 'assess', technology: { id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false } }
-  //     ];
-  //     const credentials2: VoteCredentials = {
-  //       voterId: { firstName: 'fv2', lastName: 'lv2' },
-  //       votingEvent: null
-  //     };
-  //     const votes3 = [
-  //       { ring: 'hold', technology: { id: '1', name: techName1, description: 'desc1', quadrant: 'tools', isnew: true } },
-  //       { ring: 'assess', technology: { id: '2', name: techName2, description: 'desc2', quadrant: 'platforms', isnew: false } }
-  //     ];
-  //     const credentials3: VoteCredentials = {
-  //       voterId: { firstName: 'fv3', lastName: 'lv3' },
-  //       votingEvent: null
-  //     };
-
-  //     let votingEvent;
-  //     service
-  //       .cancelVotingEvent(votingEventName, true)
-  //       .pipe(
-  //         switchMap(() => service.createVotingEvent(votingEventName)),
-  //         switchMap(() => service.getVotingEvents()),
-  //         tap((votingEvents) => {
-  //           votingEvent = votingEvents.find((ve) => ve.name === votingEventName);
-  //           credentials1.votingEvent = votingEvent;
-  //           credentials2.votingEvent = votingEvent;
-  //           credentials3.votingEvent = votingEvent;
-  //         }),
-  //         switchMap(() => service.openVotingEvent(votingEvent._id)),
-  //         switchMap(() => service.saveVote(votes1, credentials1)),
-  //         switchMap(() => service.saveVote(votes2, credentials2)),
-  //         switchMap(() => service.saveVote(votes3, credentials3)),
-  //         switchMap(() => service.calculateBlips(votingEvent))
-  //       )
-  //       .subscribe(
-  //         (blips) => {
-  //           expect(blips.length).toBe(2);
-  //           const blipTech1 = blips.find((b) => b.name === techName1);
-  //           expect(blipTech1).toBeDefined();
-  //           expect(blipTech1.ring).toBe('adopt');
-  //           const blipTech2 = blips.find((b) => b.name === techName2);
-  //           expect(blipTech2).toBeDefined();
-  //           expect(blipTech2.ring).toBe('assess');
-  //         },
-  //         (err) => {
-  //           logError('4.1 test the blip calculation logic', err);
-  //           done();
-  //           throw new Error('the blip calculation logic has some issues');
-  //         },
-  //         () => done()
-  //       );
-  //   }, 20000);
-  // });
-
   describe('5 BackendService - authenticate', () => {
     it(`5.1 authenticate a valid user. It assumes that the users used in the test are correctly loaded in the backend`, (done) => {
       const service: BackendService = TestBed.get(BackendService);
@@ -352,7 +197,7 @@ describe('BackendService', () => {
       );
     }, 10000);
 
-    it(`5.2 tries to authenticate a user with the wrong password. 
+    it(`5.2 tries to authenticate a user with the wrong password.
   It assumes that the users used in the test are correctly loaded in the backend`, (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const invalidUser = { user: 'abc', pwd: '321' };
@@ -370,7 +215,7 @@ describe('BackendService', () => {
       );
     }, 10000);
 
-    it(`5.3 tries to authenticate a user that does not exist. 
+    it(`5.3 tries to authenticate a user that does not exist.
   It assumes that the users used in the test are correctly loaded in the backend`, (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const invalidUser = { user: 'not existing user', pwd: '321' };
@@ -438,7 +283,7 @@ describe('BackendService', () => {
 
       service.saveLogInfo(reason, logData).subscribe(
         (logId) => {
-          expect(logId[0]).toBe('ObjectID');
+          expect(logId).toBeDefined();
         },
         (err) => {
           logError('7.1 saveLogInfo should not raise an error ' + err);
@@ -1414,6 +1259,32 @@ describe('BackendService', () => {
           error: (err) => {
             console.error('16.1 test "vote and override the vote with a second vote"', err);
             throw new Error('"vote and override the vote with a second vote" does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+  });
+
+  describe('17 BackendService - get TW-Blip history', () => {
+    it(`17.1 read the hystory of the tw-blips for a techology whose name has letters
+    with different upper/lower cases than the orginal one`, (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+
+      // the name of the tech with mixed upper/lower cases
+      const techName = 'Event STORMING';
+
+      service
+        .getBlipHistoryForTech(techName)
+        .pipe(
+          tap((blips: Blip[]) => {
+            expect(blips.length).toBe(3);
+            blips.forEach((b) => expect(b.name.toUpperCase()).toBe(techName.toUpperCase()));
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('17.1 test "17.1 read the hystory of the tw-blips for a techology"', err);
+            throw new Error('"17.1 read the hystory of the tw-blips for a techology" does not work');
           },
           complete: () => done()
         });

@@ -1,0 +1,46 @@
+
+@import "../../../../styles/theme/colors";
+
+.blip-timeline-item {
+    margin-left: -7px;
+    padding: 0 0 10px 50px;
+    position: relative;
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+.blip-timeline-item__time {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background-color: #eee;
+    color: #666;
+    display: block;
+    font-size: 15px;
+    font-style: italic;
+    height: 50px;
+    left: -21px;
+    line-height: 15px;
+    padding: 10px 0;
+    position: absolute;
+    text-align: center;
+    text-transform: uppercase;
+    width: 50px;
+}
+
+.blip-timeline-item__ring {
+    font-weight: 700;
+    padding: 6px 0;
+    text-transform: uppercase;
+}
+
+.blip-timeline-item__lead {
+    margin: 0;
+}
+
+.title {
+    margin-bottom: 10px;
+    font-size: larger;
+    font-weight: bold;
+    text-align: center;
+}

@@ -1,0 +1,15 @@
+
+<div class="blip-timeline">
+  <div class="title">ThoughtWorks Radar Blips History</div>
+  <div *ngFor="let blip of blips$ | async" class="blip-timeline-item">
+    <div class="blip-timeline-item__time">{{blip.edition}}</div>
+    <div class="blip-timeline-item__ring">
+      <span>{{blip.ring}}</span>
+    </div>
+    <div class="blip-timeline-item__lead">
+      <div>
+        <p innerHTML="{{blip.description}}"></p>
+      </div>
+    </div>
+  </div>
+</div>

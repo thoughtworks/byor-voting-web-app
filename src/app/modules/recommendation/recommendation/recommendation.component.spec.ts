@@ -12,6 +12,7 @@ import { TechnologyVotingResultsModule } from '../../shared/technology-voting-re
 import { RecommendationCardComponent } from '../recommendation-card/recommendation-card.component';
 
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
+import { TwBlipsModule } from '../../shared/tw-blips/tw-blips.module';
 
 describe('RecommendationComponent', () => {
   let component: RecommendationComponent;
@@ -26,7 +27,8 @@ describe('RecommendationComponent', () => {
         RouterTestingModule,
         HttpClientTestingModule,
         CommentTreesModule,
-        TechnologyVotingResultsModule
+        TechnologyVotingResultsModule,
+        TwBlipsModule
       ],
       providers: [VoteService, { provide: AppSessionService, useClass: MockAppSessionService }]
     }).compileComponents();

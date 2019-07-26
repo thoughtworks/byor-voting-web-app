@@ -31,6 +31,6 @@ export class MockBackEndService {
   }
 
   getVotes() {
-    return of(null).pipe(observeOn(asyncScheduler));
+    return of([]).pipe(observeOn(asyncScheduler));
   }
 }

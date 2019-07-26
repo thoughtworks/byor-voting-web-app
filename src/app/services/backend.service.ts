@@ -573,4 +573,15 @@ export class BackendService {
       catchError(this.handleError)
     );
   }
+
+  getBlipHistoryForTech(techName: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.getBlipHistoryForTech);
+    payload['techName'] = techName;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        return this.handleReponseDefault(resp);
+      }),
+      catchError(this.handleError)
+    );
+  }
 }

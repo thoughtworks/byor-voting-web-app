@@ -2,8 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { of, asyncScheduler } from 'rxjs';
-import { observeOn } from 'rxjs/operators';
 
 import { AppMaterialModule } from '../../../app-material.module';
 
@@ -12,17 +10,16 @@ import { VoteComponent } from './vote.component';
 import { BackendService } from '../../../services/backend.service';
 import { TwRings } from 'src/app/models/ring';
 import { AppSessionService } from 'src/app/app-session.service';
-import { VotingEvent } from 'src/app/models/voting-event';
 import { TechnologyListModule } from '../../shared/technology-list/technology-list.module';
 
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 import { MockVoteService, TEST_TECHNOLOGIES } from 'src/app/modules/test-mocks/mock-vote-service';
 import { MockBackEndService } from 'src/app/modules/test-mocks/mock-back-end-service';
 
-const mockBackendService = new MockBackEndService();
-mockBackendService.techsForVotingEvent = TEST_TECHNOLOGIES;
-
 describe('VoteComponent', () => {
+  const mockBackendService = new MockBackEndService();
+  mockBackendService.techsForVotingEvent = TEST_TECHNOLOGIES;
+
   let component: VoteComponent;
   let fixture: ComponentFixture<VoteComponent>;
 
@@ -90,32 +87,56 @@ describe('VoteComponent', () => {
     expect(component.getVotesByRing(TwRings.names[1])).toEqual([secondVote, thirdVote]);
     expect(component.getVotesByRing(TwRings.names[2]).length).toEqual(0);
   });
+});
 
-  describe('vote exist', () => {
-    it('should return true when vote is already added', function() {
-      const ring = 'hold';
-      const technologyVotedIndex = 1;
-      const vote = {
-        ring,
-        technology: TEST_TECHNOLOGIES[technologyVotedIndex]
-      };
+describe('vote exist', () => {
+  const mockBackendService = new MockBackEndService();
+  mockBackendService.techsForVotingEvent = TEST_TECHNOLOGIES;
 
-      component.addVote(vote);
+  let component: VoteComponent;
+  let fixture: ComponentFixture<VoteComponent>;
 
-      const isExist = component.isAlreadyVoted(TEST_TECHNOLOGIES[technologyVotedIndex].name);
-      expect(isExist).toBeTruthy();
-    });
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [VoteComponent],
+      imports: [BrowserAnimationsModule, HttpClientTestingModule, RouterTestingModule, AppMaterialModule, TechnologyListModule],
+      providers: [
+        { provide: BackendService, useValue: mockBackendService },
+        { provide: VoteService, useClass: MockVoteService },
+        { provide: AppSessionService, useClass: MockAppSessionService }
+      ]
+    }).compileComponents();
+  }));
 
-    it('should return false when vote does not find in the voted list', function() {
-      const ring = 'hold';
-      const technologyVotedIndex = 1;
-      const vote = {
-        ring,
-        technology: TEST_TECHNOLOGIES[technologyVotedIndex]
-      };
-      component.addVote(vote);
-      const isExist = component.isAlreadyVoted('random');
-      expect(isExist).toBeFalsy();
-    });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(VoteComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should return true when vote is already added', function() {
+    const ring = 'hold';
+    const technologyVotedIndex = 1;
+    const vote = {
+      ring,
+      technology: TEST_TECHNOLOGIES[technologyVotedIndex]
+    };
+
+    component.addVote(vote);
+
+    const isExist = component.isAlreadyVoted(TEST_TECHNOLOGIES[technologyVotedIndex].name);
+    expect(isExist).toBeTruthy();
+  });
+
+  it('should return false when vote does not find in the voted list', function() {
+    const ring = 'hold';
+    const technologyVotedIndex = 1;
+    const vote = {
+      ring,
+      technology: TEST_TECHNOLOGIES[technologyVotedIndex]
+    };
+    component.addVote(vote);
+    const isExist = component.isAlreadyVoted('random');
+    expect(isExist).toBeFalsy();
   });
 });

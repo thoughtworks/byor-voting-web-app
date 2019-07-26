@@ -10,6 +10,7 @@ import { ConversationComponent } from './conversation/conversation.component';
 import { SelectTechForConversationComponent } from './select-tech-for-conversation/select-tech-for-conversation.component';
 import { CommentTreesModule } from '../shared/comment-trees/comment-trees.module';
 import { TechnologyVotingResultsModule } from '../shared/technology-voting-results/technology-voting-results.module';
+import { TwBlipsModule } from '../shared/tw-blips/tw-blips.module';
 @NgModule({
   declarations: [ConversationComponent, SelectTechForConversationComponent],
   imports: [
@@ -18,7 +19,8 @@ import { TechnologyVotingResultsModule } from '../shared/technology-voting-resul
     AppMaterialModule,
     TechnologyListModule,
     CommentTreesModule,
-    TechnologyVotingResultsModule
+    TechnologyVotingResultsModule,
+    TwBlipsModule
   ]
 })
 export class ConversationModule {}

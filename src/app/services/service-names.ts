@@ -34,5 +34,6 @@ export enum ServiceNames {
   authenticateForVotingEvent,
   addUsersWithRole,
   deleteUsers,
-  saveLogInfo
+  saveLogInfo,
+  getBlipHistoryForTech
 }

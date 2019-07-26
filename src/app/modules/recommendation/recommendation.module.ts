@@ -11,6 +11,7 @@ import { SelectTechForRecommendationComponent } from './select-tech-for-recommen
 import { CommentTreesModule } from '../shared/comment-trees/comment-trees.module';
 import { TechnologyVotingResultsModule } from '../shared/technology-voting-results/technology-voting-results.module';
 import { RecommendationCardComponent } from './recommendation-card/recommendation-card.component';
+import { TwBlipsModule } from '../shared/tw-blips/tw-blips.module';
 @NgModule({
   declarations: [RecommendationComponent, SelectTechForRecommendationComponent, RecommendationCardComponent],
   imports: [
@@ -19,7 +20,8 @@ import { RecommendationCardComponent } from './recommendation-card/recommendatio
     AppMaterialModule,
     TechnologyListModule,
     CommentTreesModule,
-    TechnologyVotingResultsModule
+    TechnologyVotingResultsModule,
+    TwBlipsModule
   ]
 })
 export class RecommendationModule {}
