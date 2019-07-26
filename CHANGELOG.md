@@ -1,3 +1,14 @@
+# [1.4.0](https://github.com/thoughtworks/byor-voting-web-app/compare/v1.3.0...v1.4.0) (2019-07-24)
+
+
+### Features
+
+* **CommentCardComponent:** Comment shows the tags of the vote ([1280144](https://github.com/thoughtworks/byor-voting-web-app/commit/1280144))
+* **getVotes saveVote:** getVotes for a specific voter, saveVote with override option ([b1e389d](https://github.com/thoughtworks/byor-voting-web-app/commit/b1e389d))
+* **Recommendation:** Save and read a Recommendationù ([ccbfa0d](https://github.com/thoughtworks/byor-voting-web-app/commit/ccbfa0d))
+* **TechnologyVotingResultComponent:** TechnologyVotingResultComponent added ([9c22dbc](https://github.com/thoughtworks/byor-voting-web-app/commit/9c22dbc))
+* **VotingEventComponent:** move to next step in VotingEvent flow allowed ([c0b6ec7](https://github.com/thoughtworks/byor-voting-web-app/commit/c0b6ec7))
+
 # [1.3.0](https://github.com/thoughtworks/byor-voting-web-app/compare/v1.2.0...v1.3.0) (2019-07-13)
 
 
