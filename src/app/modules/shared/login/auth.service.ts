@@ -33,8 +33,8 @@ export class AuthService {
     localStorage.removeItem('access_token');
   }
 
-  loginForVotingEvent(user: string, pwd: string, role: string, votingEventId: string) {
-    return this.backend.authenticateForVotingEvent(user, pwd, role, votingEventId).pipe(
+  loginForVotingEvent(user: string, pwd: string, votingEventId: string, flowStepName: string) {
+    return this.backend.authenticateForVotingEvent(user, pwd, votingEventId, flowStepName).pipe(
       tap(({ token, pwdInserted }) => {
         if (token) {
           localStorage.setItem('access_token', token);

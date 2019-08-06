@@ -68,7 +68,7 @@ export class VotingEventComponent implements OnInit {
   onSubmit() {
     this.cleanMessages();
     const inputValue = this.eventCreationForm.controls.eventNameControl.value;
-    this.backend.createVotingEvent(inputValue).subscribe(
+    this.backend.createVotingEvent(inputValue, 'add the initiative from session').subscribe(
       (resp) => {
         if (resp.error) {
           if (resp.error.errorCode === ERRORS.votingEventAlreadyPresent) {

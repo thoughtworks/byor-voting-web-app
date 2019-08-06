@@ -19,6 +19,7 @@ import { Comment } from '../models/comment';
 import { VotingEventFlow } from '../models/voting-event-flow';
 import { Credentials } from '../models/credentials';
 import { Blip } from '../models/blip';
+import { Initiative } from '../models/initiative';
 
 describe('BackendService', () => {
   let testToken;
@@ -64,6 +65,7 @@ describe('BackendService', () => {
     it('2.1 test the entire voting cycle', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = 'thisTestVotingEvent';
+      const initiativeName = 'BackendService Test 2.1';
       const commentOnVote = 'it is crap';
       const votes1 = [
         { ring: 'adopt', technology: null },
@@ -89,15 +91,9 @@ describe('BackendService', () => {
         .authenticate(validUser.user, validUser.pwd)
         .pipe(
           tap((resp) => (testToken = resp)),
-          concatMap((resp) => service.getVotingEvents({ all: true })), // first delete any votingEvent with the same name
-          map((votingEvents) => {
-            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
-            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
-          }),
-          switchMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
-        )
-        .pipe(
-          switchMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
           switchMap(() => service.getVotingEvents()),
           tap((votingEvents) => {
             const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
@@ -235,9 +231,8 @@ describe('BackendService', () => {
   });
 
   describe('6 BackendService - getConfiguration', () => {
-    it(`6.1 retrieve the configuration without specifying a user.
-  It assumes that the configuration has been correctly loaded on the backend
-  This can be achieved using the command node ./dist/src/mongodb/scripts/set-configuration-collection DEV`, (done) => {
+    it(`6.1 retrieve the configuration without specifying a user. 
+    It assumes that the has performed correctly the migragions`, (done) => {
       const service: BackendService = TestBed.get(BackendService);
 
       service.getConfiguration().subscribe(
@@ -255,8 +250,7 @@ describe('BackendService', () => {
     }, 10000);
 
     it(`6.2 retrieve the configuration specifying a user.
-  It assumes that the configuration has been correctly loaded on the backend
-  This can be achieved using the command node ./dist/src/mongodb/scripts/set-configuration-collection DEV`, (done) => {
+    It assumes that the has performed correctly the migragions`, (done) => {
       const service: BackendService = TestBed.get(BackendService);
 
       service.getConfiguration('abc').subscribe(
@@ -355,6 +349,7 @@ describe('BackendService', () => {
     it('9.1 create a voting event and add a technology to it', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = 'theVotingEventForANewTech';
+      const initiativeName = 'BackendService Test 9.1';
 
       const newTech: Technology = {
         name: 'the new tech to add',
@@ -368,15 +363,9 @@ describe('BackendService', () => {
         .authenticate(validUser.user, validUser.pwd)
         .pipe(
           tap((resp) => (testToken = resp)),
-          concatMap((resp) => service.getVotingEvents({ all: true })),
-          map((votingEvents) => {
-            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
-            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
-          }),
-          switchMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
-        )
-        .pipe(
-          switchMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
           switchMap(() => service.getVotingEvents()),
           tap((votingEvents) => {
             const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
@@ -403,13 +392,13 @@ describe('BackendService', () => {
     it('10.1 add some votes with comments and then retrieve the comments', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = 'a voting event with votes with comments';
+      const initiativeName = 'BackendService Test 10.1';
       const commentOnVote1 = 'this is the FIRST comment I made for this test';
       const commentOnVote2 = 'this is the SECOND comment I made for this test';
       let votes1;
       let credentials1: VoteCredentials;
       let votes2;
       let credentials2: VoteCredentials;
-      const votes3 = [{ ring: 'trial', technology: null }];
 
       let votingEvent;
 
@@ -419,15 +408,9 @@ describe('BackendService', () => {
         .authenticate(validUser.user, validUser.pwd)
         .pipe(
           tap((resp) => (testToken = resp)),
-          concatMap((resp) => service.getVotingEvents({ all: true })),
-          map((votingEvents) => {
-            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
-            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
-          }),
-          switchMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
-        )
-        .pipe(
-          switchMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
           switchMap(() => service.getVotingEvents()),
           tap((votingEvents) => {
             const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
@@ -499,6 +482,7 @@ describe('BackendService', () => {
     it('10.2 add one vote with a comment, retrieve the vote and add a reply to the comment', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = 'a voting event with votes with comments and replies';
+      const initiativeName = 'BackendService Test 10.2';
       const replyText = 'this is the REPLY to the comment';
       const replyAuthor = 'I am the author of the reply';
       let votes1: Vote[];
@@ -511,15 +495,10 @@ describe('BackendService', () => {
       service
         .authenticate(validUser.user, validUser.pwd)
         .pipe(
-          concatMap(() => service.getVotingEvents({ all: true })), // first delete any votingEvent with the same name
-          map((votingEvents) => {
-            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
-            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
-          }),
-          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
-        )
-        .pipe(
-          concatMap(() => service.createVotingEvent(votingEventName)),
+          tap((resp) => (testToken = resp)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
           concatMap(() => service.getVotingEvents()),
           tap((votingEvents) => {
             const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
@@ -570,6 +549,7 @@ describe('BackendService', () => {
     it('11.1 add a tech to a voting event and then add a comment to that technology and a reply to that comment', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = 'a voting event with a technology with one comment and one reply';
+      const initiativeName = 'BackendService Test 11.1';
 
       let votingEvent: VotingEvent;
 
@@ -588,15 +568,9 @@ describe('BackendService', () => {
         .authenticate(validUser.user, validUser.pwd)
         .pipe(
           tap((resp) => (testToken = resp)),
-          concatMap(() => service.getVotingEvents({ all: true })),
-          map((votingEvents: any) => {
-            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
-            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
-          }),
-          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
-        )
-        .pipe(
-          concatMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
           concatMap(() => service.getVotingEvents()),
           tap((votingEvents) => {
             const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
@@ -655,12 +629,13 @@ describe('BackendService', () => {
     it('12.1 create a user, authenticate and then delete it', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = 'a voting event for a user to log in';
+      const initiativeName = 'BackendService Test 12.1';
 
       let votingEvent: VotingEvent;
       const user = 'A new user';
       const pwd = 'my password';
-      const firstRole = 'architect';
-      const secondRole = 'dev';
+      const firstGroup = 'architect';
+      const secondGroup = 'dev';
       const firstStepName = 'first step';
       const secondStepName = 'second step';
       const votingEventFlow: VotingEventFlow = {
@@ -672,35 +647,26 @@ describe('BackendService', () => {
           },
           {
             name: secondStepName,
-            identification: { name: 'login', roles: [firstRole] },
+            identification: { name: 'login', groups: [firstGroup] },
             action: { name: 'conversation' }
           }
         ]
       };
-      // at the moment the format is one object per role, and the name is repeated is the used has more than one role
-      // this is to mimic an csv format
-      const votingEventUser = [{ user, role: firstRole }, { user, role: secondRole }];
+      const votingEventUser = [{ user, groups: [firstGroup, secondGroup] }];
 
       service
         .authenticate(validUser.user, validUser.pwd)
         .pipe(
           tap((resp) => (testToken = resp)),
-          concatMap(() => service.deleteUsers([user])),
-          concatMap(() => service.getVotingEvents({ all: true })),
-          map((votingEvents: any) => {
-            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
-            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
-          }),
-          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
-        )
-        .pipe(
-          concatMap(() => service.createVotingEvent(votingEventName, votingEventFlow)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName, votingEventFlow)),
           concatMap(() => service.getVotingEvents()),
           tap((votingEvents) => {
             const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
             votingEvent = vEvents[0];
           }),
-          concatMap(() => service.addUsersWithRole(votingEventUser)),
+          concatMap(() => service.addUsersForVotingEvent(votingEventUser, votingEvent._id)),
           // authinticate first time
           concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id, firstStepName)),
           tap((resp) => {
@@ -716,7 +682,59 @@ describe('BackendService', () => {
             expect(resp.pwdInserted).toBeFalsy();
           }),
           // delete the user and then try to authenticate
-          concatMap(() => service.deleteUsers([user])),
+          concatMap(() => service.deleteUsers([user]))
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('12.1 create a user, authenticate and then delete it', err);
+            throw new Error('create a user, authenticate and then delete logic does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+
+    it('12.2 authenticate with a non existing user', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+      const votingEventName = 'a voting event for a user that does not exist';
+      const initiativeName = 'BackendService Test 12.2';
+
+      let votingEvent: VotingEvent;
+      const user = 'A non existing user';
+      const pwd = 'my password';
+      const firstRole = 'architect';
+      const secondRole = 'dev';
+      const firstStepName = 'first step';
+      const secondStepName = 'second step';
+      const votingEventFlow: VotingEventFlow = {
+        steps: [
+          {
+            name: firstStepName,
+            identification: { name: 'nickname' },
+            action: { name: 'vote', parameters: { commentOnVoteBlocked: false } }
+          },
+          {
+            name: secondStepName,
+            identification: { name: 'login', groups: [firstRole] },
+            action: { name: 'conversation' }
+          }
+        ]
+      };
+      // at the moment the format is one object per role, and the name is repeated is the used has more than one role
+      // this is to mimic an csv format
+      const votingEventUser = [{ user, role: firstRole }, { user, role: secondRole }];
+
+      service
+        .authenticate(validUser.user, validUser.pwd)
+        .pipe(
+          tap((resp) => (testToken = resp)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
+          concatMap(() => service.getVotingEvents()),
+          tap((votingEvents) => {
+            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+            votingEvent = vEvents[0];
+          }),
           concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id, firstStepName)),
           catchError((err) => {
             expect(err.errorCode).toBe(ERRORS.userUnknown);
@@ -725,8 +743,8 @@ describe('BackendService', () => {
         )
         .subscribe({
           error: (err) => {
-            console.error('12.1 create a user, authenticate and then delete it', err);
-            throw new Error('create a user, authenticate and then delete logic does not work');
+            console.error('12.2 authenticate with a non existing user', err);
+            throw new Error('authenticate with a non existing user');
           },
           complete: () => done()
         });
@@ -737,6 +755,7 @@ describe('BackendService', () => {
     it('13.1 add some votes and then move to the next step in the VotingEvent flow', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = 'a voting event to be moved to the next step';
+      const initiativeName = 'BackendService Test 13';
       let votes1;
       let credentials1: VoteCredentials;
       let votes2;
@@ -753,15 +772,9 @@ describe('BackendService', () => {
         .authenticate(validUser.user, validUser.pwd)
         .pipe(
           tap((resp) => (testToken = resp)),
-          concatMap(() => service.getVotingEvents({ all: true })),
-          map((votingEvents) => {
-            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
-            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
-          }),
-          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
-        )
-        .pipe(
-          concatMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
           concatMap(() => service.getVotingEvents()),
           tap((votingEvents) => {
             const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
@@ -855,10 +868,11 @@ describe('BackendService', () => {
     it('14.1 set the recommendation author', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = '14.1 - set the recommendation author';
+      const initiativeName = 'BackendService Test 14.1';
 
       const recommendationAuthor = 'The author of the recommendation 1';
 
-      setUpTestContext(service, votingEventName)
+      setUpTestContext(service, votingEventName, initiativeName)
         .pipe(
           concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name, recommendationAuthor)),
           concatMap(() => service.getVotingEvent(votingEvent._id)),
@@ -881,10 +895,11 @@ describe('BackendService', () => {
     it('14.2 try to set another recommendation author and get an error', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = '14.2 - try to set another recommendation author and get an error';
+      const initiativeName = 'BackendService Test 14.2';
 
       let setAnotherAuthorErrorEncountered = false;
 
-      setUpTestContext(service, votingEventName)
+      setUpTestContext(service, votingEventName, initiativeName)
         .pipe(
           concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name, 'The real recommendation author')),
           concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name, 'another author')),
@@ -910,12 +925,13 @@ describe('BackendService', () => {
       const service: BackendService = TestBed.get(BackendService);
 
       const votingEventName = '14.3 - set the recommendation';
+      const initiativeName = 'BackendService Test 14.1';
 
       const recommendationAuthor = 'The author of the recommendation 3';
       const recommendationRing = 'adopt';
       const recommendationText = 'I am the detailed explanation of the recommendation';
 
-      setUpTestContext(service, votingEventName)
+      setUpTestContext(service, votingEventName, initiativeName)
         .pipe(
           concatMap(() =>
             service.setRecommendation(votingEvent._id, tech2.name, {
@@ -947,13 +963,14 @@ describe('BackendService', () => {
       const service: BackendService = TestBed.get(BackendService);
 
       const votingEventName = '14.4 - a voting event where a recommendation will be set';
+      const initiativeName = 'BackendService Test 14.4';
 
       const recommendationAuthor = 'The author of the recommendation 4';
       const recommendationRing = 'adopt';
       const recommendationText = 'I am the detailed explanation of the recommendation';
       let recommendationAuthorDifferentErrorEncountered = false;
 
-      setUpTestContext(service, votingEventName)
+      setUpTestContext(service, votingEventName, initiativeName)
         .pipe(
           concatMap(() =>
             service.setRecommendation(votingEvent._id, tech2.name, {
@@ -981,68 +998,60 @@ describe('BackendService', () => {
         });
     }, 100000);
 
-    function setUpTestContext(service: BackendService, votingEventName: string) {
+    function setUpTestContext(service: BackendService, votingEventName: string, initiativeName: string) {
       let votes1;
       let credentials1: VoteCredentials;
       let votes2;
       let credentials2: VoteCredentials;
 
-      return service
-        .authenticate(validUser.user, validUser.pwd)
-        .pipe(
-          tap((resp) => (testToken = resp)),
-          concatMap(() => service.getVotingEvents({ all: true })),
-          map((votingEvents) => {
-            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
-            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
-          }),
-          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
-        )
-        .pipe(
-          concatMap(() => service.createVotingEvent(votingEventName)),
-          concatMap(() => service.getVotingEvents()),
-          tap((votingEvents) => {
-            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
-            expect(vEvents.length).toBe(1);
-            credentials1 = {
-              voterId: { nickname: 'nick1' },
-              votingEvent: null
-            };
-            credentials2 = {
-              voterId: { nickname: 'nick2' },
-              votingEvent: null
-            };
-            votingEvent = vEvents[0];
-            credentials1.votingEvent = votingEvent;
-          }),
-          concatMap(() => service.openVotingEvent(votingEvent._id)),
-          concatMap(() => service.getVotingEvent(votingEvent._id)),
-          // the first voter, Voter1, saves 2 votes,
-          // the second voter, Voter2, saves 2 votes,
-          // tech1 gets 2 "adopt" while tech2 gets 1 "hold" and 1 "trial"
-          tap((vEvent) => {
-            tech1 = vEvent.technologies[0];
-            tech2 = vEvent.technologies[1];
-            votes1 = [
-              { ring: 'adopt', technology: tech1 },
-              {
-                ring: 'hold',
-                technology: tech2
-              }
-            ];
-            votes2 = [
-              { ring: 'adopt', technology: tech1 },
-              {
-                ring: 'trial',
-                technology: tech2
-              }
-            ];
-            credentials1.votingEvent = vEvent;
-            credentials2.votingEvent = vEvent;
-          }),
-          concatMap(() => service.saveVote(votes1, credentials1)),
-          concatMap(() => service.saveVote(votes2, credentials2))
-        );
+      return service.authenticate(validUser.user, validUser.pwd).pipe(
+        tap((resp) => (testToken = resp)),
+        concatMap(() => service.cancelInitiative(initiativeName, true)),
+        concatMap(() => service.createInitiative(initiativeName)),
+        concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
+        concatMap(() => service.getVotingEvents()),
+        tap((votingEvents) => {
+          const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
+          expect(vEvents.length).toBe(1);
+          credentials1 = {
+            voterId: { nickname: 'nick1' },
+            votingEvent: null
+          };
+          credentials2 = {
+            voterId: { nickname: 'nick2' },
+            votingEvent: null
+          };
+          votingEvent = vEvents[0];
+          credentials1.votingEvent = votingEvent;
+        }),
+        concatMap(() => service.openVotingEvent(votingEvent._id)),
+        concatMap(() => service.getVotingEvent(votingEvent._id)),
+        // the first voter, Voter1, saves 2 votes,
+        // the second voter, Voter2, saves 2 votes,
+        // tech1 gets 2 "adopt" while tech2 gets 1 "hold" and 1 "trial"
+        tap((vEvent) => {
+          tech1 = vEvent.technologies[0];
+          tech2 = vEvent.technologies[1];
+          votes1 = [
+            { ring: 'adopt', technology: tech1 },
+            {
+              ring: 'hold',
+              technology: tech2
+            }
+          ];
+          votes2 = [
+            { ring: 'adopt', technology: tech1 },
+            {
+              ring: 'trial',
+              technology: tech2
+            }
+          ];
+          credentials1.votingEvent = vEvent;
+          credentials2.votingEvent = vEvent;
+        }),
+        concatMap(() => service.saveVote(votes1, credentials1)),
+        concatMap(() => service.saveVote(votes2, credentials2))
+      );
     }
   });
 
@@ -1050,6 +1059,7 @@ describe('BackendService', () => {
     it('15.1 vote and then retrieve the votes of one specific voter', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = 'a voting event where we get the votes of a specific voter';
+      const initiativeName = 'BackendService Test 15';
       let votes1;
       let credentials1: VoteCredentials;
       let votes2;
@@ -1071,15 +1081,9 @@ describe('BackendService', () => {
         .authenticate(validUser.user, validUser.pwd)
         .pipe(
           tap((resp) => (testToken = resp)),
-          concatMap(() => service.getVotingEvents({ all: true })),
-          map((votingEvents) => {
-            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
-            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
-          }),
-          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
-        )
-        .pipe(
-          concatMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
           concatMap(() => service.getVotingEvents()),
           tap((votingEvents) => {
             const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
@@ -1152,6 +1156,7 @@ describe('BackendService', () => {
     it('16.1 vote and override the vote with a second vote', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = 'a voting event where we override a vote with a second vote';
+      const initiativeName = 'BackendService Test 16';
       let votes1;
       let credentials1: VoteCredentials;
       let votes2;
@@ -1175,15 +1180,9 @@ describe('BackendService', () => {
         .authenticate(validUser.user, validUser.pwd)
         .pipe(
           tap((resp) => (testToken = resp)),
-          concatMap(() => service.getVotingEvents({ all: true })),
-          map((votingEvents) => {
-            const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
-            return vEvents.map((ve) => service.cancelVotingEvent(ve._id, true));
-          }),
-          concatMap((cancelVERequests) => (cancelVERequests.length > 0 ? forkJoin(cancelVERequests) : of(null)))
-        )
-        .pipe(
-          concatMap(() => service.createVotingEvent(votingEventName)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
           concatMap(() => service.getVotingEvents()),
           tap((votingEvents) => {
             const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
@@ -1285,6 +1284,35 @@ describe('BackendService', () => {
           error: (err) => {
             console.error('17.1 test "17.1 read the hystory of the tw-blips for a techology"', err);
             throw new Error('"17.1 read the hystory of the tw-blips for a techology" does not work');
+          },
+          complete: () => done()
+        });
+    }, 100000);
+  });
+
+  describe('18 BackendService - Initiatitives', () => {
+    it(`18.1 create an initiative and then reads it`, (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+
+      // the name of the initiative to create
+      const initiativeName = 'An Initiative created by the Front End';
+
+      service
+        .authenticate(validUser.user, validUser.pwd)
+        .pipe(
+          tap((resp) => (testToken = resp)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.getInitiatives()),
+          tap((initiatives: Initiative[]) => {
+            const initiative = initiatives.find((i) => i.name === initiativeName);
+            expect(initiative).toBeDefined();
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('18.1 test "18.1 create an initiative and then reads it"', err);
+            throw new Error('"18.1 create an initiative and then reads it" does not work');
           },
           complete: () => done()
         });

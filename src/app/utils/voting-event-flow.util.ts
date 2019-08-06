@@ -50,6 +50,10 @@ export function getActionRoute(votingEvent: VotingEvent) {
   return route;
 }
 
+export function getFlowStepName(votingEvent: VotingEvent) {
+  return getFlowStep(votingEvent).name;
+}
+
 function getFlowStep(votingEvent: VotingEvent) {
   if (!votingEvent.flow) {
     throw new Error(`Voting Event ${votingEvent.name} does not have a flow defined`);

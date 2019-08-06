@@ -5,7 +5,7 @@ export type TechSelectLogic = 'TechWithComments' | 'TechUncertain';
 export interface VotingEventStep {
   name: string;
   description?: string;
-  identification: { name: IdentificationTypeNames; roles?: string[] };
+  identification: { name: IdentificationTypeNames; groups?: string[] };
   action: {
     name: ActionNames;
     parameters?: {

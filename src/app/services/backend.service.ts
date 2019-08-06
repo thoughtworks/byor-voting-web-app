@@ -271,9 +271,10 @@ export class BackendService {
     );
   }
 
-  createVotingEvent(name: string, flow?: VotingEventFlow) {
+  createVotingEvent(name: string, initiativeName: string, flow?: VotingEventFlow) {
     const payload = this.buildPostPayloadForService(ServiceNames.createVotingEvent);
     payload['name'] = name;
+    payload['initiativeName'] = initiativeName;
     payload['flow'] = flow;
     return this.http.post(this.url, payload).pipe(
       map((resp: RespFromBackend) => {
@@ -383,9 +384,10 @@ export class BackendService {
     );
   }
 
-  addUsersWithRole(users: { user: string; role: string }[]) {
-    const payload = this.buildPostPayloadForService(ServiceNames.addUsersWithRole);
+  addUsersForVotingEvent(users: { user: string; groups: string[] }[], votingEventId: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.addUsersForVotingEvent);
     payload['users'] = users;
+    payload['votingEventId'] = votingEventId;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
         const r = this.handleReponseDefault(resp);
@@ -579,6 +581,42 @@ export class BackendService {
     payload['techName'] = techName;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
+        return this.handleReponseDefault(resp);
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  createInitiative(name: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.createInitiative);
+    payload['name'] = name;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: RespFromBackend) => {
+        return this.handleReponseDefault(resp);
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  cancelInitiative(name: string, hard?: boolean) {
+    const payload = this.buildPostPayloadForService(ServiceNames.cancelInitiative);
+    payload['name'] = name;
+    if (hard) {
+      payload['hard'] = hard;
+    }
+    return this.http.post(this.url, payload).pipe(
+      map((resp: RespFromBackend) => {
+        return this.handleReponseDefault(resp);
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  getInitiatives() {
+    const payload = this.buildPostPayloadForService(ServiceNames.getInitiatives);
+    payload['name'] = name;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: RespFromBackend) => {
         return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)

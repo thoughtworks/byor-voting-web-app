@@ -7,7 +7,7 @@ import { AuthService } from './../auth.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { ERRORS } from 'src/app/services/errors';
 import { getToken } from '../../../../utils/get-token';
-import { getActionRoute } from 'src/app/utils/voting-event-flow.util';
+import { getActionRoute, getFlowStepName } from 'src/app/utils/voting-event-flow.util';
 import { AppSessionService } from 'src/app/app-session.service';
 
 @Component({
@@ -42,8 +42,8 @@ export class LoginVotingEventComponent implements AfterViewInit, OnDestroy {
     const _loginButtonClick$ = fromEvent(this.loginButtonRef.nativeElement, 'click');
 
     this.loginSubscription = this.logIn$(_user$, _password$, _loginButtonClick$).subscribe(
-      ({ isLoggedIn, userId }) => {
-        this.authService.isLoggedIn = isLoggedIn;
+      ({ resp, userId }) => {
+        this.authService.isLoggedIn = !!resp;
         this.appSession.setCredentials({ userId });
         const redirect = getActionRoute(this.appSession.getSelectedVotingEvent());
         this.router.navigate([redirect]);
@@ -104,9 +104,10 @@ export class LoginVotingEventComponent implements AfterViewInit, OnDestroy {
     return this.clickOnLogin$.pipe(
       switchMap((_credentials) => {
         credentials = _credentials;
+        const _votingEvent = this.appSession.getSelectedVotingEvent();
         return this.authService
-          .login(credentials.user, credentials.password)
-          .pipe(map((isLoggedIn) => ({ isLoggedIn, userId: credentials.user })));
+          .loginForVotingEvent(credentials.user, credentials.password, _votingEvent._id, getFlowStepName(_votingEvent))
+          .pipe(map((resp) => ({ resp, userId: credentials.user })));
       }),
       catchError((err, caught) => {
         if (err.errorCode === ERRORS.serverUnreacheable) {
@@ -114,7 +115,7 @@ export class LoginVotingEventComponent implements AfterViewInit, OnDestroy {
         }
         if (err.message) {
           this.message$.next(err.message);
-          return caught;
+          throw err;
         }
       })
     );
