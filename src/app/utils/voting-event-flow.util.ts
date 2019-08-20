@@ -71,12 +71,3 @@ function getNextFlowStep(votingEvent: VotingEvent) {
   const round = votingEvent.round ? votingEvent.round : 1;
   return votingEvent.flow.steps.length > round ? votingEvent.flow.steps[round] : null;
 }
-
-// starting from a skinny VotingEvent, i.e. a VotingEvent which has just an id and its VotingEventFlow,
-// reads all data of the VotingEvent inlcuding its technologies
-export function getVotingEventFull$(skinnyVotingEvent: VotingEvent, backend: BackendService) {
-  const actionParams = getAction(skinnyVotingEvent).parameters;
-  return actionParams && actionParams.displayVotesAndCommentNumbers
-    ? backend.getVotingEventWithNumberOfCommentsAndVotes(skinnyVotingEvent._id)
-    : backend.getVotingEvent(skinnyVotingEvent._id);
-}

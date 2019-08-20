@@ -22,7 +22,7 @@ import { AppSessionService } from 'src/app/app-session.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { TechnologyListService } from '../../shared/technology-list/services/technology-list.service';
 import { TechnologyListComponent } from '../../shared/technology-list/technology-list/technology-list.component';
-import { getVotingEventFull$, getAction, getIdentificationRoute } from 'src/app/utils/voting-event-flow.util';
+import { getAction, getIdentificationRoute } from 'src/app/utils/voting-event-flow.util';
 import { map, tap, concatMap } from 'rxjs/operators';
 
 @Component({
@@ -53,7 +53,7 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     const votingEvent = this.appSession.getSelectedVotingEvent();
-    this.technologyListService.technologies$ = getVotingEventFull$(votingEvent, this.backEnd).pipe(map((event) => event.technologies));
+    this.technologyListService.technologies$ = this.backEnd.getVotingEvent(votingEvent._id).pipe(map((event) => event.technologies));
     const voterId = this.appSession.getCredentials();
     this.voteTechnologySubscription = this.backEnd
       .getVotes(votingEvent._id, voterId)

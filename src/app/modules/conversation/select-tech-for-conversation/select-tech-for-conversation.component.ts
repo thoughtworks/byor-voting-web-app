@@ -7,7 +7,6 @@ import { TechnologyListService } from '../../shared/technology-list/services/tec
 import { AppSessionService } from 'src/app/app-session.service';
 import { BackendService } from 'src/app/services/backend.service';
 import { Technology } from 'src/app/models/technology';
-import { getVotingEventFull$ } from 'src/app/utils/voting-event-flow.util';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -26,9 +25,9 @@ export class SelectTechForConversationComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.technologyListService.technologies$ = getVotingEventFull$(this.appSession.getSelectedVotingEvent(), this.backEnd).pipe(
-      map((event) => event.technologies)
-    );
+    this.technologyListService.technologies$ = this.backEnd
+      .getVotingEvent(this.appSession.getSelectedVotingEvent()._id)
+      .pipe(map((event) => event.technologies));
     this.technologyListSubscription = this.technologyListService.technologySelected$.subscribe((tech) => this.goToNextPage(tech));
   }
   ngOnDestroy() {
