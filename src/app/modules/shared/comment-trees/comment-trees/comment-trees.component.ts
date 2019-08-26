@@ -204,10 +204,8 @@ export class CommentTreesComponent implements OnDestroy {
       return null;
     }
     const nestedNode = this.flatNodeMap.get(node);
-    const author = this.authService.user;
     this.backEnd
-      // .addReplyToVoteComment(node.vote._id, { text, author }, nestedNode.parentCommentId)
-      .addReplyToVoteComment(node.voteId, { text, author }, nestedNode.parentCommentId)
+      .addReplyToVoteComment(node.voteId, { text }, nestedNode.parentCommentId)
       .pipe(
         tap(() => this.triggerCommentRetrieval.next(node)),
         tap(() => (this._showAddReplyButton = true))

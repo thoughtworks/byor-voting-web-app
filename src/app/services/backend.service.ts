@@ -322,12 +322,11 @@ export class BackendService {
     return this.http.post(this.url, payload).pipe(catchError(this.handleError));
   }
 
-  addCommentToTech(_id: string, technologyId: string, comment: string, author: string) {
+  addCommentToTech(_id: string, technologyId: string, comment: string) {
     const payload = this.buildPostPayloadForService(ServiceNames.addCommentToTech);
     payload['_id'] = _id;
     payload['technologyId'] = technologyId;
     payload['comment'] = comment;
-    payload['author'] = author;
     return this.http.post(this.url, payload).pipe(catchError(this.handleError));
   }
 

@@ -484,7 +484,6 @@ describe('BackendService', () => {
       const votingEventName = 'a voting event with votes with comments and replies';
       const initiativeName = 'BackendService Test 10.2';
       const replyText = 'this is the REPLY to the comment';
-      const replyAuthor = 'I am the author of the reply';
       let votes1: Vote[];
       let credentials1: VoteCredentials;
 
@@ -523,7 +522,7 @@ describe('BackendService', () => {
           concatMap((votes: Vote[]) => {
             const theVote = votes[0];
             const theCommentId = theVote.comment.id;
-            const theReply: Comment = { text: replyText, author: replyAuthor };
+            const theReply: Comment = { text: replyText };
             return service.addReplyToVoteComment(theVote._id, theReply, theCommentId);
           }),
           concatMap(() => service.getVotesWithCommentsForTechAndEvent(tech1._id, votingEvent._id)),
@@ -533,6 +532,7 @@ describe('BackendService', () => {
             expect(theVote.comment.replies).toBeDefined();
             expect(theVote.comment.replies.length).toBe(1);
             expect(theVote.comment.replies[0].text).toBe(replyText);
+            expect(theVote.comment.replies[0].author).toBe(validUser.user);
           })
         )
         .subscribe({
@@ -560,9 +560,7 @@ describe('BackendService', () => {
         quadrant: 'tools'
       };
       const theComment = 'I am the comment';
-      const theAuthorOfTheComment = 'I am the author of the comment';
       const theReplyToTheComment = 'I am the reply to the comment';
-      const theAuthorOfTheReply = 'I am the author of the reply';
 
       service
         .authenticate(validUser.user, validUser.pwd)
@@ -581,7 +579,7 @@ describe('BackendService', () => {
           concatMap(() => service.addTechnologyToVotingEvent(votingEvent._id, newTech)),
           concatMap(() => service.getVotingEvent(votingEvent._id)),
           map((vEvent) => vEvent.technologies.find((t) => t.description === newTech.description)),
-          concatMap((tech: Technology) => service.addCommentToTech(votingEvent._id, tech._id, theComment, theAuthorOfTheComment)),
+          concatMap((tech: Technology) => service.addCommentToTech(votingEvent._id, tech._id, theComment)),
           concatMap(() => service.getVotingEvent(votingEvent._id)),
           map((vEvent: VotingEvent) => vEvent.technologies.find((t) => t.description === newTech.description)),
           tap((tech: Technology) => {
@@ -589,7 +587,7 @@ describe('BackendService', () => {
             expect(techComments).toBeDefined();
             expect(techComments.length).toBe(1);
             expect(techComments[0].text).toBe(theComment);
-            expect(techComments[0].author).toBe(theAuthorOfTheComment);
+            expect(techComments[0].author).toBe(validUser.user);
             expect(techComments[0].id).toBeDefined();
             expect(techComments[0].timestamp).toBeDefined();
             expect(techComments[0].replies).toBeUndefined();
@@ -597,8 +595,7 @@ describe('BackendService', () => {
           concatMap((tech: Technology) => {
             const commentId = tech.comments[0].id;
             const reply: Comment = {
-              text: theReplyToTheComment,
-              author: theAuthorOfTheReply
+              text: theReplyToTheComment
             };
             return service.addReplyToTechComment(votingEvent._id, tech._id, reply, commentId);
           }),
@@ -609,7 +606,7 @@ describe('BackendService', () => {
             expect(replies).toBeDefined();
             expect(replies.length).toBe(1);
             expect(replies[0].text).toBe(theReplyToTheComment);
-            expect(replies[0].author).toBe(theAuthorOfTheReply);
+            expect(replies[0].author).toBe(validUser.user);
             expect(replies[0].id).toBeDefined();
             expect(replies[0].timestamp).toBeDefined();
             expect(replies[0].replies).toBeUndefined();
