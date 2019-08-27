@@ -665,7 +665,7 @@ describe('BackendService', () => {
           }),
           concatMap(() => service.addUsersForVotingEvent(votingEventUser, votingEvent._id)),
           // authinticate first time
-          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id, firstStepName)),
+          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id)),
           tap((resp) => {
             expect(resp.token).toBeDefined();
             expect(resp.pwdInserted).toBeTruthy();
@@ -673,7 +673,7 @@ describe('BackendService', () => {
             testToken = resp.token;
           }),
           // authenticate secondtime
-          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id, firstStepName)),
+          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id)),
           tap((resp) => {
             expect(resp.token).toBeDefined();
             expect(resp.pwdInserted).toBeFalsy();
@@ -732,7 +732,7 @@ describe('BackendService', () => {
             const vEvents = votingEvents.filter((ve) => ve.name === votingEventName);
             votingEvent = vEvents[0];
           }),
-          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id, firstStepName)),
+          concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id)),
           catchError((err) => {
             expect(err.errorCode).toBe(ERRORS.userUnknown);
             return of(null);
@@ -867,17 +867,20 @@ describe('BackendService', () => {
       const votingEventName = '14.1 - set the recommendation author';
       const initiativeName = 'BackendService Test 14.1';
 
-      const recommendationAuthor = 'The author of the recommendation 1';
+      const recommendationAuthor = 'Recomm Auth 1.1';
+      const users = [{ user: recommendationAuthor, groups: [] }];
 
-      setUpTestContext(service, votingEventName, initiativeName)
+      setUpContextForTestsOnRecommendation(service, votingEventName, initiativeName)
         .pipe(
-          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name, recommendationAuthor)),
+          concatMap(() => service.addUsersForVotingEvent(users, votingEvent._id)),
+          concatMap(() => authenticateForTestsOnRecommendation(service, recommendationAuthor, 'pwdA', votingEvent._id)),
+          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech1.name)),
           concatMap(() => service.getVotingEvent(votingEvent._id)),
           tap((vEvent: VotingEvent) => {
             const techs = vEvent.technologies;
-            const t2 = techs.find((t) => t.name === tech2.name);
-            expect(t2.recommendandation).toBeDefined();
-            expect(t2.recommendandation.author).toBe(recommendationAuthor);
+            const t1 = techs.find((t) => t.name === tech1.name);
+            expect(t1.recommendation).toBeDefined();
+            expect(t1.recommendation.author).toBe(recommendationAuthor);
           })
         )
         .subscribe({
@@ -894,12 +897,19 @@ describe('BackendService', () => {
       const votingEventName = '14.2 - try to set another recommendation author and get an error';
       const initiativeName = 'BackendService Test 14.2';
 
+      const recommendationAuthor1 = 'Recomm Auth 1';
+      const recommendationAuthor2 = 'Recomm Auth 2';
+      const users = [{ user: recommendationAuthor1, groups: [] }, { user: recommendationAuthor2, groups: [] }];
+
       let setAnotherAuthorErrorEncountered = false;
 
-      setUpTestContext(service, votingEventName, initiativeName)
+      setUpContextForTestsOnRecommendation(service, votingEventName, initiativeName)
         .pipe(
-          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name, 'The real recommendation author')),
-          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name, 'another author')),
+          concatMap(() => service.addUsersForVotingEvent(users, votingEvent._id)),
+          concatMap(() => authenticateForTestsOnRecommendation(service, recommendationAuthor1, 'pwd1', votingEvent._id)),
+          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name)),
+          concatMap(() => authenticateForTestsOnRecommendation(service, recommendationAuthor2, 'pwd2', votingEvent._id)),
+          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name)),
           catchError((err) => {
             setAnotherAuthorErrorEncountered = true;
             expect(err.errorCode).toBe(ERRORS.recommendationAuthorAlreadySet);
@@ -925,11 +935,14 @@ describe('BackendService', () => {
       const initiativeName = 'BackendService Test 14.1';
 
       const recommendationAuthor = 'The author of the recommendation 3';
+      const users = [{ user: recommendationAuthor, groups: [] }];
       const recommendationRing = 'adopt';
       const recommendationText = 'I am the detailed explanation of the recommendation';
 
-      setUpTestContext(service, votingEventName, initiativeName)
+      setUpContextForTestsOnRecommendation(service, votingEventName, initiativeName)
         .pipe(
+          concatMap(() => service.addUsersForVotingEvent(users, votingEvent._id)),
+          concatMap(() => authenticateForTestsOnRecommendation(service, recommendationAuthor, 'pwd3', votingEvent._id)),
           concatMap(() =>
             service.setRecommendation(votingEvent._id, tech2.name, {
               author: recommendationAuthor,
@@ -941,10 +954,10 @@ describe('BackendService', () => {
           tap((vEvent: VotingEvent) => {
             const techs = vEvent.technologies;
             const t2 = techs.find((t) => t.name === tech2.name);
-            expect(t2.recommendandation).toBeDefined();
-            expect(t2.recommendandation.author).toBe(recommendationAuthor);
-            expect(t2.recommendandation.ring).toBe(recommendationRing);
-            expect(t2.recommendandation.text).toBe(recommendationText);
+            expect(t2.recommendation).toBeDefined();
+            expect(t2.recommendation.author).toBe(recommendationAuthor);
+            expect(t2.recommendation.ring).toBe(recommendationRing);
+            expect(t2.recommendation.text).toBe(recommendationText);
           })
         )
         .subscribe({
@@ -963,12 +976,16 @@ describe('BackendService', () => {
       const initiativeName = 'BackendService Test 14.4';
 
       const recommendationAuthor = 'The author of the recommendation 4';
+      const recommendationAuthorWannaBe = 'author-wanna-be';
+      const users = [{ user: recommendationAuthor, groups: [] }, { user: recommendationAuthorWannaBe, groups: [] }];
       const recommendationRing = 'adopt';
       const recommendationText = 'I am the detailed explanation of the recommendation';
       let recommendationAuthorDifferentErrorEncountered = false;
 
-      setUpTestContext(service, votingEventName, initiativeName)
+      setUpContextForTestsOnRecommendation(service, votingEventName, initiativeName)
         .pipe(
+          concatMap(() => service.addUsersForVotingEvent(users, votingEvent._id)),
+          concatMap(() => authenticateForTestsOnRecommendation(service, recommendationAuthor, 'pwd4', votingEvent._id)),
           concatMap(() =>
             service.setRecommendation(votingEvent._id, tech2.name, {
               author: recommendationAuthor,
@@ -976,7 +993,8 @@ describe('BackendService', () => {
               text: recommendationText
             })
           ),
-          concatMap(() => service.resetRecommendation(votingEvent._id, tech2.name, 'author-wanna-be')),
+          concatMap(() => authenticateForTestsOnRecommendation(service, recommendationAuthorWannaBe, 'pwd', votingEvent._id)),
+          concatMap(() => service.resetRecommendation(votingEvent._id, tech2.name)),
           catchError((err) => {
             recommendationAuthorDifferentErrorEncountered = true;
             expect(err.errorCode).toBe(ERRORS.recommendationAuthorDifferent);
@@ -995,7 +1013,7 @@ describe('BackendService', () => {
         });
     }, 100000);
 
-    function setUpTestContext(service: BackendService, votingEventName: string, initiativeName: string) {
+    function setUpContextForTestsOnRecommendation(service: BackendService, votingEventName: string, initiativeName: string) {
       let votes1;
       let credentials1: VoteCredentials;
       let votes2;
@@ -1049,6 +1067,10 @@ describe('BackendService', () => {
         concatMap(() => service.saveVote(votes1, credentials1)),
         concatMap(() => service.saveVote(votes2, credentials2))
       );
+    }
+
+    function authenticateForTestsOnRecommendation(service: BackendService, user: string, pwd: string, votingEventId: string) {
+      return service.authenticateForVotingEvent(user, pwd, votingEventId).pipe(tap((resp) => (testToken = resp.token)));
     }
   });
 

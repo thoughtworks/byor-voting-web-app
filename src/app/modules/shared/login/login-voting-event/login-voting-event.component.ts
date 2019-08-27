@@ -6,8 +6,7 @@ import { Router } from '@angular/router';
 import { AuthService } from './../auth.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { ERRORS } from 'src/app/services/errors';
-import { getToken } from '../../../../utils/get-token';
-import { getActionRoute, getFlowStepName } from 'src/app/utils/voting-event-flow.util';
+import { getActionRoute } from 'src/app/utils/voting-event-flow.util';
 import { AppSessionService } from 'src/app/app-session.service';
 
 @Component({
@@ -106,7 +105,7 @@ export class LoginVotingEventComponent implements AfterViewInit, OnDestroy {
         credentials = _credentials;
         const _votingEvent = this.appSession.getSelectedVotingEvent();
         return this.authService
-          .loginForVotingEvent(credentials.user, credentials.password, _votingEvent._id, getFlowStepName(_votingEvent))
+          .loginForVotingEvent(credentials.user, credentials.password, _votingEvent._id)
           .pipe(map((resp) => ({ resp, userId: credentials.user })));
       }),
       catchError((err, caught) => {

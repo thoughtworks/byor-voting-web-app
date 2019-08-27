@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./recommendation-card.component.scss']
 })
 export class RecommendationCardComponent implements OnInit {
-  @ViewChild('commentText') commentElRef: ElementRef;
+  @ViewChild('recommendationText') recommendationElRef: ElementRef;
 
   showConfirmButton$ = new ReplaySubject<boolean>(1);
   recommendationText: string;
@@ -23,7 +23,7 @@ export class RecommendationCardComponent implements OnInit {
 
   ngOnInit() {
     const selectedTech = this.appSession.getSelectedTechnology();
-    if (selectedTech.recommendandation && selectedTech.recommendandation.text) {
+    if (selectedTech.recommendation && selectedTech.recommendation.text) {
       // this.recommendationText = selectedTech.recommendandation.text;
       return;
     }
@@ -57,10 +57,10 @@ export class RecommendationCardComponent implements OnInit {
     this.placeholderText = text;
   }
 
-  getCommentTextFromView() {
-    return this.commentElRef.nativeElement.value;
+  getRecommendationTextFromView() {
+    return this.recommendationElRef.nativeElement.value;
   }
-  getCommentTextSelectedTech$() {
-    return this.appSession.selectedTechnology$.pipe(map((tech) => tech.recommendandation.text));
+  getRecommendationTextSelectedTech$() {
+    return this.appSession.selectedTechnology$.pipe(map((tech) => tech.recommendation.text));
   }
 }

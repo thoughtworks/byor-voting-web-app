@@ -31,7 +31,7 @@ export interface Technology {
   numberOfVotes?: number;
   numberOfComments?: number;
   votingResult?: VotingResults;
-  recommendandation?: Recommendation;
+  recommendation?: Recommendation;
 }
 
 export function mostVotedRings(tech: Technology) {

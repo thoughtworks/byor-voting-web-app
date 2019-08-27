@@ -1,7 +1,6 @@
 import { VotingEvent } from '../models/voting-event';
-import { BackendService } from '../services/backend.service';
 
-export function getIdentificationType(votingEvent: VotingEvent) {
+function getIdentificationType(votingEvent: VotingEvent) {
   return getFlowStep(votingEvent).identification.name;
 }
 
@@ -18,8 +17,8 @@ export function getIdentificationRoute(votingEvent: VotingEvent) {
   return route;
 }
 
-export function getAction(votingEvent: VotingEvent) {
-  return getFlowStep(votingEvent).action;
+export function getActionParameters(votingEvent: VotingEvent) {
+  return getFlowStep(votingEvent).action.parameters;
 }
 
 export function getActionName(votingEvent: VotingEvent) {
@@ -48,10 +47,6 @@ export function getActionRoute(votingEvent: VotingEvent) {
     throw new Error(`No route defined for action name "${actionName}"`);
   }
   return route;
-}
-
-export function getFlowStepName(votingEvent: VotingEvent) {
-  return getFlowStep(votingEvent).name;
 }
 
 function getFlowStep(votingEvent: VotingEvent) {

@@ -30,8 +30,7 @@ export class RecommendationComponent {
   signUp() {
     const eventId = this.appSession.getSelectedVotingEvent()._id;
     const techName = this.appSession.getSelectedTechnology().name;
-    const userId = this.appSession.getCredentials().userId || this.appSession.getCredentials().nickname;
-    this.backEnd.setRecommendationAuthor(eventId, techName, userId).subscribe(
+    this.backEnd.setRecommendationAuthor(eventId, techName).subscribe(
       () => this.showSignUpButton$.next(false),
       (err) => {
         if (err.errorCode === ERRORS.recommendationAuthorAlreadySet) {
@@ -48,9 +47,9 @@ export class RecommendationComponent {
     const eventId = this.appSession.getSelectedVotingEvent()._id;
     const techName = this.appSession.getSelectedTechnology().name;
     const userId = this.appSession.getCredentials().userId || this.appSession.getCredentials().nickname;
-    this.backEnd.resetRecommendation(eventId, techName, userId).subscribe(
+    this.backEnd.resetRecommendation(eventId, techName).subscribe(
       () => {
-        this.appSession.getSelectedTechnology().recommendandation = null;
+        this.appSession.getSelectedTechnology().recommendation = null;
         this.showSignUpButton$.next(true);
       },
       (err) => {
@@ -61,13 +60,13 @@ export class RecommendationComponent {
   }
 
   recommendationButtonText() {
-    const recommendation = this.appSession.getSelectedTechnology().recommendandation;
-    return recommendation && recommendation.text ? 'Review recommendation' : 'Sign up for Reconmendation';
+    const recommendation = this.appSession.getSelectedTechnology().recommendation;
+    return recommendation && recommendation.text ? 'Review recommendation' : 'Sign up for Recommendation';
   }
 
   saveRecommendation() {
     const selectedTech = this.appSession.getSelectedTechnology();
-    const recommendationText = this.recommendationCard.getCommentTextFromView();
+    const recommendationText = this.recommendationCard.getRecommendationTextFromView();
     // maxVotes contains the rings which have collected the highest number of votes
     // it is an array to contemplated the possibility that 2 or more rings can receive the same numberof votes
     const maxVotes = mostVotedRings(selectedTech);
@@ -86,7 +85,7 @@ export class RecommendationComponent {
 
     this.backEnd.setRecommendation(eventId, techName, recommendation).subscribe(
       () => {
-        this.appSession.getSelectedTechnology().recommendandation.text = recommendationText;
+        this.appSession.getSelectedTechnology().recommendation.text = recommendationText;
         this.message$.next(`Recommendation saved`);
       },
       (err) => {

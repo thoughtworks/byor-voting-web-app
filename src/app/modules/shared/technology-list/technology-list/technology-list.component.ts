@@ -8,14 +8,11 @@ import { BackendService } from '../../../../services/backend.service';
 import { ErrorService } from '../../../../services/error.service';
 import { Technology } from '../../../../models/technology';
 import { QUADRANT_NAMES } from '../../../../models/quadrant';
-import { VoteService } from '../../../vote/services/vote.service';
 import * as _ from 'lodash';
 import { TwRings } from 'src/app/models/ring';
 import { logError } from 'src/app/utils/utils';
 import { AppSessionService } from 'src/app/app-session.service';
-import { getActionName, getAction } from 'src/app/utils/voting-event-flow.util';
 import { TechnologyListService } from '../services/technology-list.service';
-import { VotingEvent } from 'src/app/models/voting-event';
 
 @Component({
   selector: 'byor-technology-list',

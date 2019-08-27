@@ -22,7 +22,7 @@ import { AppSessionService } from 'src/app/app-session.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
 import { TechnologyListService } from '../../shared/technology-list/services/technology-list.service';
 import { TechnologyListComponent } from '../../shared/technology-list/technology-list/technology-list.component';
-import { getAction, getIdentificationRoute } from 'src/app/utils/voting-event-flow.util';
+import { getActionParameters, getIdentificationRoute } from 'src/app/utils/voting-event-flow.util';
 import { map, tap, concatMap } from 'rxjs/operators';
 
 @Component({
@@ -138,7 +138,7 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
       voteCredentials = this.voteService.credentials;
       voterIdentification = voteCredentials.voterId.firstName + ' ' + voteCredentials.voterId.lastName;
     }
-    const allowVoteOverride = !getAction(votingEvent).parameters.voteOnlyOnce;
+    const allowVoteOverride = !getActionParameters(votingEvent).voteOnlyOnce;
     combineLatest(
       this.backEnd.saveVote(this.votes, voteCredentials, allowVoteOverride),
       this.configurationService.defaultConfiguration()

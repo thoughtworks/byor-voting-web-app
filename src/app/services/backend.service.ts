@@ -363,17 +363,11 @@ export class BackendService {
     );
   }
 
-  authenticateForVotingEvent(
-    user: string,
-    pwd: string,
-    votingEventId: string,
-    flowStepName: string
-  ): Observable<{ token: string; pwdInserted: boolean }> {
+  authenticateForVotingEvent(user: string, pwd: string, votingEventId: string): Observable<{ token: string; pwdInserted: boolean }> {
     const payload = this.buildPostPayloadForService(ServiceNames.authenticateForVotingEvent);
     payload['user'] = user;
     payload['pwd'] = pwd;
     payload['votingEventId'] = votingEventId;
-    payload['flowStepName'] = flowStepName;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
         const r = this.handleReponseDefault(resp);
@@ -536,11 +530,10 @@ export class BackendService {
     );
   }
 
-  setRecommendationAuthor(votingEventId: string, technologyName: string, author: string) {
+  setRecommendationAuthor(votingEventId: string, technologyName: string) {
     const payload = this.buildPostPayloadForService(ServiceNames.setRecommendationAuthor);
     payload['votingEventId'] = votingEventId;
     payload['technologyName'] = technologyName;
-    payload['author'] = author;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
         return this.handleReponseDefault(resp);
@@ -562,11 +555,10 @@ export class BackendService {
     );
   }
 
-  resetRecommendation(votingEventId: string, technologyName: string, requester: string) {
+  resetRecommendation(votingEventId: string, technologyName: string) {
     const payload = this.buildPostPayloadForService(ServiceNames.resetRecommendation);
     payload['votingEventId'] = votingEventId;
     payload['technologyName'] = technologyName;
-    payload['requester'] = requester;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
         return this.handleReponseDefault(resp);

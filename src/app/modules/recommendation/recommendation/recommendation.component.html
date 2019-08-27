@@ -4,7 +4,7 @@
 <div>
     <button mat-icon-button *ngIf="showSignUpButton$ | async" (click)="signUp()">{{recommendationButtonText()}}</button>
     <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="saveRecommendation()">Save</button>
-    <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="quit()">Quit Reconmendation</button>
+    <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="quit()">Quit Recommendation</button>
 </div>
 
 <div *ngIf="message$ | async as message" class="message" [innerHTML]="message"></div>
@@ -22,7 +22,7 @@
             <div>
                 <button mat-icon-button *ngIf="showSignUpButton$ | async" (click)="signUp()">{{recommendationButtonText()}}</button>
                 <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="saveRecommendation()">Save</button>
-                <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="quit()">Quit Reconmendation</button>
+                <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="quit()">Quit Recommendation</button>
             </div>
             
             <div *ngIf="message$ | async as message" class="message" [innerHTML]="message"></div>
