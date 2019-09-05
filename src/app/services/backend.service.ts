@@ -271,7 +271,7 @@ export class BackendService {
     );
   }
 
-  createVotingEvent(name: string, initiativeName: string, flow?: VotingEventFlow) {
+  createVotingEvent(name: string, initiativeName?: string, flow?: VotingEventFlow) {
     const payload = this.buildPostPayloadForService(ServiceNames.createVotingEvent);
     payload['name'] = name;
     payload['initiativeName'] = initiativeName;
@@ -530,7 +530,7 @@ export class BackendService {
     );
   }
 
-  setRecommendationAuthor(votingEventId: string, technologyName: string) {
+  signUpForRecommendation(votingEventId: string, technologyName: string) {
     const payload = this.buildPostPayloadForService(ServiceNames.setRecommendationAuthor);
     payload['votingEventId'] = votingEventId;
     payload['technologyName'] = technologyName;

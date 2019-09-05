@@ -1,6 +1,7 @@
 import { Technology } from './technology';
 import { Blip } from './blip';
 import { VotingEventFlow } from './voting-event-flow';
+import { Roles } from './roles';
 
 // @todo look for a better way to merge the need of specifying a union type and the need of
 // providing access to the possible values of the domain via easy to read property names
@@ -19,4 +20,5 @@ export interface VotingEvent {
   openForRevote?: boolean;
   hasTechnologiesForRevote?: boolean;
   flow?: VotingEventFlow;
+  roles?: Roles;
 }

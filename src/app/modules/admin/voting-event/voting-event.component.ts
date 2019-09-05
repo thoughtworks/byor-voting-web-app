@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Observable, never, NEVER } from 'rxjs';
-import { shareReplay, tap, map, switchMap, catchError } from 'rxjs/operators';
+import { shareReplay, tap, map, switchMap, catchError, filter, concatMap } from 'rxjs/operators';
 
 import { BackendService } from '../../../services/backend.service';
 import { VotingEvent } from '../../../models/voting-event';
@@ -13,6 +13,8 @@ import { AuthService } from '../../shared/login/auth.service';
 import { EventsService } from '../../../services/events.service';
 import { VoteCloudService } from '../vote-cloud/vote-cloud.service';
 import { getNextActionName, getActionName, getNextAction } from 'src/app/utils/voting-event-flow.util';
+import { AppSessionService } from 'src/app/app-session.service';
+import { Initiative } from 'src/app/models/initiative';
 
 @Component({
   selector: 'byor-voting-event',
@@ -38,21 +40,54 @@ export class VotingEventComponent implements OnInit {
     private errorService: ErrorService,
     private configurationService: ConfigurationService,
     private authenticationService: AuthService,
-    private voteCloudService: VoteCloudService
+    private voteCloudService: VoteCloudService,
+    private appSession: AppSessionService
   ) {}
 
   ngOnInit() {
+    const userLogged = this.appSession.getCredentials().userId;
+    this.backend
+      .getInitiatives()
+      .pipe(
+        map((initiatives: Initiative[]) => {
+          return initiatives.filter((initiative) => initiative.roles.administrators.includes(userLogged));
+        }),
+        tap((initiatives) => {
+          if (initiatives) {
+            if (initiatives.length === 0) {
+              this.messageCreate = `${userLogged} is not Admnistrator of any initiative and so can not create any Event`;
+            } else if (initiatives.length === 1) {
+              this.appSession.setSelectedInitiative(initiatives[0]);
+            } else {
+              this.errorService.setError(
+                new Error(`${userLogged} is is administrator of more than one Initiative ${initiatives}.
+              This is not yet supported in the front end`)
+              );
+              this.router.navigate(['error']);
+            }
+          }
+        })
+      )
+      .subscribe();
+
     this.refreshVotingEvents();
 
     this.configuration$ = this.configurationService.configurationForUser(this.authenticationService.user).pipe(shareReplay(1));
   }
 
   refreshVotingEvents() {
+    const userLogged = this.appSession.getCredentials().userId;
     this.votingEvents$ = this.backend.getVotingEvents().pipe(
       catchError((err) => {
         this.errorService.setError(err);
         this.router.navigate(['/error']);
         return NEVER;
+      }),
+      map((events) => events.filter((ve) => ve.roles.administrators.includes(userLogged))),
+      tap((events) => {
+        if (events.length === 0) {
+          this.messageAction = `${userLogged} is not Admnistrator of any Voting Event and so can not do anything`;
+        }
       }),
       map((events) => events.sort((a, b) => (a.name > b.name ? 1 : -1))),
       tap((events) => (this.votingEvents = events)),
@@ -68,7 +103,7 @@ export class VotingEventComponent implements OnInit {
   onSubmit() {
     this.cleanMessages();
     const inputValue = this.eventCreationForm.controls.eventNameControl.value;
-    this.backend.createVotingEvent(inputValue, 'add the initiative from session').subscribe(
+    this.backend.createVotingEvent(inputValue, this.appSession.getSelectedInitiative().name).subscribe(
       (resp) => {
         if (resp.error) {
           if (resp.error.errorCode === ERRORS.votingEventAlreadyPresent) {

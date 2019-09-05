@@ -14,10 +14,10 @@ fileignoreconfig:
   checksum: 96f4f7aa4bd17b66037dcd3c066dfa5d1e11fa2d44ea6ba3f9d7ad02ec41bff8
   ignore_detectors: []
 - filename: src/app/modules/shared/login/login.component.ts
-  checksum: a433e598d534cff647c856bf63b0aee54a190fe1d25ba9458f7d48973038e4fe
+  checksum: 868c2cadf29dd7129aa53f48235d62c396cd4fce45a678aa4444346e9874322e
   ignore_detectors: []
 - filename: src/app/services/backend.service.spec.ts
-  checksum: 949ae9d0e307ea4183d1e312150bdda4f2e538b96220f659545b1a2457ebb01d
+  checksum: 5066cbd902266efa7cf6e45cf676924899d57198958fde663eea350c27303b8c
   ignore_detectors: []
 - filename: docs/images/vote_process.gif
   checksum: c3a82314b7db3029e5dd9b4226bde884f472561112b4287b5193eeeab1a7cf75

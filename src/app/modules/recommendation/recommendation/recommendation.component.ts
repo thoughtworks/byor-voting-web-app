@@ -30,7 +30,7 @@ export class RecommendationComponent {
   signUp() {
     const eventId = this.appSession.getSelectedVotingEvent()._id;
     const techName = this.appSession.getSelectedTechnology().name;
-    this.backEnd.setRecommendationAuthor(eventId, techName).subscribe(
+    this.backEnd.signUpForRecommendation(eventId, techName).subscribe(
       () => this.showSignUpButton$.next(false),
       (err) => {
         if (err.errorCode === ERRORS.recommendationAuthorAlreadySet) {
@@ -62,37 +62,5 @@ export class RecommendationComponent {
   recommendationButtonText() {
     const recommendation = this.appSession.getSelectedTechnology().recommendation;
     return recommendation && recommendation.text ? 'Review recommendation' : 'Sign up for Recommendation';
-  }
-
-  saveRecommendation() {
-    const selectedTech = this.appSession.getSelectedTechnology();
-    const recommendationText = this.recommendationCard.getRecommendationTextFromView();
-    // maxVotes contains the rings which have collected the highest number of votes
-    // it is an array to contemplated the possibility that 2 or more rings can receive the same numberof votes
-    const maxVotes = mostVotedRings(selectedTech);
-
-    if (!recommendationText) {
-      throw Error(`It is mandatory to add a comment to the recommendation`);
-    }
-    const author = this.appSession.getCredentials().userId || this.appSession.getCredentials().userId;
-    const eventId = this.appSession.getSelectedVotingEvent()._id;
-    const techName = this.appSession.getSelectedTechnology().name;
-    const recommendation: Recommendation = {
-      author,
-      ring: maxVotes[0].ring,
-      text: recommendationText
-    };
-
-    this.backEnd.setRecommendation(eventId, techName, recommendation).subscribe(
-      () => {
-        this.appSession.getSelectedTechnology().recommendation.text = recommendationText;
-        this.message$.next(`Recommendation saved`);
-      },
-      (err) => {
-        this.errorService.setError(err);
-        console.error(err);
-        this.router.navigate(['error']);
-      }
-    );
   }
 }

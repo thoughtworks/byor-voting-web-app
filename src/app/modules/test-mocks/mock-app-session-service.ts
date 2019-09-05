@@ -12,7 +12,7 @@ export const TEST_TECHNOLOGY = {
   description: 'Description of <strong>Babel</strong>',
   numberOfVotes: 1,
   numberOfComments: 2,
-  votingResult: { votesForRing: [{ count: 1, ring: 'adopt' }], votesForTag: [{ tag: 'Production', count: 1 }] }
+  votingResult: { votesForRing: [{ count: 1, ring: 'Adopt' }], votesForTag: [{ tag: 'Production', count: 1 }] }
 };
 
 export class MockAppSessionService {

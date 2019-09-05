@@ -38,8 +38,8 @@
         <button mat-flat-button *ngIf="canBeClosedForRevote()" color="accent" (click)="closeForRevote()">Close
           Revote</button>
       </span>
-      <div *ngIf="messageAction" class="selected-event-message" [innerHTML]="messageAction"></div>
     </div>
+    <div *ngIf="messageAction" class="selected-event-message" [innerHTML]="messageAction"></div>
   </div>
 
   <mat-divider></mat-divider>

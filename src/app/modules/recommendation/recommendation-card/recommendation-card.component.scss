@@ -1,0 +1,31 @@
+@import "../../../styles/theme/colors";
+
+.selected-ring-button {
+  margin: 1rem;
+  color: white;
+  background-color: darkmagenta;
+  padding: 10px;
+}
+
+.ring-button {
+    margin: 1rem;
+    color: white;
+    background-color: grey;
+    padding: 5px;
+}
+
+.recommnedation-text {
+  margin: 20px;
+  width: 90%;
+}
+
+.message {
+  color: green;
+}
+.error-message {
+  color: red;
+}
+
+.save-button {
+  margin-left: 100px;
+}

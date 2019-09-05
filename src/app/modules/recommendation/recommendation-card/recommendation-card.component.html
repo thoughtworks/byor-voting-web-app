@@ -1,10 +1,16 @@
 <mat-card class="recommnedation-card">
   <mat-form-field class="recommnedation-text">
-    <textarea matInput #recommendationText placeholder="{{placeholderText}}" value="{{getRecommendationTextSelectedTech$() | async}}"></textarea>
+    <textarea matInput #recommendationText placeholder="{{placeholderText}}" 
+    value="{{getRecommendationTextSelectedTech$() | async}}"></textarea>
   </mat-form-field>
-  <!-- <mat-card-actions>
-    <button mat-icon-button *ngIf="showConfirmButton$ | async" (click)="confirmRing()">Save</button>
-  </mat-card-actions> -->
+  <mat-card-actions>
+    <button *ngFor="let ring of rings" class="ring-button" [attr.class]="ringButtonClass$(ring) | async" 
+    mat-flat-button (click)="setRing(ring)"
+    tabindex="-1">{{ring  | uppercase }}</button>
+    <button mat-icon-button class="save-button" (click)="save()">save</button>
+  </mat-card-actions>
 </mat-card>
 
-<!-- <div *ngIf="message$ | async as message" class="message" [innerHTML]="message"></div> -->
+<div *ngIf="message$ | async as message" class="message" [innerHTML]="message"></div>
+
+<div *ngIf="errorMessage$ | async as message" class="error-message" [innerHTML]="message"></div>

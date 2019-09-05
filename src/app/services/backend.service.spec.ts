@@ -68,9 +68,9 @@ describe('BackendService', () => {
       const initiativeName = 'BackendService Test 2.1';
       const commentOnVote = 'it is crap';
       const votes1 = [
-        { ring: 'adopt', technology: null },
+        { ring: 'Adopt', technology: null },
         {
-          ring: 'hold',
+          ring: 'Hold',
           technology: null,
           comment: { text: commentOnVote }
         }
@@ -79,12 +79,12 @@ describe('BackendService', () => {
         voterId: { firstName: 'fv1', lastName: 'lv1' },
         votingEvent: null
       };
-      const votes2 = [{ ring: 'adopt', technology: null }, { ring: 'trial', technology: null }];
+      const votes2 = [{ ring: 'Adopt', technology: null }, { ring: 'Trial', technology: null }];
       const credentials2: VoteCredentials = {
         voterId: { firstName: 'fv2', lastName: 'lv2' },
         votingEvent: null
       };
-      const votes3 = [{ ring: 'trial', technology: null }];
+      const votes3 = [{ ring: 'Trial', technology: null }];
 
       let votingEvent;
       service
@@ -434,17 +434,17 @@ describe('BackendService', () => {
             tech1 = vEvent.technologies[0];
             tech2 = vEvent.technologies[1];
             votes1 = [
-              { ring: 'adopt', technology: tech1 },
+              { ring: 'Adopt', technology: tech1 },
               {
-                ring: 'hold',
+                ring: 'Hold',
                 technology: tech2,
                 comment: { text: commentOnVote1 }
               }
             ];
             votes2 = [
-              { ring: 'adopt', technology: tech1 },
+              { ring: 'Adopt', technology: tech1 },
               {
-                ring: 'trial',
+                ring: 'Trial',
                 technology: tech2,
                 comment: { text: commentOnVote2 }
               }
@@ -514,7 +514,7 @@ describe('BackendService', () => {
           // the first voter, Commenter1, saves 1 vote with a comment
           tap((vEvent) => {
             tech1 = vEvent.technologies[0];
-            votes1 = [{ ring: 'hold', technology: tech1, comment: { text: 'comment on the vote' } }];
+            votes1 = [{ ring: 'Hold', technology: tech1, comment: { text: 'comment on the vote' } }];
             credentials1.votingEvent = vEvent;
           }),
           concatMap(() => service.saveVote(votes1, credentials1)),
@@ -797,16 +797,16 @@ describe('BackendService', () => {
             tech1 = vEvent.technologies[0];
             tech2 = vEvent.technologies[1];
             votes1 = [
-              { ring: 'adopt', technology: tech1, tags: [productionTag, trainingTag] },
+              { ring: 'Adopt', technology: tech1, tags: [productionTag, trainingTag] },
               {
-                ring: 'hold',
+                ring: 'Hold',
                 technology: tech2
               }
             ];
             votes2 = [
-              { ring: 'adopt', technology: tech1, tags: [productionTag] },
+              { ring: 'Adopt', technology: tech1, tags: [productionTag] },
               {
-                ring: 'trial',
+                ring: 'Trial',
                 technology: tech2,
                 tags: [trainingTag]
               }
@@ -826,7 +826,7 @@ describe('BackendService', () => {
             expect(t1.votingResult.votesForRing).toBeDefined();
             expect(t1.votingResult.votesForRing.length).toBe(1);
             expect(t1.votingResult.votesForRing[0].count).toBe(2);
-            expect(t1.votingResult.votesForRing[0].ring).toBe('adopt');
+            expect(t1.votingResult.votesForRing[0].ring).toBe('Adopt');
             expect(t1.votingResult.votesForTag).toBeDefined();
             expect(t1.votingResult.votesForTag.length).toBe(2);
             const prodTagRes1 = t1.votingResult.votesForTag.find((t) => t.tag === productionTag);
@@ -837,8 +837,8 @@ describe('BackendService', () => {
             expect(t2.votingResult).toBeDefined();
             expect(t2.votingResult.votesForRing).toBeDefined();
             expect(t2.votingResult.votesForRing.length).toBe(2);
-            const holdRingRes2 = t2.votingResult.votesForRing.find((v) => v.ring === 'hold');
-            const trialRingRes2 = t2.votingResult.votesForRing.find((v) => v.ring === 'trial');
+            const holdRingRes2 = t2.votingResult.votesForRing.find((v) => v.ring === 'Hold');
+            const trialRingRes2 = t2.votingResult.votesForRing.find((v) => v.ring === 'Trial');
             expect(holdRingRes2.count).toBe(1);
             expect(trialRingRes2.count).toBe(1);
             expect(t2.votingResult.votesForTag).toBeDefined();
@@ -874,7 +874,7 @@ describe('BackendService', () => {
         .pipe(
           concatMap(() => service.addUsersForVotingEvent(users, votingEvent._id)),
           concatMap(() => authenticateForTestsOnRecommendation(service, recommendationAuthor, 'pwdA', votingEvent._id)),
-          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech1.name)),
+          concatMap(() => service.signUpForRecommendation(votingEvent._id, tech1.name)),
           concatMap(() => service.getVotingEvent(votingEvent._id)),
           tap((vEvent: VotingEvent) => {
             const techs = vEvent.technologies;
@@ -907,9 +907,9 @@ describe('BackendService', () => {
         .pipe(
           concatMap(() => service.addUsersForVotingEvent(users, votingEvent._id)),
           concatMap(() => authenticateForTestsOnRecommendation(service, recommendationAuthor1, 'pwd1', votingEvent._id)),
-          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name)),
+          concatMap(() => service.signUpForRecommendation(votingEvent._id, tech2.name)),
           concatMap(() => authenticateForTestsOnRecommendation(service, recommendationAuthor2, 'pwd2', votingEvent._id)),
-          concatMap(() => service.setRecommendationAuthor(votingEvent._id, tech2.name)),
+          concatMap(() => service.signUpForRecommendation(votingEvent._id, tech2.name)),
           catchError((err) => {
             setAnotherAuthorErrorEncountered = true;
             expect(err.errorCode).toBe(ERRORS.recommendationAuthorAlreadySet);
@@ -936,7 +936,7 @@ describe('BackendService', () => {
 
       const recommendationAuthor = 'The author of the recommendation 3';
       const users = [{ user: recommendationAuthor, groups: [] }];
-      const recommendationRing = 'adopt';
+      const recommendationRing = 'Adopt';
       const recommendationText = 'I am the detailed explanation of the recommendation';
 
       setUpContextForTestsOnRecommendation(service, votingEventName, initiativeName)
@@ -978,7 +978,7 @@ describe('BackendService', () => {
       const recommendationAuthor = 'The author of the recommendation 4';
       const recommendationAuthorWannaBe = 'author-wanna-be';
       const users = [{ user: recommendationAuthor, groups: [] }, { user: recommendationAuthorWannaBe, groups: [] }];
-      const recommendationRing = 'adopt';
+      const recommendationRing = 'Adopt';
       const recommendationText = 'I am the detailed explanation of the recommendation';
       let recommendationAuthorDifferentErrorEncountered = false;
 
@@ -1048,16 +1048,16 @@ describe('BackendService', () => {
           tech1 = vEvent.technologies[0];
           tech2 = vEvent.technologies[1];
           votes1 = [
-            { ring: 'adopt', technology: tech1 },
+            { ring: 'Adopt', technology: tech1 },
             {
-              ring: 'hold',
+              ring: 'Hold',
               technology: tech2
             }
           ];
           votes2 = [
-            { ring: 'adopt', technology: tech1 },
+            { ring: 'Adopt', technology: tech1 },
             {
-              ring: 'trial',
+              ring: 'Trial',
               technology: tech2
             }
           ];
@@ -1091,8 +1091,8 @@ describe('BackendService', () => {
 
       let tech1: Technology;
       let tech2: Technology;
-      const ring1 = 'adopt';
-      const ring2 = 'hold';
+      const ring1 = 'Adopt';
+      const ring2 = 'Hold';
       const productionTag = 'Production';
       const trainingTag = 'Training';
 
@@ -1135,9 +1135,9 @@ describe('BackendService', () => {
               }
             ];
             votes2 = [
-              { ring: 'assess', technology: tech1, tags: [productionTag] },
+              { ring: 'Assess', technology: tech1, tags: [productionTag] },
               {
-                ring: 'trial',
+                ring: 'Trial',
                 technology: tech2,
                 tags: [trainingTag]
               }
@@ -1188,10 +1188,10 @@ describe('BackendService', () => {
 
       let tech1: Technology;
       let tech2: Technology;
-      const ring1 = 'adopt';
-      const ring2 = 'hold';
-      const ringOfVoter2 = 'assess';
-      const ringForSecondVote = 'trial';
+      const ring1 = 'Adopt';
+      const ring2 = 'Hold';
+      const ringOfVoter2 = 'Assess';
+      const ringForSecondVote = 'Trial';
       const productionTag = 'Production';
       const trainingTag = 'Training';
 

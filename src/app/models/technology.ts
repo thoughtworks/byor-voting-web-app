@@ -12,7 +12,7 @@ export interface VotingResults {
   }[];
 }
 export interface Recommendation {
-  author: string;
+  author?: string;
   ring?: string;
   text?: string;
   timestamp?: string;

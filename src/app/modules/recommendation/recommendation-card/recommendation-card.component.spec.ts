@@ -7,6 +7,8 @@ import { RecommendationCardComponent } from './recommendation-card.component';
 import { AppSessionService } from 'src/app/app-session.service';
 
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('RecommendationCardComponent', () => {
   let component: RecommendationCardComponent;
@@ -15,7 +17,7 @@ describe('RecommendationCardComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [RecommendationCardComponent],
-      imports: [BrowserAnimationsModule, AppMaterialModule],
+      imports: [BrowserAnimationsModule, AppMaterialModule, RouterTestingModule, HttpClientTestingModule],
       providers: [{ provide: AppSessionService, useClass: MockAppSessionService }]
     }).compileComponents();
   }));

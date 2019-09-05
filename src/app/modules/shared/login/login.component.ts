@@ -7,6 +7,15 @@ import { AuthService } from './auth.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { ERRORS } from 'src/app/services/errors';
 import { getToken } from '../../../utils/get-token';
+import { AppSessionService } from 'src/app/app-session.service';
+
+// The impleentation of this component is an experiment to implement all the logic of a Component using a single Observable chain,
+// i.e. using a single subscription.
+// The component is stateless. Its propoerties are all Observables.
+// The entire logic, including validations and enablement/disablent of the submit button is done via observables.
+// In the component typescript code there is only one subscription which fires everything.
+// Other subscriptions are embedded in the html template via the async pipe.
+// Again, this is an experiment. It is not meant to be the suggested way to code Components.
 
 @Component({
   selector: 'byor-login',
@@ -28,7 +37,12 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('pwd') pwd: ElementRef;
   @ViewChild('loginButton', { read: ElementRef }) loginButtonRef: ElementRef;
 
-  constructor(public authService: AuthService, public router: Router, public errorService: ErrorService) {}
+  constructor(
+    public authService: AuthService,
+    public router: Router,
+    public errorService: ErrorService,
+    private appSession: AppSessionService
+  ) {}
 
   ngOnInit() {
     if (getToken()) {
@@ -104,7 +118,11 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.clickOnLogin$.pipe(
       switchMap((_credentials) => {
         credentials = _credentials;
-        return this.authService.login(credentials.user, credentials.password);
+        return this.authService.login(credentials.user, credentials.password).pipe(
+          tap(() => {
+            this.appSession.setCredentials({ userId: credentials.user });
+          })
+        );
       }),
       catchError((err, caught) => {
         if (err.errorCode === ERRORS.serverUnreacheable) {

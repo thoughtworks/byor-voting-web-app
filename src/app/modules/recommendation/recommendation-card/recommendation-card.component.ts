@@ -1,9 +1,14 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ReplaySubject, Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
-import { mostVotedRings } from 'src/app/models/technology';
-import { AppSessionService } from 'src/app/app-session.service';
+import { ReplaySubject, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+
+import { mostVotedRings, Recommendation } from 'src/app/models/technology';
+import { AppSessionService } from 'src/app/app-session.service';
+import { TwRings } from 'src/app/models/ring';
+import { BackendService } from 'src/app/services/backend.service';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
   selector: 'byor-recommendation-card',
@@ -11,25 +16,32 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./recommendation-card.component.scss']
 })
 export class RecommendationCardComponent implements OnInit {
+  rings = TwRings.names;
   @ViewChild('recommendationText') recommendationElRef: ElementRef;
 
-  showConfirmButton$ = new ReplaySubject<boolean>(1);
-  recommendationText: string;
   placeholderText: string;
 
   message$ = new Subject();
+  errorMessage$ = new Subject();
+  ringsSelected$ = new ReplaySubject<string>(1);
+  ringsSelected: string;
 
-  constructor(private appSession: AppSessionService) {}
+  constructor(
+    private appSession: AppSessionService,
+    private backEnd: BackendService,
+    private router: Router,
+    private errorService: ErrorService
+  ) {}
 
   ngOnInit() {
     const selectedTech = this.appSession.getSelectedTechnology();
     if (selectedTech.recommendation && selectedTech.recommendation.text) {
-      // this.recommendationText = selectedTech.recommendandation.text;
+      this.setRing(selectedTech.recommendation.ring);
       return;
     }
 
     // maxVotes contains the rings which have collected the highest number of votes
-    // it is an array to contemplated the possibility that 2 or more rings can receive the same numberof votes
+    // it is an array to contemplate the possibility that 2 or more rings can receive the same numberof votes
     const maxVotes = mostVotedRings(selectedTech);
 
     if (maxVotes.length === 1) {
@@ -42,18 +54,18 @@ export class RecommendationCardComponent implements OnInit {
   }
 
   oneRingWithMaxVotes(ringsWithMaxVotes: string) {
+    this.setRing(ringsWithMaxVotes);
     const text = `Confirm ring ${ringsWithMaxVotes} or choose a different ring specifying the reasons in the comment`;
-    this.showConfirmButton$.next(true);
     this.placeholderText = text;
   }
   moreThanOneRingWithMaxVotes() {
+    this.setRing('');
     const text = `More than one ring got max number of votes. Choose a ring specifying the reasons in the comment`;
-    this.showConfirmButton$.next(false);
     this.placeholderText = text;
   }
   noVotes() {
+    this.setRing('');
     const text = `Choose a ring specifying the reasons in the comment`;
-    this.showConfirmButton$.next(false);
     this.placeholderText = text;
   }
 
@@ -61,6 +73,54 @@ export class RecommendationCardComponent implements OnInit {
     return this.recommendationElRef.nativeElement.value;
   }
   getRecommendationTextSelectedTech$() {
-    return this.appSession.selectedTechnology$.pipe(map((tech) => tech.recommendation.text));
+    return this.appSession.selectedTechnology$.pipe(
+      map((tech) => {
+        const ret = tech.recommendation ? tech.recommendation.text : null;
+        return ret;
+      })
+    );
+  }
+  ringButtonClass$(ring: string) {
+    return this.ringsSelected$.pipe(map((_ring) => (ring.toLowerCase() === _ring.toLowerCase() ? 'selected-ring-button' : 'ring-button')));
+  }
+  setRing(ring) {
+    this.ringsSelected = ring;
+    this.ringsSelected$.next(ring);
+  }
+  save() {
+    this.cleanMessages();
+    const selectedTech = this.appSession.getSelectedTechnology();
+    const recommendationText = this.getRecommendationTextFromView();
+
+    if (!recommendationText || recommendationText.trim().length === 0) {
+      this.errorMessage$.next(`It is mandatory to add a comment to the recommendation`);
+      return;
+    }
+    if (!this.ringsSelected) {
+      this.errorMessage$.next(`It is mandatory to choose a ring for the recommendation`);
+      return;
+    }
+    const eventId = this.appSession.getSelectedVotingEvent()._id;
+    const techName = this.appSession.getSelectedTechnology().name;
+    const recommendation: Recommendation = {
+      ring: this.ringsSelected,
+      text: recommendationText
+    };
+
+    this.backEnd.setRecommendation(eventId, techName, recommendation).subscribe(
+      () => {
+        selectedTech.recommendation = recommendation;
+        this.message$.next(`Recommendation saved`);
+      },
+      (err) => {
+        this.errorService.setError(err);
+        console.error(err);
+        this.router.navigate(['error']);
+      }
+    );
+  }
+  cleanMessages() {
+    this.message$.next(false);
+    this.errorMessage$.next(false);
   }
 }

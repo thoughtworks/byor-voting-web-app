@@ -1,28 +1,12 @@
-<!-- 
-<byor-technology-voting-result #votingResults></byor-technology-voting-result>
-
-<div>
-    <button mat-icon-button *ngIf="showSignUpButton$ | async" (click)="signUp()">{{recommendationButtonText()}}</button>
-    <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="saveRecommendation()">Save</button>
-    <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="quit()">Quit Recommendation</button>
-</div>
-
-<div *ngIf="message$ | async as message" class="message" [innerHTML]="message"></div>
-
-<byor-recommendation-card #recommendationCard *ngIf="!(showSignUpButton$ | async)"></byor-recommendation-card>
-
-<byor-comment-trees #commentTrees [allowAddComment]="false"></byor-comment-trees> -->
-
 
 <div class="recommendation">
 
     <div class="results-comments">
             <byor-technology-voting-result #votingResults></byor-technology-voting-result>
 
-            <div>
+            <div class="recommendation-button">
                 <button mat-icon-button *ngIf="showSignUpButton$ | async" (click)="signUp()">{{recommendationButtonText()}}</button>
-                <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="saveRecommendation()">Save</button>
-                <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="quit()">Quit Recommendation</button>
+                <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="quit()">Quit Signup for Recommendation</button>
             </div>
             
             <div *ngIf="message$ | async as message" class="message" [innerHTML]="message"></div>

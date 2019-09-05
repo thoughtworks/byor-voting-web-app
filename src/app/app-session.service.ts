@@ -4,12 +4,14 @@ import { Injectable } from '@angular/core';
 import { VotingEvent } from 'src/app/models/voting-event';
 import { Technology } from './models/technology';
 import { Credentials } from './models/credentials';
+import { Initiative } from './models/initiative';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppSessionService {
   private votingEvents: VotingEvent[];
+  private selectedInitiative: Initiative;
   private selectedVotingEvent: VotingEvent;
   private selectedTechnology: Technology;
   selectedTechnology$ = new ReplaySubject<Technology>(1);
@@ -44,5 +46,12 @@ export class AppSessionService {
   }
   setCredentials(credentials: Credentials) {
     this.credentials = credentials;
+  }
+
+  getSelectedInitiative() {
+    return this.selectedInitiative;
+  }
+  setSelectedInitiative(initiative: Initiative) {
+    this.selectedInitiative = initiative;
   }
 }

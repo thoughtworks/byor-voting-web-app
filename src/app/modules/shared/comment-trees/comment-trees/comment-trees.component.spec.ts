@@ -24,7 +24,7 @@ const secondReplyToReplyToFirsCommentId = 'replyToReplyToFirsCommentId';
 const votes: Vote[] = [
   {
     technology: TEST_TECHNOLOGY,
-    ring: 'adopt',
+    ring: 'Adopt',
     comment: {
       text: 'first comment',
       id: firsCommentId,

@@ -46,7 +46,7 @@ describe('VoteComponent', () => {
   });
 
   it('1.5 does SELECT a technology which has been voted and then whose vote has been cancelled', () => {
-    const ring = 'hold';
+    const ring = 'Hold';
     const technologyVotedIndex = 1;
     const vote = {
       ring,
@@ -115,7 +115,7 @@ describe('vote exist', () => {
   });
 
   it('should return true when vote is already added', function() {
-    const ring = 'hold';
+    const ring = 'Hold';
     const technologyVotedIndex = 1;
     const vote = {
       ring,
@@ -129,7 +129,7 @@ describe('vote exist', () => {
   });
 
   it('should return false when vote does not find in the voted list', function() {
-    const ring = 'hold';
+    const ring = 'Hold';
     const technologyVotedIndex = 1;
     const vote = {
       ring,
