@@ -22,40 +22,27 @@ export class AppComponent implements OnInit {
     private backend: BackendService,
     public errorService: ErrorService,
     private appSession: AppSessionService,
-    private configurationService: ConfigurationService,
     private authService: AuthService
   ) {}
 
   ngOnInit() {
     this.authService.logout(); // to remove any token which may be left appended to the browsers
-    this.configurationService
-      .defaultConfiguration()
+    this.backend
+      .getVotingEvents()
       .pipe(
-        tap((config) => {
-          if (config.enableVotingEventFlow) {
-            this.backend
-              .getVotingEvents()
-              .pipe(
-                concatMap(() => this.backend.getVotingEvents()),
-                map((votingEvents) => votingEvents.filter((ve) => ve.status === 'open')),
-                tap((votingEvents) => {
-                  if (!votingEvents || votingEvents.length === 0) {
-                    this.errorService.setError(new Error('There are no Voting Events open'));
-                    this.router.navigate(['error']);
-                  } else if (votingEvents.length === 1) {
-                    const votingEvent = votingEvents[0];
-                    this.appSession.setSelectedVotingEvent(votingEvent);
-                    const route = getIdentificationRoute(votingEvent);
-                    this.router.navigate([route]);
-                  } else {
-                    this.appSession.setVotingEvents(votingEvents);
-                    this.router.navigate(['selectVotingEvent']);
-                  }
-                })
-              )
-              .subscribe();
+        map((votingEvents) => votingEvents.filter((ve) => ve.status === 'open')),
+        tap((votingEvents) => {
+          if (!votingEvents || votingEvents.length === 0) {
+            this.errorService.setError(new Error('There are no Voting Events open'));
+            this.router.navigate(['error']);
+          } else if (votingEvents.length === 1) {
+            const votingEvent = votingEvents[0];
+            this.appSession.setSelectedVotingEvent(votingEvent);
+            const route = getIdentificationRoute(votingEvent);
+            this.router.navigate([route]);
           } else {
-            this.router.navigate(['vote']);
+            this.appSession.setVotingEvents(votingEvents);
+            this.router.navigate(['selectVotingEvent']);
           }
         })
       )

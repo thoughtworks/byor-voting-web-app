@@ -157,9 +157,7 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
           });
 
           dialogRef.afterClosed().subscribe((result) => {
-            // enableVotingEventFlow is on, then it means we are using the new version of the app which
-            // uses the identification component set as parameter of the current step of the flow
-            const route = config.enableVotingEventFlow ? getIdentificationRoute(this.appSession.getSelectedVotingEvent()) : '/vote';
+            const route = getIdentificationRoute(this.appSession.getSelectedVotingEvent());
             this.router.navigate([route]);
           });
         }
