@@ -5,13 +5,13 @@
             <byor-technology-voting-result #votingResults></byor-technology-voting-result>
 
             <div class="recommendation-button">
-                <button mat-icon-button *ngIf="showSignUpButton$ | async" (click)="signUp()">{{recommendationButtonText()}}</button>
-                <button mat-icon-button *ngIf="!(showSignUpButton$ | async)" (click)="quit()">Quit Signup for Recommendation</button>
+                <button mat-icon-button *ngIf="!(showRecommendation$ | async)" (click)="signUp()">Sign up for Recommendation</button>
+                <button mat-icon-button *ngIf="showCancelRecommendation$ | async" (click)="cancel()">Cancel Recommendation</button>
             </div>
             
             <div *ngIf="message$ | async as message" class="message" [innerHTML]="message"></div>
             
-            <byor-recommendation-card #recommendationCard *ngIf="!(showSignUpButton$ | async)"></byor-recommendation-card>
+            <byor-recommendation-card #recommendationCard *ngIf="(showRecommendation$ | async)"></byor-recommendation-card>
             
             <byor-comment-trees #commentTrees [allowAddComment]="false"></byor-comment-trees>
     </div>

@@ -1,24 +1,25 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, BehaviorSubject } from 'rxjs';
+import { Subject, ReplaySubject, Observable } from 'rxjs';
 
 import { AppSessionService } from 'src/app/app-session.service';
 import { BackendService } from 'src/app/services/backend.service';
 import { ERRORS } from 'src/app/services/errors';
 import { ErrorService } from 'src/app/services/error.service';
-import { mostVotedRings, Recommendation } from 'src/app/models/technology';
 import { RecommendationCardComponent } from '../recommendation-card/recommendation-card.component';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'byor-recommendation',
   templateUrl: './recommendation.component.html',
   styleUrls: ['./recommendation.component.scss']
 })
-export class RecommendationComponent {
+export class RecommendationComponent implements OnInit {
   @ViewChild('recommendationCard') recommendationCard: RecommendationCardComponent;
 
-  showSignUpButton$ = new BehaviorSubject<boolean>(true);
-  message$ = new Subject();
+  showRecommendation$ = new ReplaySubject<boolean>(1);
+  showCancelRecommendation$: Observable<boolean>;
+  message$ = new Subject<string>();
 
   constructor(
     private backEnd: BackendService,
@@ -27,11 +28,24 @@ export class RecommendationComponent {
     private errorService: ErrorService
   ) {}
 
+  ngOnInit() {
+    const isRecommendationDefined = this.isRecommendationDefined();
+    this.showRecommendation$.next(isRecommendationDefined);
+    this.showCancelRecommendation$ = this.showRecommendation$.pipe(
+      map((showRecommendation) => showRecommendation && this.canCancelRecommendation())
+    );
+  }
+
   signUp() {
     const eventId = this.appSession.getSelectedVotingEvent()._id;
     const techName = this.appSession.getSelectedTechnology().name;
     this.backEnd.signUpForRecommendation(eventId, techName).subscribe(
-      () => this.showSignUpButton$.next(false),
+      () => {
+        const tech = this.appSession.getSelectedTechnology();
+        tech.recommendation = { author: this.appSession.getCredentials().userId };
+        this.appSession.setSelectedTechnology(tech);
+        this.showRecommendation$.next(true);
+      },
       (err) => {
         if (err.errorCode === ERRORS.recommendationAuthorAlreadySet) {
           this.message$.next(`${err.currentAuthor} already signed up`);
@@ -43,14 +57,13 @@ export class RecommendationComponent {
     );
   }
 
-  quit() {
+  cancel() {
     const eventId = this.appSession.getSelectedVotingEvent()._id;
     const techName = this.appSession.getSelectedTechnology().name;
-    const userId = this.appSession.getCredentials().userId || this.appSession.getCredentials().nickname;
     this.backEnd.resetRecommendation(eventId, techName).subscribe(
       () => {
         this.appSession.getSelectedTechnology().recommendation = null;
-        this.showSignUpButton$.next(true);
+        this.showRecommendation$.next(false);
       },
       (err) => {
         this.errorService.setError(err);
@@ -59,8 +72,16 @@ export class RecommendationComponent {
     );
   }
 
-  recommendationButtonText() {
-    const recommendation = this.appSession.getSelectedTechnology().recommendation;
-    return recommendation && recommendation.text ? 'Review recommendation' : 'Sign up for Recommendation';
+  isRecommendationDefined() {
+    return !!(this.appSession.getSelectedTechnology() && this.appSession.getSelectedTechnology().recommendation);
+  }
+  canCancelRecommendation() {
+    return this.isRecommendationAuthorTheLoggedUser();
+  }
+  isRecommendationAuthorTheLoggedUser() {
+    return (
+      this.isRecommendationDefined() &&
+      this.appSession.getCredentials().userId === this.appSession.getSelectedTechnology().recommendation.author
+    );
   }
 }

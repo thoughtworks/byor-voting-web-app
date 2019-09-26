@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ReplaySubject, Subject } from 'rxjs';
+import { ReplaySubject, Subject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { mostVotedRings, Recommendation } from 'src/app/models/technology';
@@ -21,6 +21,11 @@ export class RecommendationCardComponent implements OnInit {
 
   placeholderText: string;
 
+  recommendation$: Observable<Recommendation>;
+  recommendationAuthor$: Observable<string>;
+  recommendationTextSelectedTech$: Observable<string>;
+  canEdit$: Observable<boolean>;
+
   message$ = new Subject();
   errorMessage$ = new Subject();
   ringsSelected$ = new ReplaySubject<string>(1);
@@ -34,12 +39,23 @@ export class RecommendationCardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.recommendation$ = this.appSession.selectedTechnology$.pipe(map((tech) => tech.recommendation));
+    this.recommendationAuthor$ = this.recommendation$.pipe(map((recommendation) => (recommendation ? recommendation.author : null)));
+    this.recommendationTextSelectedTech$ = this.recommendation$.pipe(
+      map((recommendation) => (recommendation ? recommendation.text : null))
+    );
+    this.canEdit$ = this.recommendation$.pipe(
+      map((recommendation) => {
+        return recommendation && recommendation.author === this.appSession.getCredentials().userId;
+      })
+    );
     const selectedTech = this.appSession.getSelectedTechnology();
     if (selectedTech.recommendation && selectedTech.recommendation.text) {
       this.setRing(selectedTech.recommendation.ring);
-      return;
+      return; // exits here since the Recommendation exists and it drives which is the ring
     }
 
+    // This logic calculates the suggested ring based on the votes gathered
     // maxVotes contains the rings which have collected the highest number of votes
     // it is an array to contemplate the possibility that 2 or more rings can receive the same numberof votes
     const maxVotes = mostVotedRings(selectedTech);
@@ -71,14 +87,6 @@ export class RecommendationCardComponent implements OnInit {
 
   getRecommendationTextFromView() {
     return this.recommendationElRef.nativeElement.value;
-  }
-  getRecommendationTextSelectedTech$() {
-    return this.appSession.selectedTechnology$.pipe(
-      map((tech) => {
-        const ret = tech.recommendation ? tech.recommendation.text : null;
-        return ret;
-      })
-    );
   }
   ringButtonClass$(ring: string) {
     return this.ringsSelected$.pipe(map((_ring) => (ring.toLowerCase() === _ring.toLowerCase() ? 'selected-ring-button' : 'ring-button')));

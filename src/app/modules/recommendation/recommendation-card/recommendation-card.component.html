@@ -1,9 +1,13 @@
 <mat-card class="recommnedation-card">
+  <mat-card-header>
+    <mat-card-title>Recommendation</mat-card-title>
+    <mat-card-subtitle>{{recommendationAuthor$ | async}}</mat-card-subtitle>
+  </mat-card-header>
   <mat-form-field class="recommnedation-text">
     <textarea matInput #recommendationText placeholder="{{placeholderText}}" 
-    value="{{getRecommendationTextSelectedTech$() | async}}"></textarea>
+    value="{{recommendationTextSelectedTech$ | async}}" [readonly]="!(canEdit$ | async)"></textarea>
   </mat-form-field>
-  <mat-card-actions>
+  <mat-card-actions *ngIf="canEdit$ | async">
     <button *ngFor="let ring of rings" class="ring-button" [attr.class]="ringButtonClass$(ring) | async" 
     mat-flat-button (click)="setRing(ring)"
     tabindex="-1">{{ring  | uppercase }}</button>
