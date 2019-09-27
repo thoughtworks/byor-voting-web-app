@@ -1,6 +1,6 @@
 <mat-card class="recommnedation-card">
   <mat-card-header>
-    <mat-card-title>Recommendation</mat-card-title>
+    <mat-card-title>{{'Recommendation - ' + (recommendationRing$ | async)}}</mat-card-title>
     <mat-card-subtitle>{{recommendationAuthor$ | async}}</mat-card-subtitle>
   </mat-card-header>
   <mat-form-field class="recommnedation-text">

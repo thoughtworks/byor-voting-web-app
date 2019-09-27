@@ -23,6 +23,7 @@ export class RecommendationCardComponent implements OnInit {
 
   recommendation$: Observable<Recommendation>;
   recommendationAuthor$: Observable<string>;
+  recommendationRing$: Observable<string>;
   recommendationTextSelectedTech$: Observable<string>;
   canEdit$: Observable<boolean>;
 
@@ -41,6 +42,7 @@ export class RecommendationCardComponent implements OnInit {
   ngOnInit() {
     this.recommendation$ = this.appSession.selectedTechnology$.pipe(map((tech) => tech.recommendation));
     this.recommendationAuthor$ = this.recommendation$.pipe(map((recommendation) => (recommendation ? recommendation.author : null)));
+    this.recommendationRing$ = this.recommendation$.pipe(map((recommendation) => (recommendation ? recommendation.ring : null)));
     this.recommendationTextSelectedTech$ = this.recommendation$.pipe(
       map((recommendation) => (recommendation ? recommendation.text : null))
     );
