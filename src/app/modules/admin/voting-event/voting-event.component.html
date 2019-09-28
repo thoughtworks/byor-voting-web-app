@@ -13,29 +13,34 @@
   <div class="voting-event-section">
     <h3>Single event</h3>
     <mat-form-field>
-      <mat-select placeholder="Choose a voting event" [(value)]="selectedName" (selectionChange)="cleanMessages()">
+      <mat-select placeholder="Choose a voting event" [(value)]="selectedName" (selectionChange)="selectionChanged($event)">
         <mat-option *ngFor="let votingEvent of votingEvents$ | async; let i=index" [value]="votingEvent.name">
           {{votingEvent.name}}</mat-option>
       </mat-select>
     </mat-form-field>
     <div *ngIf="getSelectedEvent()">
-      <button mat-flat-button *ngIf="isSelectedEventClosed()" color="accent" (click)="openSelectedEvent()">Open
-        Event</button>
-      <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="closeSelectedEvent()">Close
-        Event</button>
-      <button mat-flat-button color="accent" (click)="viewVoteCloud()">Word cloud</button>
-      <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="voters()">Voters</button>
-      <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="viewRadarForSelectedEvent()">Tech radar</button>
-      
-      <button mat-flat-button *ngIf="isNextStepAvailable()" color="accent" (click)="goToNextStep()">{{getNextStepButtonText()}}</button>
-
-      <span mat-flat-button *ngIf="(configuration$ | async)?.revoteToggle">
-        <button mat-flat-button *ngIf="showTechnologiesForRevote()" color="accent" (click)="techForRevote()">Tech for
-          Revote</button>
-        <button mat-flat-button *ngIf="canBeOpenedForRevote()" color="accent" (click)="openForRevote()">Revote</button>
-        <button mat-flat-button *ngIf="canBeClosedForRevote()" color="accent" (click)="closeForRevote()">Close
-          Revote</button>
-      </span>
+      <div>
+        <div>{{'Stats ' + (stats$ | async)}}</div>
+      </div>
+      <div>
+        <button mat-flat-button *ngIf="isSelectedEventClosed()" color="accent" (click)="openSelectedEvent()">Open
+          Event</button>
+        <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="closeSelectedEvent()">Close
+          Event</button>
+        <button mat-flat-button color="accent" (click)="viewVoteCloud()">Word cloud</button>
+        <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="voters()">Voters</button>
+        <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="viewRadarForSelectedEvent()">Tech radar</button>
+        
+        <button mat-flat-button *ngIf="isNextStepAvailable()" color="accent" (click)="goToNextStep()">{{getNextStepButtonText()}}</button>
+  
+        <span mat-flat-button *ngIf="(configuration$ | async)?.revoteToggle">
+          <button mat-flat-button *ngIf="showTechnologiesForRevote()" color="accent" (click)="techForRevote()">Tech for
+            Revote</button>
+          <button mat-flat-button *ngIf="canBeOpenedForRevote()" color="accent" (click)="openForRevote()">Revote</button>
+          <button mat-flat-button *ngIf="canBeClosedForRevote()" color="accent" (click)="closeForRevote()">Close
+            Revote</button>
+        </span>
+      </div>
     </div>
     <div *ngIf="messageAction" class="selected-event-message" [innerHTML]="messageAction"></div>
   </div>

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Observable, never, NEVER } from 'rxjs';
-import { shareReplay, tap, map, switchMap, catchError, filter, concatMap } from 'rxjs/operators';
+import { Observable, NEVER, Subject, forkJoin, ReplaySubject } from 'rxjs';
+import { shareReplay, tap, map, catchError, concatMap } from 'rxjs/operators';
 
 import { BackendService } from '../../../services/backend.service';
 import { VotingEvent } from '../../../models/voting-event';
@@ -32,6 +32,9 @@ export class VotingEventComponent implements OnInit {
   selectedName: string;
   votingEvents: Array<VotingEvent>;
   configuration$: Observable<any>;
+
+  selectedEvent$ = new ReplaySubject<string>(1);
+  stats$: Observable<string>;
 
   constructor(
     private router: Router,
@@ -73,6 +76,14 @@ export class VotingEventComponent implements OnInit {
     this.refreshVotingEvents();
 
     this.configuration$ = this.configurationService.configurationForUser(this.authenticationService.user).pipe(shareReplay(1));
+    this.stats$ = this.selectedEvent$.pipe(
+      map((vEventName) => this.votingEvents.find((vEvent) => vEvent.name === vEventName)),
+      concatMap((vEvent) => forkJoin(this.backend.getVoters(vEvent._id), this.backend.getVotes(vEvent._id))),
+      map(([voters, votes]) => {
+        console.log('here');
+        return `Number of voters: ${voters.length}  - Voters have cast ${votes.length} votes`;
+      })
+    );
   }
 
   refreshVotingEvents() {
@@ -126,6 +137,11 @@ export class VotingEventComponent implements OnInit {
       },
       () => this.refreshVotingEvents()
     );
+  }
+
+  selectionChanged(event) {
+    this.selectedEvent$.next(event.value);
+    this.cleanMessages();
   }
 
   getSelectedEvent() {

@@ -131,7 +131,7 @@ describe('BackendService', () => {
           tap((hasVoted) => {
             expect(hasVoted).toBeTruthy();
           }),
-          switchMap(() => service.getVoters(votingEvent)),
+          switchMap(() => service.getVoters(votingEvent._id)),
           tap((voters) => {
             expect(voters.length).toBe(2);
           }),

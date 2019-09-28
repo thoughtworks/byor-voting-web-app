@@ -12,6 +12,7 @@ import { EventsService } from '../../../services/events.service';
 import { logError } from 'src/app/utils/utils';
 
 import { MockBackEndService, VOTERS } from 'src/app/modules/test-mocks/mock-back-end-service';
+import { MockEventService } from '../../test-mocks/mock-events-service';
 
 describe('VotersListComponent', () => {
   let component: VotersListComponent;
@@ -21,7 +22,7 @@ describe('VotersListComponent', () => {
     TestBed.configureTestingModule({
       declarations: [VotersListComponent],
       imports: [HttpClientTestingModule, AppMaterialModule],
-      providers: [EventsService, { provide: BackendService, useClass: MockBackEndService }]
+      providers: [{ provide: EventsService, useClass: MockEventService }, { provide: BackendService, useClass: MockBackEndService }]
     }).compileComponents();
   }));
 

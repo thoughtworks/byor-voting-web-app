@@ -339,9 +339,9 @@ export class BackendService {
     return this.http.post(this.url, payload).pipe(catchError(this.handleError));
   }
 
-  getVoters(votingEvent: VotingEvent) {
+  getVoters(votingEventId: string): Observable<Array<string>> {
     const payload = this.buildPostPayloadForService(ServiceNames.getVoters);
-    payload['votingEvent'] = votingEvent;
+    payload['votingEventId'] = votingEventId;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {
         return this.handleReponseDefault(resp);
