@@ -62,7 +62,7 @@
     "prettier": "^1.16.4",
     "protractor": "~5.4.0",
     "rxjs-marbles": "^5.0.0",
-    "semantic-release": "^15.13.12",
+    "semantic-release": "^15.13.25",
     "ts-node": "~7.0.0",
     "tslint": "~5.11.0",
     "typescript": "~3.2.4",
