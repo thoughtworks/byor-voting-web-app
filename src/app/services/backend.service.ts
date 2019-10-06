@@ -18,6 +18,7 @@ import { inspect } from 'util';
 import { Comment } from '../models/comment';
 import { VotingEventFlow } from '../models/voting-event-flow';
 import { Credentials } from '../models/credentials';
+import { AppSessionService } from '../app-session.service';
 
 interface BackEndError {
   errorCode: string;
@@ -44,7 +45,7 @@ export class BackendService {
   url = environment.serviceUrl;
   private defaultSiteName = 'BUILD YOUR OWN RADAR';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private appSessionService: AppSessionService) {}
 
   getTechnologies(): Observable<Array<Technology>> {
     const payload = this.buildPostPayloadForService(ServiceNames.getTechnologies);
@@ -489,7 +490,8 @@ export class BackendService {
 
   private buildPostPayloadForService(serviceName: ServiceNames) {
     const service = ServiceNames[serviceName];
-    return { service };
+    const userId = this.appSessionService.getCredentials() ? this.appSessionService.getCredentials().userId : null;
+    return { service, userId };
   }
 
   getBlipsForSelectedEvent(votingEvent: VotingEvent, config: any) {
