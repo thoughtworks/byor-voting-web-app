@@ -11,7 +11,7 @@
   </div>
 
   <div class="quadrant-buttons">
-    <button *ngFor="let quadrant of quadrants" (click)="quadrantSelected(quadrant)"
+    <button *ngFor="let quadrant of quadrants$ | async" (click)="quadrantSelected(quadrant)"
       [ngClass]="quadrant.substr(0,9).toLowerCase()" class="quadrant-button" mat-flat-button
       [class.selected-quadrant-button]="isQuadrantSelected(quadrant) | async">
       <span *ngIf="technologiesToShow && technologiesToShow.length !== 0">

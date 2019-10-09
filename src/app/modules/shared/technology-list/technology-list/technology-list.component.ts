@@ -2,12 +2,11 @@ import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnInit, Inp
 import { Router } from '@angular/router';
 
 import { BehaviorSubject, combineLatest, Observable, fromEvent, concat, of, Subject, merge, EMPTY, Subscription } from 'rxjs';
-import { map, catchError, switchMap, scan, shareReplay, delay, tap, concatMap } from 'rxjs/operators';
+import { map, catchError, switchMap, scan, shareReplay, delay, tap, concatMap, filter } from 'rxjs/operators';
 
 import { BackendService } from '../../../../services/backend.service';
 import { ErrorService } from '../../../../services/error.service';
 import { Technology } from '../../../../models/technology';
-import { QUADRANT_NAMES } from '../../../../models/quadrant';
 import * as _ from 'lodash';
 import { TwRings } from 'src/app/models/ring';
 import { logError } from 'src/app/utils/utils';
@@ -21,7 +20,8 @@ import { TechnologyListService } from '../services/technology-list.service';
 })
 export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('searchField') searchField: ElementRef;
-  quadrants = QUADRANT_NAMES;
+  quadrants = new Array<string>();
+  quadrants$: Observable<string[]>;
   rings = TwRings.names;
 
   private technologiesToShowSubscription: Subscription;
@@ -61,7 +61,18 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
     private techListService: TechnologyListService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.quadrants$ = this.techListService.technologies$.pipe(
+      map((techs) => techs.map((t) => t.quadrant.toUpperCase())),
+      map((quadrants) => {
+        const uniqueQuadrantNamesSet = new Set(quadrants);
+        const uniqueQuadrantNames = new Array<string>();
+        uniqueQuadrantNamesSet.forEach((q) => uniqueQuadrantNames.push(q));
+        this.quadrants = uniqueQuadrantNames;
+        return uniqueQuadrantNames;
+      })
+    );
+  }
 
   ngAfterViewInit() {
     this.search$ = merge(concat(of(''), fromEvent(this.searchField.nativeElement, 'keyup')), this.clearSearch$).pipe(
