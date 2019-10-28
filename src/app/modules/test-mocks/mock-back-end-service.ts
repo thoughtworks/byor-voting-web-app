@@ -33,4 +33,8 @@ export class MockBackEndService {
   getVotes() {
     return of([]).pipe(observeOn(asyncScheduler));
   }
+
+  addTechnologyToVotingEvent(votingEventId, technology) {
+    return of(technology).pipe(observeOn(asyncScheduler));
+  }
 }

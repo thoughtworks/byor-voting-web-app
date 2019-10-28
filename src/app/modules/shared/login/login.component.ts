@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
-import { Observable, Subject, fromEvent, combineLatest, never, Subscription, merge, throwError } from 'rxjs';
+import { Observable, Subject, fromEvent, combineLatest, Subscription, merge, throwError, NEVER } from 'rxjs';
 import { map, share, switchMap, catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
@@ -98,18 +98,18 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
       pwd$
     );
 
-    this.inputData$ = combineLatest(this.user$, this.password$);
+    this.inputData$ = combineLatest([this.user$, this.password$]);
     this.isValidInputData$ = this.inputData$.pipe(
       map(([user, password]) => this.isInputDataValid(user, password)),
       share() // isValidInputData$ is subscribed in the template via asyc pipe - any other subscriber should use this subscription
     );
 
-    this.clickOnLogin$ = combineLatest(this.isValidInputData$, this.inputData$).pipe(
+    this.clickOnLogin$ = combineLatest([this.isValidInputData$, this.inputData$]).pipe(
       switchMap(([isValid, [user, password]]) => {
         if (isValid) {
           return loginButtonClick$.pipe(map(() => ({ user, password })));
         } else {
-          return never();
+          return NEVER;
         }
       })
     );

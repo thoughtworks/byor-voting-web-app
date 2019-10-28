@@ -2,9 +2,8 @@ import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, OnInit, Inp
 import { Router } from '@angular/router';
 
 import { BehaviorSubject, combineLatest, Observable, fromEvent, concat, of, Subject, merge, EMPTY, Subscription } from 'rxjs';
-import { map, catchError, switchMap, scan, shareReplay, delay, tap, concatMap, filter } from 'rxjs/operators';
+import { map, catchError, switchMap, scan, shareReplay, tap } from 'rxjs/operators';
 
-import { BackendService } from '../../../../services/backend.service';
 import { ErrorService } from '../../../../services/error.service';
 import { Technology } from '../../../../models/technology';
 import * as _ from 'lodash';
@@ -12,6 +11,7 @@ import { TwRings } from 'src/app/models/ring';
 import { logError } from 'src/app/utils/utils';
 import { AppSessionService } from 'src/app/app-session.service';
 import { TechnologyListService } from '../services/technology-list.service';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 @Component({
   selector: 'byor-technology-list',
@@ -25,9 +25,11 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
   rings = TwRings.names;
 
   private technologiesToShowSubscription: Subscription;
+  private addTechnologyToVotingEventSubscription: Subscription;
+  private searchSubscription: Subscription;
   technologiesToShow: Technology[];
 
-  search$: Observable<any>;
+  search$ = new BehaviorSubject<string>('');
   clearSearch$ = new Subject<any>();
   quadrantSelected$ = new BehaviorSubject<string>('');
   // the following Observable emits the name of the quadrant selected if it is different from the last quadrant selected,
@@ -51,40 +53,35 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
     this.setTechnolgiesToExclude(technologies);
   }
 
-  votingEventId$: Observable<any>;
-
   constructor(
-    private backEnd: BackendService,
     private router: Router,
     private errorService: ErrorService,
     private appSession: AppSessionService,
-    private techListService: TechnologyListService
+    private techListService: TechnologyListService,
+    private votingEventService: VotingEventService
   ) {}
 
   ngOnInit() {
-    this.quadrants$ = this.techListService.technologies$.pipe(
-      map((techs) => techs.map((t) => t.quadrant.toUpperCase())),
-      map((quadrants) => {
-        const uniqueQuadrantNamesSet = new Set(quadrants);
-        const uniqueQuadrantNames = new Array<string>();
-        uniqueQuadrantNamesSet.forEach((q) => uniqueQuadrantNames.push(q));
-        this.quadrants = uniqueQuadrantNames;
-        return uniqueQuadrantNames;
-      })
-    );
-  }
-
-  ngAfterViewInit() {
-    this.search$ = merge(concat(of(''), fromEvent(this.searchField.nativeElement, 'keyup')), this.clearSearch$).pipe(
-      map(() => this.searchField.nativeElement.value)
-    );
+    this.quadrants$ = this.votingEventService.quadrants$.pipe(tap((_quadrants) => (this.quadrants = _quadrants)));
     this.technologiesToShowSubscription = this.techonologiesToShow().subscribe((t) => {
       this.technologiesToShow = t;
     });
   }
+
+  ngAfterViewInit() {
+    this.searchSubscription = merge(concat(of(''), fromEvent(this.searchField.nativeElement, 'keyup')), this.clearSearch$)
+      .pipe(map(() => this.searchField.nativeElement.value))
+      .subscribe(this.search$);
+  }
   ngOnDestroy() {
     if (!!this.technologiesToShowSubscription) {
       this.technologiesToShowSubscription.unsubscribe();
+    }
+    if (!!this.addTechnologyToVotingEventSubscription) {
+      this.addTechnologyToVotingEventSubscription.unsubscribe();
+    }
+    if (!!this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
     }
   }
 
@@ -95,9 +92,6 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
       switchMap(() => {
         return combineLatest([this.search$, this.quadrantSelectedToggle$, this.technolgiesToExclude$]);
       }),
-      // delay is needed to avoid the error ExpressionChangedAfterItHasBeenCheckedError
-      // @todo see if it is possible to remove delay
-      delay(0),
       // show in the list only the technologies serach criteria and quadrant selected
       map(([search, quadrant, technolgiesToExclude]) => {
         return technologies
@@ -119,7 +113,7 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   getTechnologies() {
-    return this.techListService.technologies$.pipe(
+    return this.votingEventService.technologies$.pipe(
       map((techs) => {
         const technologies = techs;
         return _.sortBy(technologies, function(item: Technology) {
@@ -142,12 +136,9 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
       description: '',
       quadrant: quadrant
     };
-    this.backEnd
+    this.addTechnologyToVotingEventSubscription = this.votingEventService
       .addTechnologyToVotingEvent(votingEvent._id, technology)
-      .pipe(concatMap(() => this.getTechnologies()))
-      .subscribe((resp) => {
-        this.techListService.newTechnologyAdded$.next(technology);
-      });
+      .subscribe();
   }
 
   clearSearch() {
@@ -174,5 +165,10 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
           .join(' ') + '...';
     }
     return shortName;
+  }
+
+  getClassForQuadrant(quadrant: string) {
+    const quadrantIndex = this.quadrants.indexOf(quadrant.toUpperCase());
+    return `q${quadrantIndex + 1}`;
   }
 }

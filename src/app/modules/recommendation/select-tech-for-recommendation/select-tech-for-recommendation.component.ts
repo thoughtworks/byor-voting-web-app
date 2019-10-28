@@ -4,10 +4,9 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { TechnologyListService } from '../../shared/technology-list/services/technology-list.service';
-import { AppSessionService } from 'src/app/app-session.service';
-import { BackendService } from 'src/app/services/backend.service';
 import { Technology } from 'src/app/models/technology';
-import { map } from 'rxjs/operators';
+import { AppSessionService } from 'src/app/app-session.service';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 @Component({
   selector: 'byor-select-tech-for-recommendation',
@@ -15,22 +14,26 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./select-tech-for-recommendation.component.scss']
 })
 export class SelectTechForRecommendationComponent implements OnInit, OnDestroy {
+  votingEventSubscription: Subscription;
   technologyListSubscription: Subscription;
 
   constructor(
     private router: Router,
-    private technologyListService: TechnologyListService,
     private appSession: AppSessionService,
-    private backEnd: BackendService
+    private votingEventService: VotingEventService,
+    private technologyListService: TechnologyListService
   ) {}
 
   ngOnInit() {
-    this.technologyListService.technologies$ = this.backEnd
-      .getVotingEvent(this.appSession.getSelectedVotingEvent()._id)
-      .pipe(map((event) => event.technologies));
+    const votingEventShallow = this.appSession.getSelectedVotingEvent();
+    // retrieve the details of the voting event
+    this.votingEventSubscription = this.votingEventService.getVotingEvent(votingEventShallow._id).subscribe();
     this.technologyListSubscription = this.technologyListService.technologySelected$.subscribe((tech) => this.goToNextPage(tech));
   }
   ngOnDestroy() {
+    if (this.votingEventSubscription) {
+      this.votingEventSubscription.unsubscribe();
+    }
     if (this.technologyListSubscription) {
       this.technologyListSubscription.unsubscribe();
     }

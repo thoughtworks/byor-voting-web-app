@@ -23,7 +23,8 @@ import { ConfigurationService } from 'src/app/services/configuration.service';
 import { TechnologyListService } from '../../shared/technology-list/services/technology-list.service';
 import { TechnologyListComponent } from '../../shared/technology-list/technology-list/technology-list.component';
 import { getActionParameters, getIdentificationRoute } from 'src/app/utils/voting-event-flow.util';
-import { map, tap, concatMap } from 'rxjs/operators';
+import { tap, concatMap } from 'rxjs/operators';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 @Component({
   selector: 'byor-vote',
@@ -39,7 +40,11 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
 
   messageVote: string;
 
+  votingEventSubscription: Subscription;
+  quadrantSubscription: Subscription;
   voteTechnologySubscription: Subscription;
+
+  quadrants = new Array<string>();
 
   constructor(
     private backEnd: BackendService,
@@ -48,26 +53,34 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
     private voteService: VoteService,
     private appSession: AppSessionService,
     private configurationService: ConfigurationService,
+    private votingEventService: VotingEventService,
     private technologyListService: TechnologyListService
   ) {}
 
   ngOnInit() {
-    const votingEvent = this.appSession.getSelectedVotingEvent();
-    this.technologyListService.technologies$ = this.backEnd.getVotingEvent(votingEvent._id).pipe(map((event) => event.technologies));
+    const votingEventShallow = this.appSession.getSelectedVotingEvent();
+    // retrieve the details of the voting event
+    this.votingEventSubscription = this.votingEventService.getVotingEvent(votingEventShallow._id).subscribe();
+    // the quadrants are required to provide the correct css class to the Accordion which shows the votes
+    this.quadrantSubscription = this.votingEventService.quadrants$.subscribe((_quadrants) => (this.quadrants = _quadrants));
+
     const voterId = this.appSession.getCredentials();
     this.voteTechnologySubscription = this.backEnd
-      .getVotes(votingEvent._id, voterId)
+      .getVotes(votingEventShallow._id, voterId)
       .pipe(
         tap((votes) => {
           this.votes = votes;
           this.excludeTechnologiesVoted();
         }),
-        concatMap(() => merge(this.technologyListService.technologySelected$, this.technologyListService.newTechnologyAdded$))
+        concatMap(() => merge(this.technologyListService.technologySelected$, this.votingEventService.newTechnologyAdded$))
       )
       .subscribe((tech) => this.openVoteDialog(tech));
   }
   ngAfterViewInit() {}
   ngOnDestroy() {
+    if (this.votingEventSubscription) {
+      this.votingEventSubscription.unsubscribe();
+    }
     if (this.voteTechnologySubscription) {
       this.voteTechnologySubscription.unsubscribe();
     }
@@ -139,11 +152,8 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
       voterIdentification = voteCredentials.voterId.firstName + ' ' + voteCredentials.voterId.lastName;
     }
     const allowVoteOverride = !getActionParameters(votingEvent).voteOnlyOnce;
-    combineLatest(
-      this.backEnd.saveVote(this.votes, voteCredentials, allowVoteOverride),
-      this.configurationService.defaultConfiguration()
-    ).subscribe(
-      ([resp, config]) => {
+    this.backEnd.saveVote(this.votes, voteCredentials, allowVoteOverride).subscribe(
+      (resp) => {
         if (resp.error) {
           if (resp.error.errorCode === 'V-01') {
             this.messageVote = `<strong> ${voterIdentification} </strong> has already voted`;
@@ -187,5 +197,10 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
   isAlreadyVoted(value: string) {
     const existingVote = this.votes.filter((vote) => vote.technology.name === value);
     return existingVote.length !== 0;
+  }
+
+  getClassForQuadrant(quadrant: string) {
+    const quadrantIndex = this.quadrants.indexOf(quadrant.toUpperCase());
+    return `q${quadrantIndex + 1}`;
   }
 }

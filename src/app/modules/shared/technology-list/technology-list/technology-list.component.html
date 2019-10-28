@@ -12,7 +12,7 @@
 
   <div class="quadrant-buttons">
     <button *ngFor="let quadrant of quadrants$ | async" (click)="quadrantSelected(quadrant)"
-      [ngClass]="quadrant.substr(0,9).toLowerCase()" class="quadrant-button" mat-flat-button
+      [ngClass]="getClassForQuadrant(quadrant)" class="quadrant-button" mat-flat-button
       [class.selected-quadrant-button]="isQuadrantSelected(quadrant) | async">
       <span *ngIf="technologiesToShow && technologiesToShow.length !== 0">
         {{quadrant | uppercase}}
@@ -25,7 +25,7 @@
 
 <div class="technology-card-list">
   <mat-card class="technology-card" *ngFor="let technology of technologiesToShow"
-    [ngClass]="technology.quadrant.substr(0,9).toLowerCase()" (click)="technologySelected(technology)">
+    [ngClass]="getClassForQuadrant(technology.quadrant)" (click)="technologySelected(technology)">
     <span *ngIf="technology.isNew" class="new-ribbon">
       <svg width="50" height="50" viewBox="0 0 100 100">
         <path fill="none" d="M-1-1h582v402H-1z" />
@@ -47,7 +47,7 @@
 
 
 <div *ngFor="let quadrant of quadrants">
-  <mat-card class="technology-card" [ngClass]="quadrant.substr(0,9).toLowerCase()"
+  <mat-card class="technology-card" [ngClass]="getClassForQuadrant(quadrant)"
     (click)="createNewTechnology(searchField.value, quadrant)"
     *ngIf="searchField.value !== '' && technologiesToShow.length === 0">
     <span id="add-technology"> {{truncatedName('Add as a new '+ quadrant)}} </span>

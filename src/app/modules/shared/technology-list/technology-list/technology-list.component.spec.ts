@@ -2,8 +2,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { of, asyncScheduler, Subject } from 'rxjs';
-import { observeOn } from 'rxjs/operators';
+import { of, asyncScheduler, Subject, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { observeOn, tap } from 'rxjs/operators';
 
 import { TechnologyListComponent } from './technology-list.component';
 import { AppMaterialModule } from '../../../../app-material.module';
@@ -15,11 +15,17 @@ import { TechnologyListService } from '../services/technology-list.service';
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 import { MockVoteService, TEST_TECHNOLOGIES } from 'src/app/modules/test-mocks/mock-vote-service';
 import { MockBackEndService } from 'src/app/modules/test-mocks/mock-back-end-service';
+import { VotingEventService } from 'src/app/services/voting-event.service';
+import { Technology } from 'src/app/models/technology';
 
 const mockBackendService = new MockBackEndService();
 mockBackendService.techsForVotingEvent = TEST_TECHNOLOGIES;
 class MockTechnologyListService {
   technologies$ = of(TEST_TECHNOLOGIES).pipe(observeOn(asyncScheduler));
+}
+class MockVotingEventService {
+  technologies$ = of(TEST_TECHNOLOGIES).pipe(observeOn(asyncScheduler));
+  quadrants$ = of([]).pipe(observeOn(asyncScheduler));
 }
 
 describe('TechnologyListComponent', () => {
@@ -34,6 +40,7 @@ describe('TechnologyListComponent', () => {
         { provide: BackendService, useValue: mockBackendService },
         { provide: VoteService, useClass: MockVoteService },
         { provide: AppSessionService, useClass: MockAppSessionService },
+        { provide: VotingEventService, useClass: MockVotingEventService },
         { provide: TechnologyListService, useClass: MockTechnologyListService }
       ]
     }).compileComponents();
@@ -87,14 +94,14 @@ describe('TechnologyListComponent', () => {
 
   describe('search for technology', () => {
     it('should list down all the technologies that matches the search string', () => {
-      component.search$ = of(TEST_TECHNOLOGIES[0].name);
+      component.search$ = new BehaviorSubject<string>(TEST_TECHNOLOGIES[0].name);
       fixture.whenStable().then(() => {
         expect(component.technologiesToShow.find((t) => t === TEST_TECHNOLOGIES[0]));
       });
     });
 
     it('should list down all the technologies that matches the search character', () => {
-      component.search$ = of('c');
+      component.search$ = new BehaviorSubject<string>('c');
       fixture.whenStable().then(() => {
         expect(component.technologiesToShow.length).toBe(3);
         expect(component.technologiesToShow).toContain(TEST_TECHNOLOGIES[2]);
@@ -104,7 +111,7 @@ describe('TechnologyListComponent', () => {
     });
 
     it('should get empty list of technologies when that does not matches the search string', () => {
-      component.search$ = of('random');
+      component.search$ = new BehaviorSubject<string>('random');
       fixture.whenStable().then(() => {
         expect(component.technologiesToShow.length).toBe(0);
       });
@@ -122,14 +129,25 @@ describe('add a new technology', () => {
       const votingEvent = { technologies: TECHS, name: null, status: 'closed', _id: null, creationTS: null };
       return of(votingEvent).pipe(observeOn(asyncScheduler));
     }
-    addTechnologyToVotingEvent(votingEventId: any, technology: any) {
-      TECHS.push(technology);
-      return of(technology).pipe(observeOn(asyncScheduler));
-    }
   }
   class MockStatefullTechnologyListService {
     technologies$ = of(TECHS).pipe(observeOn(asyncScheduler));
-    newTechnologyAdded$ = new Subject<any>();
+  }
+  class MockStatefullVotingEventService {
+    // the test is synchronous, so we can not use observeOn(asyncScheduler) in the technologies$ Observable as well as
+    // in the Observable returned by addTechnologyToVotingEvent
+    _technologies$ = new BehaviorSubject<Technology[]>(TEST_TECHNOLOGIES);
+    technologies$ = this._technologies$.asObservable();
+    quadrants$ = of(['Tools', 'Platforms', 'Techniques', 'Languages & Frameworks']).pipe(observeOn(asyncScheduler));
+    addTechnologyToVotingEvent(votingEventId: any, technology: any) {
+      TECHS.push(technology);
+      return of(technology).pipe(
+        tap({
+          next: () => this._technologies$.next(TECHS),
+          error: (err) => console.error(err)
+        })
+      );
+    }
   }
 
   beforeEach(async(() => {
@@ -140,6 +158,7 @@ describe('add a new technology', () => {
         { provide: BackendService, useClass: MockStatefullBackEndService },
         { provide: VoteService, useClass: MockVoteService },
         { provide: AppSessionService, useClass: MockAppSessionService },
+        { provide: VotingEventService, useClass: MockStatefullVotingEventService },
         { provide: TechnologyListService, useClass: MockStatefullTechnologyListService }
       ]
     }).compileComponents();
@@ -151,9 +170,9 @@ describe('add a new technology', () => {
     fixture.detectChanges();
   });
 
-  it('should get empty list of technologies when that does not matches the search string', () => {
+  it('after a technology is added should be found among the technologies for which it is possible to vote', () => {
     const newTechName = 'The brand new tech';
-    const theQuadrant = 'tools';
+    const theQuadrant = 'Tools';
     component.createNewTechnology(newTechName, theQuadrant);
     fixture.whenStable().then(() => {
       expect(component.technologiesToShow.find((t) => t.name === newTechName)).toBeDefined();

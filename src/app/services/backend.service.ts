@@ -320,7 +320,7 @@ export class BackendService {
     const payload = this.buildPostPayloadForService(ServiceNames.addNewTechnologyToEvent);
     payload['_id'] = _id;
     payload['technology'] = technology;
-    return this.http.post(this.url, payload).pipe(catchError(this.handleError));
+    return <Observable<any>>this.http.post(this.url, payload).pipe(catchError(this.handleError));
   }
 
   addCommentToTech(_id: string, technologyId: string, comment: string) {

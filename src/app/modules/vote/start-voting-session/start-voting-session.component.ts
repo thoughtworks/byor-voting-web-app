@@ -141,7 +141,7 @@ export class StartVotingSessionComponent implements AfterViewInit, OnDestroy, On
 
     this.votingEvent$ = merge(justOneOpenEvent$, selectionChanged$).pipe(share());
 
-    const inputData$ = combineLatest(this.votingEvent$, firstName$, lastName$);
+    const inputData$ = combineLatest([this.votingEvent$, firstName$, lastName$]);
 
     // notifies when any of the input data provided changes - the value notified is true of false
     // depending on the fact that the input data is valid or not
@@ -150,7 +150,7 @@ export class StartVotingSessionComponent implements AfterViewInit, OnDestroy, On
       share()
     );
 
-    const clickOnVote$ = combineLatest(this.isValidInputData$, inputData$).pipe(
+    const clickOnVote$ = combineLatest([this.isValidInputData$, inputData$]).pipe(
       switchMap(([isValid, [votingEvent, firstName, lastName]]) => {
         if (!isValid) {
           return NEVER;

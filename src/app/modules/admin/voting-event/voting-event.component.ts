@@ -78,7 +78,7 @@ export class VotingEventComponent implements OnInit {
     this.configuration$ = this.configurationService.configurationForUser(this.authenticationService.user).pipe(shareReplay(1));
     this.stats$ = this.selectedEvent$.pipe(
       map((vEventName) => this.votingEvents.find((vEvent) => vEvent.name === vEventName)),
-      concatMap((vEvent) => forkJoin(this.backend.getVoters(vEvent._id), this.backend.getVotes(vEvent._id))),
+      concatMap((vEvent) => forkJoin([this.backend.getVoters(vEvent._id), this.backend.getVotes(vEvent._id)])),
       map(([voters, votes]) => {
         console.log('here');
         return `Number of voters: ${voters.length}  - Voters have cast ${votes.length} votes`;
