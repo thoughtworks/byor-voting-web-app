@@ -87,6 +87,7 @@ describe('BackendService', () => {
       const votes3 = [{ ring: 'Trial', technology: null }];
 
       let votingEvent;
+      let errorEncountered = false;
       service
         .authenticate(validUser.user, validUser.pwd)
         .pipe(
@@ -150,6 +151,7 @@ describe('BackendService', () => {
           switchMap(() => service.saveVote(votes2, credentials2)),
           catchError((err) => {
             expect(err.errorCode).toBe(ERRORS.voteAlreadyPresent);
+            errorEncountered = true;
             return of(null);
           }),
           switchMap(() => service.openForRevote(votingEvent)),
@@ -173,7 +175,10 @@ describe('BackendService', () => {
             logError('2.1 test the entire voting cycle ' + err);
             throw new Error('the voting cycle does not work');
           },
-          complete: () => done()
+          complete: () => {
+            expect(errorEncountered).toBeTruthy();
+            done();
+          }
         });
     }, 100000);
   });
@@ -198,6 +203,7 @@ describe('BackendService', () => {
       const service: BackendService = TestBed.get(BackendService);
       const invalidUser = { user: 'abc', pwd: '321' };
 
+      let errorEncountered = false;
       service.authenticate(invalidUser.user, invalidUser.pwd).subscribe(
         (resp) => {
           logError('5.2 authenticate a user with wrong password ' + resp);
@@ -205,9 +211,13 @@ describe('BackendService', () => {
         },
         (err) => {
           expect(err.errorCode).toBe(ERRORS.pwdInvalid);
+          errorEncountered = true;
           done();
         },
-        () => done()
+        () => {
+          expect(errorEncountered).toBeTruthy();
+          done();
+        }
       );
     }, 10000);
 
@@ -216,6 +226,7 @@ describe('BackendService', () => {
       const service: BackendService = TestBed.get(BackendService);
       const invalidUser = { user: 'not existing user', pwd: '321' };
 
+      let errorEncountered = false;
       service.authenticate(invalidUser.user, invalidUser.pwd).subscribe(
         (resp) => {
           logError('5.3 authenticate a user that does not exist ' + resp);
@@ -223,9 +234,13 @@ describe('BackendService', () => {
         },
         (err) => {
           expect(err.errorCode).toBe(ERRORS.userUnknown);
+          errorEncountered = true;
           done();
         },
-        () => done()
+        () => {
+          expect(errorEncountered).toBeTruthy();
+          done();
+        }
       );
     }, 10000);
   });
@@ -720,6 +735,7 @@ describe('BackendService', () => {
       // this is to mimic an csv format
       const votingEventUser = [{ user, role: firstRole }, { user, role: secondRole }];
 
+      let errorEncountered = false;
       service
         .authenticate(validUser.user, validUser.pwd)
         .pipe(
@@ -735,6 +751,7 @@ describe('BackendService', () => {
           concatMap(() => service.authenticateForVotingEvent(user, pwd, votingEvent._id)),
           catchError((err) => {
             expect(err.errorCode).toBe(ERRORS.userUnknown);
+            errorEncountered = true;
             return of(null);
           })
         )
@@ -743,13 +760,16 @@ describe('BackendService', () => {
             console.error('12.2 authenticate with a non existing user', err);
             throw new Error('authenticate with a non existing user');
           },
-          complete: () => done()
+          complete: () => {
+            expect(errorEncountered).toBeTruthy();
+            done();
+          }
         });
     }, 100000);
   });
 
-  describe('13 BackendService - vote and then move to the next step', () => {
-    it('13.1 add some votes and then move to the next step in the VotingEvent flow', (done) => {
+  describe('13 BackendService - vote and then move to the next and previous step', () => {
+    it('13.1 add some votes and then move to the next step in the VotingEvent flow and then back to the previous step', (done) => {
       const service: BackendService = TestBed.get(BackendService);
       const votingEventName = 'a voting event to be moved to the next step';
       const initiativeName = 'BackendService Test 13';
@@ -816,9 +836,10 @@ describe('BackendService', () => {
           }),
           concatMap(() => service.saveVote(votes1, credentials1)),
           concatMap(() => service.saveVote(votes2, credentials2)),
-          concatMap(() => service.moveToNexFlowStep(votingEvent._id)),
+          concatMap(() => service.moveToNextFlowStep(votingEvent._id)),
           concatMap(() => service.getVotingEvent(votingEvent._id)),
           tap((vEvent: VotingEvent) => {
+            expect(vEvent.round).toBe(2);
             const techs = vEvent.technologies;
             const t1 = techs.find((t) => t.name === tech1.name);
             const t2 = techs.find((t) => t.name === tech2.name);
@@ -845,6 +866,11 @@ describe('BackendService', () => {
             expect(t2.votingResult.votesForTag.length).toBe(1);
             const trainingTagRes2 = t2.votingResult.votesForTag.find((t) => t.tag === trainingTag);
             expect(trainingTagRes2.count).toBe(1);
+          }),
+          concatMap(() => service.moveToPreviousFlowStep(votingEvent._id)),
+          concatMap(() => service.getVotingEvent(votingEvent._id)),
+          tap((vEvent: VotingEvent) => {
+            expect(vEvent.round).toBe(1);
           })
         )
         .subscribe({
@@ -853,6 +879,93 @@ describe('BackendService', () => {
             throw new Error('"add some votes and then move to the next step in the VotingEvent flow" does not work');
           },
           complete: () => done()
+        });
+    }, 100000);
+
+    it('13.2 try to move a voting event back to the previous step even if it is already in its first step', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+      const votingEventName = 'a voting event that tries to move to previous state even if it is already in its first step';
+      const initiativeName = 'BackendService Test 13';
+
+      let votingEventId;
+      let errorEncountered = false;
+
+      service
+        .authenticate(validUser.user, validUser.pwd)
+        .pipe(
+          tap((resp) => (testToken = resp)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
+          tap((id) => {
+            votingEventId = id;
+          }),
+          concatMap(() => service.openVotingEvent(votingEventId)),
+          concatMap(() => service.moveToPreviousFlowStep(votingEventId)),
+          catchError((err) => {
+            expect(err.errorCode).toBe(ERRORS.votingEventCanNotMoveToPreviousStepBecauseAlreadyInTheFirstStep);
+            errorEncountered = true;
+            return of(null);
+          }),
+          concatMap(() => service.getVotingEvent(votingEventId)),
+          tap((vEvent: VotingEvent) => {
+            expect(vEvent.round).toBe(1);
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('13.2 test "try to move a voting event back to the previous step even if it is already in its first step"', err);
+            throw new Error('"try to move a voting event back to the previous step even if it is already in its first step" does not work');
+          },
+          complete: () => {
+            expect(errorEncountered).toBeTruthy();
+            done();
+          }
+        });
+    }, 100000);
+
+    it('13.3 try to move a voting event after its last step', (done) => {
+      const service: BackendService = TestBed.get(BackendService);
+      const votingEventName = 'a voting event that tries to move after its last step';
+      const initiativeName = 'BackendService Test 13';
+
+      let votingEventId;
+      let errorEncountered = false;
+
+      service
+        .authenticate(validUser.user, validUser.pwd)
+        .pipe(
+          tap((resp) => (testToken = resp)),
+          concatMap(() => service.cancelInitiative(initiativeName, true)),
+          concatMap(() => service.createInitiative(initiativeName)),
+          concatMap(() => service.createVotingEvent(votingEventName, initiativeName)),
+          tap((id) => {
+            votingEventId = id;
+          }),
+          concatMap(() => service.openVotingEvent(votingEventId)),
+          // moves the step ahead 3 times even if the VotingEvent has just 3 steps - so the third move should fails
+          concatMap(() => service.moveToNextFlowStep(votingEventId)),
+          concatMap(() => service.moveToNextFlowStep(votingEventId)),
+          concatMap(() => service.moveToNextFlowStep(votingEventId)),
+          catchError((err) => {
+            expect(err.errorCode).toBe(ERRORS.votingEventCanNotMoveToNextStepBecauseAlreadyInTheLastStep);
+            errorEncountered = true;
+            return of(null);
+          }),
+          concatMap(() => service.getVotingEvent(votingEventId)),
+          tap((vEvent: VotingEvent) => {
+            expect(vEvent.round).toBe(3);
+          })
+        )
+        .subscribe({
+          error: (err) => {
+            console.error('13.3 test "13.3 try to move a voting event after its last step"', err);
+            throw new Error('"13.3 try to move a voting event after its last step" does not work');
+          },
+          complete: () => {
+            expect(errorEncountered).toBeTruthy();
+            done();
+          }
         });
     }, 100000);
   });
@@ -924,7 +1037,9 @@ describe('BackendService', () => {
             console.error('14.2 test "try to set another recommendation author and get an error"', err);
             throw new Error('"try to set another recommendation author and get an error" does not work');
           },
-          complete: () => done()
+          complete: () => {
+            done();
+          }
         });
     }, 100000);
 
@@ -1009,7 +1124,9 @@ describe('BackendService', () => {
             console.error('14.4 test "a different author-wanna-be tries to reset the recommendation and gets an error"', err);
             throw new Error('"a different author-wanna-be tries to reset the recommendation and gets an error" does not work');
           },
-          complete: () => done()
+          complete: () => {
+            done();
+          }
         });
     }, 100000);
 

@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { of, asyncScheduler, Subject, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { of, asyncScheduler, BehaviorSubject } from 'rxjs';
 import { observeOn, tap } from 'rxjs/operators';
 
 import { TechnologyListComponent } from './technology-list.component';
@@ -17,6 +17,7 @@ import { MockVoteService, TEST_TECHNOLOGIES } from 'src/app/modules/test-mocks/m
 import { MockBackEndService } from 'src/app/modules/test-mocks/mock-back-end-service';
 import { VotingEventService } from 'src/app/services/voting-event.service';
 import { Technology } from 'src/app/models/technology';
+import { TEST_VOTING_EVENT } from 'src/app/modules/test-mocks/mock-voting-event';
 
 const mockBackendService = new MockBackEndService();
 mockBackendService.techsForVotingEvent = TEST_TECHNOLOGIES;
@@ -148,6 +149,7 @@ describe('add a new technology', () => {
         })
       );
     }
+    selectedVotingEvent = of(TEST_VOTING_EVENT);
   }
 
   beforeEach(async(() => {

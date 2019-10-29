@@ -12,7 +12,13 @@ import { ConfigurationService } from 'src/app/services/configuration.service';
 import { AuthService } from '../../shared/login/auth.service';
 import { EventsService } from '../../../services/events.service';
 import { VoteCloudService } from '../vote-cloud/vote-cloud.service';
-import { getNextActionName, getActionName, getNextAction } from 'src/app/utils/voting-event-flow.util';
+import {
+  getNextActionName,
+  getActionName,
+  getNextAction,
+  getPreviousAction,
+  getPreviousActionName
+} from 'src/app/utils/voting-event-flow.util';
 import { AppSessionService } from 'src/app/app-session.service';
 import { Initiative } from 'src/app/models/initiative';
 
@@ -301,7 +307,7 @@ export class VotingEventComponent implements OnInit {
     const nextStepName = getNextActionName(this.getSelectedEvent());
     if (!nextStepName) {
       throw new Error(
-        `No next step for event ${this.getSelectedEvent().name} which is already at step ${getActionName(this.getSelectedEvent())}`
+        `No next step for event ${this.getSelectedEvent().name} which is already at the last step ${getActionName(this.getSelectedEvent())}`
       );
     }
     return `Go to "${nextStepName}"`;
@@ -309,14 +315,36 @@ export class VotingEventComponent implements OnInit {
   isNextStepAvailable() {
     return !!getNextAction(this.getSelectedEvent());
   }
-
   goToNextStep() {
-    this.backend.moveToNexFlowStep(this.getSelectedEvent()._id).subscribe(
-      () =>
-        (this.messageAction = `Event <strong> ${this.selectedName} </strong> moved to step "${getNextActionName(
+    this.backend
+      .moveToNextFlowStep(this.getSelectedEvent()._id)
+      .subscribe(this.moveStepSubscriber(getNextActionName(this.getSelectedEvent())));
+  }
+
+  getPreviousStepButtonText() {
+    const previousStepName = getPreviousActionName(this.getSelectedEvent());
+    if (!previousStepName) {
+      throw new Error(
+        `No previous step for event ${this.getSelectedEvent().name} which is already at the first step ${getActionName(
           this.getSelectedEvent()
-        )}"`),
-      (err) => {
+        )}`
+      );
+    }
+    return `Go back to "${previousStepName}"`;
+  }
+  isPreviousStepAvailable() {
+    return !!getPreviousAction(this.getSelectedEvent());
+  }
+  goToPreviousStep() {
+    this.backend
+      .moveToPreviousFlowStep(this.getSelectedEvent()._id)
+      .subscribe(this.moveStepSubscriber(getPreviousActionName(this.getSelectedEvent())));
+  }
+
+  private moveStepSubscriber(newStepName: string) {
+    return {
+      next: () => (this.messageAction = `Event <strong> ${this.selectedName} </strong> moved to step "${newStepName}"`),
+      error: (err) => {
         if (err.errorCode === ERRORS.unauthorized) {
           this.unauthorized();
           return;
@@ -324,7 +352,7 @@ export class VotingEventComponent implements OnInit {
         this.messageAction = `Event <strong> ${this.selectedName} </strong> could not be moved to next step - 
       look at the browser console to see if there is any detail`;
       },
-      () => this.refreshVotingEvents()
-    );
+      complete: () => this.refreshVotingEvents()
+    };
   }
 }

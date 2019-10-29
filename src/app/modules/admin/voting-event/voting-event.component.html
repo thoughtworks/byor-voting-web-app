@@ -31,6 +31,7 @@
         <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="voters()">Voters</button>
         <button mat-flat-button *ngIf="isSelectedEventOpen()" color="accent" (click)="viewRadarForSelectedEvent()">Tech radar</button>
         
+        <button mat-flat-button *ngIf="isPreviousStepAvailable()" color="accent" (click)="goToPreviousStep()">{{getPreviousStepButtonText()}}</button>
         <button mat-flat-button *ngIf="isNextStepAvailable()" color="accent" (click)="goToNextStep()">{{getNextStepButtonText()}}</button>
   
         <span mat-flat-button *ngIf="(configuration$ | async)?.revoteToggle">

@@ -12,6 +12,7 @@ import { logError } from 'src/app/utils/utils';
 import { AppSessionService } from 'src/app/app-session.service';
 import { TechnologyListService } from '../services/technology-list.service';
 import { VotingEventService } from 'src/app/services/voting-event.service';
+import { getActionParameters } from 'src/app/utils/voting-event-flow.util';
 
 @Component({
   selector: 'byor-technology-list',
@@ -170,5 +171,21 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
   getClassForQuadrant(quadrant: string) {
     const quadrantIndex = this.quadrants.indexOf(quadrant.toUpperCase());
     return `q${quadrantIndex + 1}`;
+  }
+
+  showNumberOfVotes(technology: Technology) {
+    return this.votingEventService.selectedVotingEvent.pipe(
+      map((votingEvent) => getActionParameters(votingEvent)),
+      map((stepParams) => {
+        const ret = !stepParams || (!stepParams.hideVotesAndCommentNumbers && technology.numberOfVotes > 0);
+        return ret;
+      })
+    );
+  }
+  showNumberOfComments(technology: Technology) {
+    return this.votingEventService.selectedVotingEvent.pipe(
+      map((votingEvent) => getActionParameters(votingEvent)),
+      map((stepParams) => !stepParams || (!stepParams.hideVotesAndCommentNumbers && technology.numberOfComments > 0))
+    );
   }
 }

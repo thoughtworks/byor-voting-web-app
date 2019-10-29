@@ -34,6 +34,15 @@ export function getNextActionName(votingEvent: VotingEvent) {
   return nextAction ? nextAction.name : null;
 }
 
+export function getPreviousAction(votingEvent: VotingEvent) {
+  const previousFlowStep = getPreviousFlowStep(votingEvent);
+  return previousFlowStep ? previousFlowStep.action : null;
+}
+export function getPreviousActionName(votingEvent: VotingEvent) {
+  const nextAction = getPreviousAction(votingEvent);
+  return nextAction ? nextAction.name : null;
+}
+
 export function getActionRoute(votingEvent: VotingEvent) {
   const actionName = getActionName(votingEvent);
   let route: string;
@@ -65,4 +74,11 @@ function getNextFlowStep(votingEvent: VotingEvent) {
   }
   const round = votingEvent.round ? votingEvent.round : 1;
   return votingEvent.flow.steps.length > round ? votingEvent.flow.steps[round] : null;
+}
+function getPreviousFlowStep(votingEvent: VotingEvent) {
+  if (!votingEvent.flow) {
+    throw new Error(`Voting Event ${votingEvent.name} does not have a flow defined`);
+  }
+  const round = votingEvent.round ? votingEvent.round : 1;
+  return round > 1 ? votingEvent.flow.steps[round - 2] : null;
 }

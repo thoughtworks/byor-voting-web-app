@@ -11,7 +11,7 @@ export interface VotingEventStep {
     parameters?: {
       commentOnVoteBlocked?: boolean;
       techSelectLogic?: TechSelectLogic;
-      displayVotesAndCommentNumbers?: boolean;
+      hideVotesAndCommentNumbers?: boolean;
       tags?: string[];
       allowTagsOnVote?: boolean;
       voteOnlyOnce?: boolean; // if true the voter can vote only once and can not override the vote

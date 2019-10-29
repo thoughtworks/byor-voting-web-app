@@ -279,7 +279,7 @@ export class BackendService {
     payload['flow'] = flow;
     return this.http.post(this.url, payload).pipe(
       map((resp: RespFromBackend) => {
-        return resp;
+        return this.handleReponseDefault(resp);
       }),
       catchError(this.handleError)
     );
@@ -320,7 +320,12 @@ export class BackendService {
     const payload = this.buildPostPayloadForService(ServiceNames.addNewTechnologyToEvent);
     payload['_id'] = _id;
     payload['technology'] = technology;
-    return <Observable<any>>this.http.post(this.url, payload).pipe(catchError(this.handleError));
+    return <Observable<any>>this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        return this.handleReponseDefault(resp);
+      }),
+      catchError(this.handleError)
+    );
   }
 
   addCommentToTech(_id: string, technologyId: string, comment: string) {
@@ -521,8 +526,19 @@ export class BackendService {
     window.open(radarUrl, '_blank');
   }
 
-  moveToNexFlowStep(id: string) {
-    const payload = this.buildPostPayloadForService(ServiceNames.moveToNexFlowStep);
+  moveToNextFlowStep(id: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.moveToNextFlowStep);
+    payload['_id'] = id;
+    return this.http.post(this.url, payload).pipe(
+      map((resp: any) => {
+        return this.handleReponseDefault(resp);
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  moveToPreviousFlowStep(id: string) {
+    const payload = this.buildPostPayloadForService(ServiceNames.moveToPreviousFlowStep);
     payload['_id'] = id;
     return this.http.post(this.url, payload).pipe(
       map((resp: any) => {

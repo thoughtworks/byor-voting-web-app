@@ -6,5 +6,7 @@ export const ERRORS = {
   serverUnreacheable: 'S-01',
   unauthorized: 'Auth-01',
   recommendationAuthorAlreadySet: 'R-01',
-  recommendationAuthorDifferent: 'R-02'
+  recommendationAuthorDifferent: 'R-02',
+  votingEventCanNotMoveToPreviousStepBecauseAlreadyInTheFirstStep: 'V-E-05',
+  votingEventCanNotMoveToNextStepBecauseAlreadyInTheLastStep: 'V-E-06'
 };
