@@ -4,6 +4,7 @@ import { VotingEvent } from 'src/app/models/voting-event';
 import { MatSelect } from '@angular/material/select';
 import { getIdentificationRoute } from 'src/app/utils/voting-event-flow.util';
 import { Router } from '@angular/router';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 @Component({
   selector: 'byor-voting-event-select',
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
 export class VotingEventSelectComponent implements OnInit {
   votingEventName: string;
 
-  constructor(public appSession: AppSessionService, private router: Router) {}
+  constructor(public appSession: AppSessionService, private router: Router, private votingEventService: VotingEventService) {}
 
   ngOnInit() {}
 
@@ -23,7 +24,7 @@ export class VotingEventSelectComponent implements OnInit {
 
   goToIdentification() {
     const votingEvent = this.appSession.getVotingEvents().find((ve) => ve.name === this.votingEventName);
-    this.appSession.setSelectedVotingEvent(votingEvent);
+    this.votingEventService.setVotingEvent(votingEvent);
     const route = getIdentificationRoute(votingEvent);
     this.router.navigate([route]);
   }

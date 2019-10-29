@@ -8,6 +8,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { ERRORS } from 'src/app/services/errors';
 import { getActionRoute } from 'src/app/utils/voting-event-flow.util';
 import { AppSessionService } from 'src/app/app-session.service';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 @Component({
   selector: 'byor-login-voting-event',
@@ -32,7 +33,8 @@ export class LoginVotingEventComponent implements AfterViewInit, OnDestroy {
     public authService: AuthService,
     public router: Router,
     public errorService: ErrorService,
-    public appSession: AppSessionService
+    public appSession: AppSessionService,
+    private votingEventService: VotingEventService
   ) {}
 
   ngAfterViewInit() {
@@ -44,7 +46,7 @@ export class LoginVotingEventComponent implements AfterViewInit, OnDestroy {
       ({ resp, userId }) => {
         this.authService.isLoggedIn = !!resp;
         this.appSession.setCredentials({ userId });
-        const redirect = getActionRoute(this.appSession.getSelectedVotingEvent());
+        const redirect = getActionRoute(this.votingEventService.getSelectedVotingEvent());
         this.router.navigate([redirect]);
       },
       (error) => {
@@ -103,7 +105,7 @@ export class LoginVotingEventComponent implements AfterViewInit, OnDestroy {
     return this.clickOnLogin$.pipe(
       switchMap((_credentials) => {
         credentials = _credentials;
-        const _votingEvent = this.appSession.getSelectedVotingEvent();
+        const _votingEvent = this.votingEventService.getSelectedVotingEvent();
         return this.authService
           .loginForVotingEvent(credentials.user, credentials.password, _votingEvent._id)
           .pipe(map((resp) => ({ resp, userId: credentials.user })));

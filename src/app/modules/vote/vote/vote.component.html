@@ -19,7 +19,7 @@
         <div *ngIf="getVotesByRing(ring).length">
           <h5>{{ ring  | uppercase }}:</h5>
           <mat-chip-list>
-            <mat-chip [ngClass]="getClassForQuadrant(vote.technology.quadrant)" class="vote-chip"
+            <mat-chip [ngClass]="getClassForQuadrant$(vote.technology.quadrant) | async" class="vote-chip"
               *ngFor="let vote of getVotesByRing(ring)" (removed)="removeVote(vote)">
               <span>{{ vote.technology.name }}</span>
               <mat-icon matChipRemove>cancel</mat-icon>

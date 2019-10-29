@@ -45,3 +45,6 @@ fileignoreconfig:
   ignore_detectors: []
 - filename: .make/utils/get_byor_env.sh
   ignore_detectors: [filename]
+- filename: src/app/modules/shared/login/login-voting-event/login-voting-event.component.ts
+  checksum: d76037d70275877fb7261e9fd74c57c6d860e7d87c7602e7d956569595438720
+  ignore_detectors: []

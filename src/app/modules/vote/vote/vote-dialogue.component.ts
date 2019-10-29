@@ -1,19 +1,12 @@
 import { Component, Inject, ViewChild, ElementRef, OnInit, AfterViewInit } from '@angular/core';
-import {
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatAutocomplete,
-  MatAutocompleteSelectedEvent,
-  MatAutocompleteTrigger
-} from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material';
 
 import { TwRings } from '../../../models/ring';
 import { HelpDialogueComponent } from './help-dialogue/help-dialogue.component';
 import { Observable } from 'rxjs';
-import { AppSessionService } from 'src/app/app-session.service';
 import { getActionParameters } from 'src/app/utils/voting-event-flow.util';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 @Component({
   selector: 'byor-vote-dialogue',
@@ -44,11 +37,11 @@ export class VoteDialogueComponent implements OnInit, AfterViewInit {
     public dialog: MatDialog,
     public dialogRef: MatDialogRef<VoteDialogueComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private appSession: AppSessionService
+    private votingEventService: VotingEventService
   ) {}
 
   ngOnInit() {
-    const votingEvent = this.appSession.getSelectedVotingEvent();
+    const votingEvent = this.votingEventService.getSelectedVotingEvent();
     const actionParams = getActionParameters(votingEvent);
     this.allTags = actionParams && actionParams.tags ? actionParams.tags : [];
     this.filteredTags = [...this.allTags].sort();
@@ -60,7 +53,7 @@ export class VoteDialogueComponent implements OnInit, AfterViewInit {
   }
 
   showComment() {
-    const votingEvent = this.appSession.getSelectedVotingEvent();
+    const votingEvent = this.votingEventService.getSelectedVotingEvent();
     const actionStepParams = getActionParameters(votingEvent);
     return actionStepParams ? !actionStepParams.commentOnVoteBlocked : false;
   }

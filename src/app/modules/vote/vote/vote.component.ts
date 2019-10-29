@@ -2,7 +2,7 @@ import { Component, ViewChild, AfterViewInit, OnDestroy, OnInit } from '@angular
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 
-import { combineLatest, Observable, merge, Subscription } from 'rxjs';
+import { Observable, merge, Subscription } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 
@@ -19,11 +19,10 @@ import { TwRings } from 'src/app/models/ring';
 import { Comment } from 'src/app/models/comment';
 import { logError } from 'src/app/utils/utils';
 import { AppSessionService } from 'src/app/app-session.service';
-import { ConfigurationService } from 'src/app/services/configuration.service';
 import { TechnologyListService } from '../../shared/technology-list/services/technology-list.service';
 import { TechnologyListComponent } from '../../shared/technology-list/technology-list/technology-list.component';
 import { getActionParameters, getIdentificationRoute } from 'src/app/utils/voting-event-flow.util';
-import { tap, concatMap } from 'rxjs/operators';
+import { tap, concatMap, switchMap, map } from 'rxjs/operators';
 import { VotingEventService } from 'src/app/services/voting-event.service';
 
 @Component({
@@ -41,8 +40,6 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
   messageVote: string;
 
   votingEventSubscription: Subscription;
-  quadrantSubscription: Subscription;
-  voteTechnologySubscription: Subscription;
 
   quadrants = new Array<string>();
 
@@ -52,26 +49,21 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
     public dialog: MatDialog,
     private voteService: VoteService,
     private appSession: AppSessionService,
-    private configurationService: ConfigurationService,
     private votingEventService: VotingEventService,
     private technologyListService: TechnologyListService
   ) {}
 
   ngOnInit() {
-    const votingEventShallow = this.appSession.getSelectedVotingEvent();
-    // retrieve the details of the voting event
-    this.votingEventSubscription = this.votingEventService.getVotingEvent(votingEventShallow._id).subscribe();
-    // the quadrants are required to provide the correct css class to the Accordion which shows the votes
-    this.quadrantSubscription = this.votingEventService.quadrants$.subscribe((_quadrants) => (this.quadrants = _quadrants));
-
-    const voterId = this.appSession.getCredentials();
-    this.voteTechnologySubscription = this.backEnd
-      .getVotes(votingEventShallow._id, voterId)
+    // retrieve the details of the voting event and then the votes and then be ready to open the vote dialogue
+    this.votingEventSubscription = this.votingEventService
+      .getSelectedVotingEvent$()
       .pipe(
+        concatMap((votingEvent) => this.backEnd.getVotes(votingEvent._id, this.appSession.getCredentials())),
         tap((votes) => {
           this.votes = votes;
           this.excludeTechnologiesVoted();
         }),
+        // wait for a tech to be selected or a new tech to be added to move to the voting dialogue
         concatMap(() => merge(this.technologyListService.technologySelected$, this.votingEventService.newTechnologyAdded$))
       )
       .subscribe((tech) => this.openVoteDialog(tech));
@@ -80,9 +72,6 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.votingEventSubscription) {
       this.votingEventSubscription.unsubscribe();
-    }
-    if (this.voteTechnologySubscription) {
-      this.voteTechnologySubscription.unsubscribe();
     }
   }
 
@@ -141,7 +130,10 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
 
   saveVotes() {
     const credentials = this.appSession.getCredentials();
-    const votingEvent = this.appSession.getSelectedVotingEvent();
+    // at this point we are sure there is a voting event selected and that this is stored as state in the service
+    // we do not need to ask for the Observable since the selected voting event is not going to change as far as the
+    // execution of this method is concerned, in other words at this point of execution voting event is not a stream
+    const votingEvent = this.votingEventService.getSelectedVotingEvent();
     let voterIdentification;
     let voteCredentials: VoteCredentials;
     if (credentials) {
@@ -167,7 +159,9 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
           });
 
           dialogRef.afterClosed().subscribe((result) => {
-            const route = getIdentificationRoute(this.appSession.getSelectedVotingEvent());
+            // at this point we are sure the selected voting event is stored as state in the VotingEventService
+            // there is no reason to treat it as an Observable stream
+            const route = getIdentificationRoute(this.votingEventService.getSelectedVotingEvent());
             this.router.navigate([route]);
           });
         }
@@ -194,13 +188,12 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
     return shortName;
   }
 
-  isAlreadyVoted(value: string) {
-    const existingVote = this.votes.filter((vote) => vote.technology.name === value);
-    return existingVote.length !== 0;
-  }
-
-  getClassForQuadrant(quadrant: string) {
-    const quadrantIndex = this.quadrants.indexOf(quadrant.toUpperCase());
-    return `q${quadrantIndex + 1}`;
+  getClassForQuadrant$(quadrant: string) {
+    return this.votingEventService.quadrants$.pipe(
+      map((quadrants) => {
+        const quadrantIndex = quadrants.indexOf(quadrant.toUpperCase());
+        return `q${quadrantIndex + 1}`;
+      })
+    );
   }
 }

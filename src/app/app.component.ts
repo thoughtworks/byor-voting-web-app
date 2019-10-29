@@ -5,9 +5,9 @@ import { BackendService } from './services/backend.service';
 import { ErrorService } from './services/error.service';
 import { AppSessionService } from './app-session.service';
 import { getIdentificationRoute } from './utils/voting-event-flow.util';
-import { map, tap, concatMap } from 'rxjs/operators';
-import { ConfigurationService } from './services/configuration.service';
+import { map, tap } from 'rxjs/operators';
 import { AuthService } from './modules/shared/login/auth.service';
+import { VotingEventService } from './services/voting-event.service';
 
 @Component({
   selector: 'byor-root',
@@ -22,7 +22,8 @@ export class AppComponent implements OnInit {
     private backend: BackendService,
     public errorService: ErrorService,
     private appSession: AppSessionService,
-    private authService: AuthService
+    private authService: AuthService,
+    private votingEventService: VotingEventService
   ) {}
 
   ngOnInit() {
@@ -36,8 +37,9 @@ export class AppComponent implements OnInit {
             this.errorService.setError(new Error('There are no Voting Events open'));
             this.router.navigate(['error']);
           } else if (votingEvents.length === 1) {
+            // if there is only one event open then automatically this becomes the selected event
             const votingEvent = votingEvents[0];
-            this.appSession.setSelectedVotingEvent(votingEvent);
+            this.votingEventService.setVotingEvent(votingEvent);
             const route = getIdentificationRoute(votingEvent);
             this.router.navigate([route]);
           } else {

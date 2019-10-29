@@ -85,7 +85,6 @@ export class StartVotingSessionComponent implements AfterViewInit, OnDestroy, On
       .subscribe(
         (credentials) => {
           this.voteService.credentials = credentials;
-          this.appSession.setSelectedVotingEvent(credentials.votingEvent);
           this.router.navigate(['vote/start']);
         },
         (error) => {

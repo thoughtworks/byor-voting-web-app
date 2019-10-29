@@ -67,7 +67,7 @@ describe('VotingEventService - get VotingEvent', () => {
     let areTechnologiesEmitted = false;
     let areQuadrantsEmitted = false;
     service
-      .getVotingEvent('a voting event id')
+      .getVotingEvent$('a voting event id')
       .pipe(
         tap({
           next: (votingEvent) => {
@@ -136,8 +136,8 @@ describe('VotingEventService - add technology to a voting event', () => {
     let isNewTechnologyEmitted = false;
     let areTechnologiesEmitted = false;
     service
-      .getVotingEvent(votingEventId)
-      .pipe(concatMap(() => service.addTechnologyToVotingEvent('a voting event id for new tech', newTech)))
+      .getVotingEvent$(votingEventId)
+      .pipe(concatMap(() => service.addTechnologyToVotingEvent$('a voting event id for new tech', newTech)))
       .subscribe({ error: console.error });
     service.newTechnologyAdded$.pipe(
       tap({

@@ -2,15 +2,13 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { VoteDialogueComponent } from './vote-dialogue.component';
 
-import { MatCardModule } from '@angular/material/card';
 import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { VotingEvent } from 'src/app/models/voting-event';
-import { AppSessionService } from 'src/app/app-session.service';
 import { AppMaterialModule } from 'src/app/app-material.module';
 
-import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
+import { VotingEventService } from 'src/app/services/voting-event.service';
+import { MockVotingEventService } from '../../test-mocks/mock-voting-event-service';
 
 describe('VoteDialogueComponent', () => {
   let component: VoteDialogueComponent;
@@ -28,7 +26,7 @@ describe('VoteDialogueComponent', () => {
         { provide: MatDialog, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
         { provide: MAT_DIALOG_DATA, useValue: matDialogData },
-        { provide: AppSessionService, useClass: MockAppSessionService }
+        { provide: VotingEventService, useClass: MockVotingEventService }
       ]
     }).compileComponents();
   }));

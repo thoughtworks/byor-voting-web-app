@@ -6,7 +6,6 @@ import { Subscription } from 'rxjs';
 import { TechnologyListService } from '../../shared/technology-list/services/technology-list.service';
 import { Technology } from 'src/app/models/technology';
 import { VotingEventService } from 'src/app/services/voting-event.service';
-import { AppSessionService } from 'src/app/app-session.service';
 
 @Component({
   selector: 'byor-select-tech-for-conversation',
@@ -19,15 +18,14 @@ export class SelectTechForConversationComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private appSession: AppSessionService,
     private votingEventService: VotingEventService,
     private technologyListService: TechnologyListService
   ) {}
 
   ngOnInit() {
-    const votingEventShallow = this.appSession.getSelectedVotingEvent();
+    const votingEventShallow = this.votingEventService.getSelectedVotingEvent();
     // retrieve the details of the voting event
-    this.votingEventSubscription = this.votingEventService.getVotingEvent(votingEventShallow._id).subscribe();
+    this.votingEventSubscription = this.votingEventService.getVotingEvent$(votingEventShallow._id).subscribe();
     this.technologyListSubscription = this.technologyListService.technologySelected$.subscribe((tech) => this.goToNextPage(tech));
   }
   ngOnDestroy() {

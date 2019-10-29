@@ -8,6 +8,7 @@ import { ERRORS } from 'src/app/services/errors';
 import { ErrorService } from 'src/app/services/error.service';
 import { RecommendationCardComponent } from '../recommendation-card/recommendation-card.component';
 import { map } from 'rxjs/operators';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 @Component({
   selector: 'byor-recommendation',
@@ -25,7 +26,8 @@ export class RecommendationComponent implements OnInit {
     private backEnd: BackendService,
     private appSession: AppSessionService,
     private router: Router,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private votingEventService: VotingEventService
   ) {}
 
   ngOnInit() {
@@ -37,7 +39,7 @@ export class RecommendationComponent implements OnInit {
   }
 
   signUp() {
-    const eventId = this.appSession.getSelectedVotingEvent()._id;
+    const eventId = this.votingEventService.getSelectedVotingEvent()._id;
     const techName = this.appSession.getSelectedTechnology().name;
     this.backEnd.signUpForRecommendation(eventId, techName).subscribe(
       () => {
@@ -58,7 +60,7 @@ export class RecommendationComponent implements OnInit {
   }
 
   cancel() {
-    const eventId = this.appSession.getSelectedVotingEvent()._id;
+    const eventId = this.votingEventService.getSelectedVotingEvent()._id;
     const techName = this.appSession.getSelectedTechnology().name;
     this.backEnd.resetRecommendation(eventId, techName).subscribe(
       () => {

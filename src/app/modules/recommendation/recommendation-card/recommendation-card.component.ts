@@ -9,6 +9,7 @@ import { AppSessionService } from 'src/app/app-session.service';
 import { TwRings } from 'src/app/models/ring';
 import { BackendService } from 'src/app/services/backend.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 @Component({
   selector: 'byor-recommendation-card',
@@ -36,7 +37,8 @@ export class RecommendationCardComponent implements OnInit {
     private appSession: AppSessionService,
     private backEnd: BackendService,
     private router: Router,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private votingEventService: VotingEventService
   ) {}
 
   ngOnInit() {
@@ -110,7 +112,7 @@ export class RecommendationCardComponent implements OnInit {
       this.errorMessage$.next(`It is mandatory to choose a ring for the recommendation`);
       return;
     }
-    const eventId = this.appSession.getSelectedVotingEvent()._id;
+    const eventId = this.votingEventService.getSelectedVotingEvent()._id;
     const techName = this.appSession.getSelectedTechnology().name;
     const recommendation: Recommendation = {
       ring: this.ringsSelected,

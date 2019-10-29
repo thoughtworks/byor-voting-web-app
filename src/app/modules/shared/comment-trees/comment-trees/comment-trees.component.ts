@@ -9,6 +9,7 @@ import { map, switchMap, tap } from 'rxjs/operators';
 import { Vote } from 'src/app/models/vote';
 import { AppSessionService } from 'src/app/app-session.service';
 import { AuthService } from '../../login/auth.service';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 /** Flat comment node with expandable and level information */
 export class CommentFlatNode {
@@ -57,13 +58,18 @@ export class CommentTreesComponent implements OnDestroy {
   private _showAddReplyButton = true;
   errorMessage: string;
 
-  constructor(private backEnd: BackendService, private authService: AuthService, public appSession: AppSessionService) {
+  constructor(
+    private backEnd: BackendService,
+    private authService: AuthService,
+    public appSession: AppSessionService,
+    private votingEventService: VotingEventService
+  ) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<CommentFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
     const tech = this.appSession.getSelectedTechnology();
-    const votingEvent = this.appSession.getSelectedVotingEvent();
+    const votingEvent = this.votingEventService.getSelectedVotingEvent();
     this.commentRetrievalSubscription = this.triggerCommentRetrieval
       .pipe(
         switchMap((flatNode) =>

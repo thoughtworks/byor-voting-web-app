@@ -5,9 +5,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { VotingEventSelectComponent } from './voting-event-select.component';
 import { AppSessionService } from 'src/app/app-session.service';
-import { VotingEvent } from 'src/app/models/voting-event';
 
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
+import { VotingEventService } from 'src/app/services/voting-event.service';
+import { MockVotingEventService } from 'src/app/modules/test-mocks/mock-voting-event-service';
 
 describe('VotingEventSelectComponent', () => {
   let component: VotingEventSelectComponent;
@@ -17,7 +18,10 @@ describe('VotingEventSelectComponent', () => {
     TestBed.configureTestingModule({
       imports: [AppMaterialModule, RouterTestingModule, BrowserAnimationsModule],
       declarations: [VotingEventSelectComponent],
-      providers: [{ provide: AppSessionService, useClass: MockAppSessionService }]
+      providers: [
+        { provide: AppSessionService, useClass: MockAppSessionService },
+        { provide: VotingEventService, useClass: MockVotingEventService }
+      ]
     }).compileComponents();
   }));
 

@@ -19,14 +19,12 @@ import { VotingEventService } from 'src/app/services/voting-event.service';
 import { Technology } from 'src/app/models/technology';
 import { TEST_VOTING_EVENT } from 'src/app/modules/test-mocks/mock-voting-event';
 
+import { MockVotingEventService } from '../../../test-mocks/mock-voting-event-service';
+
 const mockBackendService = new MockBackEndService();
 mockBackendService.techsForVotingEvent = TEST_TECHNOLOGIES;
 class MockTechnologyListService {
   technologies$ = of(TEST_TECHNOLOGIES).pipe(observeOn(asyncScheduler));
-}
-class MockVotingEventService {
-  technologies$ = of(TEST_TECHNOLOGIES).pipe(observeOn(asyncScheduler));
-  quadrants$ = of([]).pipe(observeOn(asyncScheduler));
 }
 
 describe('TechnologyListComponent', () => {
@@ -140,7 +138,11 @@ describe('add a new technology', () => {
     _technologies$ = new BehaviorSubject<Technology[]>(TEST_TECHNOLOGIES);
     technologies$ = this._technologies$.asObservable();
     quadrants$ = of(['Tools', 'Platforms', 'Techniques', 'Languages & Frameworks']).pipe(observeOn(asyncScheduler));
-    addTechnologyToVotingEvent(votingEventId: any, technology: any) {
+    votingEvent$ = of(TEST_VOTING_EVENT);
+    getSelectedVotingEvent() {
+      return TEST_VOTING_EVENT;
+    }
+    addTechnologyToVotingEvent$(votingEventId: any, technology: any) {
       TECHS.push(technology);
       return of(technology).pipe(
         tap({
@@ -149,7 +151,6 @@ describe('add a new technology', () => {
         })
       );
     }
-    selectedVotingEvent = of(TEST_VOTING_EVENT);
   }
 
   beforeEach(async(() => {

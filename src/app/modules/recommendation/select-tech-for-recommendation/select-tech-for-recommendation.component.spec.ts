@@ -10,11 +10,10 @@ import { TechnologyListService } from '../../shared/technology-list/services/tec
 import { TechnologyListComponent } from '../../shared/technology-list/technology-list/technology-list.component';
 
 import { SelectTechForRecommendationComponent } from './select-tech-for-recommendation.component';
-import { VotingEvent } from 'src/app/models/voting-event';
-import { AppSessionService } from 'src/app/app-session.service';
 
-import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 import { MockVoteService } from 'src/app/modules/test-mocks/mock-vote-service';
+import { VotingEventService } from 'src/app/services/voting-event.service';
+import { MockVotingEventService } from '../../test-mocks/mock-voting-event-service';
 
 describe('SelectTechForRecommendationComponent', () => {
   let component: SelectTechForRecommendationComponent;
@@ -27,7 +26,7 @@ describe('SelectTechForRecommendationComponent', () => {
       providers: [
         { provide: VoteService, useClass: MockVoteService },
         TechnologyListService,
-        { provide: AppSessionService, useClass: MockAppSessionService }
+        { provide: VotingEventService, useClass: MockVotingEventService }
       ]
     }).compileComponents();
   }));

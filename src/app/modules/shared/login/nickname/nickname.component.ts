@@ -2,15 +2,14 @@ import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef } fr
 import { Router } from '@angular/router';
 
 import { Observable, Subject, fromEvent, Subscription, NEVER } from 'rxjs';
-import { shareReplay, map, share, switchMap, tap, filter } from 'rxjs/operators';
+import { shareReplay, map, share, switchMap } from 'rxjs/operators';
 
 import { AppSessionService } from 'src/app/app-session.service';
 import { ConfigurationService } from 'src/app/services/configuration.service';
-import { BackendService } from 'src/app/services/backend.service';
-import { VoteCredentials } from 'src/app/models/vote-credentials';
 import { ErrorService } from 'src/app/services/error.service';
 import { logError } from 'src/app/utils/utils';
 import { getActionRoute } from 'src/app/utils/voting-event-flow.util';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 @Component({
   selector: 'byor-nickname',
@@ -22,8 +21,8 @@ export class NicknameComponent implements AfterViewInit, OnDestroy, OnInit {
     private router: Router,
     private errorService: ErrorService,
     public appSession: AppSessionService,
-    private configurationService: ConfigurationService,
-    private backend: BackendService
+    public votingEventService: VotingEventService,
+    private configurationService: ConfigurationService
   ) {}
 
   isValidInputData$: Observable<boolean>;
@@ -49,7 +48,7 @@ export class NicknameComponent implements AfterViewInit, OnDestroy, OnInit {
     this.goToVoteSubscription = this.goToVote$(nickname$, startButtonClick$).subscribe(
       (nickname) => {
         this.appSession.setCredentials({ nickname });
-        const redirect = getActionRoute(this.appSession.getSelectedVotingEvent());
+        const redirect = getActionRoute(this.votingEventService.getSelectedVotingEvent());
         this.router.navigate([redirect]);
       },
       (error) => {

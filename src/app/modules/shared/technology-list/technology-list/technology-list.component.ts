@@ -130,7 +130,7 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   createNewTechnology(name: string, quadrant: string) {
-    const votingEvent = this.appSession.getSelectedVotingEvent();
+    const votingEvent = this.votingEventService.getSelectedVotingEvent();
     const technology: Technology = {
       name: name,
       isnew: true,
@@ -138,7 +138,7 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
       quadrant: quadrant
     };
     this.addTechnologyToVotingEventSubscription = this.votingEventService
-      .addTechnologyToVotingEvent(votingEvent._id, technology)
+      .addTechnologyToVotingEvent$(votingEvent._id, technology)
       .subscribe();
   }
 
@@ -174,18 +174,18 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   showNumberOfVotes(technology: Technology) {
-    return this.votingEventService.selectedVotingEvent.pipe(
+    return this.votingEventService.votingEvent$.pipe(
       map((votingEvent) => getActionParameters(votingEvent)),
       map((stepParams) => {
-        const ret = !stepParams || (!stepParams.hideVotesAndCommentNumbers && technology.numberOfVotes > 0);
+        const ret = technology.numberOfVotes > 0 && (!stepParams || !stepParams.hideVotesAndCommentNumbers);
         return ret;
       })
     );
   }
   showNumberOfComments(technology: Technology) {
-    return this.votingEventService.selectedVotingEvent.pipe(
+    return this.votingEventService.votingEvent$.pipe(
       map((votingEvent) => getActionParameters(votingEvent)),
-      map((stepParams) => !stepParams || (!stepParams.hideVotesAndCommentNumbers && technology.numberOfComments > 0))
+      map((stepParams) => technology.numberOfComments > 0 && (!stepParams || !stepParams.hideVotesAndCommentNumbers))
     );
   }
 }

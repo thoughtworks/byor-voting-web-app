@@ -12,7 +12,6 @@ import { Initiative } from './models/initiative';
 export class AppSessionService {
   private votingEvents: VotingEvent[];
   private selectedInitiative: Initiative;
-  private selectedVotingEvent: VotingEvent;
   private selectedTechnology: Technology;
   selectedTechnology$ = new ReplaySubject<Technology>(1);
   private credentials: Credentials;
@@ -24,13 +23,6 @@ export class AppSessionService {
   }
   setVotingEvents(votingEvents: VotingEvent[]) {
     this.votingEvents = votingEvents;
-  }
-
-  getSelectedVotingEvent() {
-    return this.selectedVotingEvent;
-  }
-  setSelectedVotingEvent(votingEvent: VotingEvent) {
-    this.selectedVotingEvent = votingEvent;
   }
 
   getSelectedTechnology() {

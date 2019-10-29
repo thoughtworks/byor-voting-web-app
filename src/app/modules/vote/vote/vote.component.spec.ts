@@ -11,10 +11,12 @@ import { BackendService } from '../../../services/backend.service';
 import { TwRings } from 'src/app/models/ring';
 import { AppSessionService } from 'src/app/app-session.service';
 import { TechnologyListModule } from '../../shared/technology-list/technology-list.module';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 import { MockVoteService, TEST_TECHNOLOGIES } from 'src/app/modules/test-mocks/mock-vote-service';
 import { MockBackEndService } from 'src/app/modules/test-mocks/mock-back-end-service';
+import { MockVotingEventService } from '../../test-mocks/mock-voting-event-service';
 
 describe('VoteComponent', () => {
   const mockBackendService = new MockBackEndService();
@@ -30,7 +32,8 @@ describe('VoteComponent', () => {
       providers: [
         { provide: BackendService, useValue: mockBackendService },
         { provide: VoteService, useClass: MockVoteService },
-        { provide: AppSessionService, useClass: MockAppSessionService }
+        { provide: AppSessionService, useClass: MockAppSessionService },
+        { provide: VotingEventService, useClass: MockVotingEventService }
       ]
     }).compileComponents();
   }));
@@ -103,7 +106,8 @@ describe('vote exist', () => {
       providers: [
         { provide: BackendService, useValue: mockBackendService },
         { provide: VoteService, useClass: MockVoteService },
-        { provide: AppSessionService, useClass: MockAppSessionService }
+        { provide: AppSessionService, useClass: MockAppSessionService },
+        { provide: VotingEventService, useClass: MockVotingEventService }
       ]
     }).compileComponents();
   }));
@@ -112,31 +116,5 @@ describe('vote exist', () => {
     fixture = TestBed.createComponent(VoteComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should return true when vote is already added', function() {
-    const ring = 'Hold';
-    const technologyVotedIndex = 1;
-    const vote = {
-      ring,
-      technology: TEST_TECHNOLOGIES[technologyVotedIndex]
-    };
-
-    component.addVote(vote);
-
-    const isExist = component.isAlreadyVoted(TEST_TECHNOLOGIES[technologyVotedIndex].name);
-    expect(isExist).toBeTruthy();
-  });
-
-  it('should return false when vote does not find in the voted list', function() {
-    const ring = 'Hold';
-    const technologyVotedIndex = 1;
-    const vote = {
-      ring,
-      technology: TEST_TECHNOLOGIES[technologyVotedIndex]
-    };
-    component.addVote(vote);
-    const isExist = component.isAlreadyVoted('random');
-    expect(isExist).toBeFalsy();
   });
 });
