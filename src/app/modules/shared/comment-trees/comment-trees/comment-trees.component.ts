@@ -58,12 +58,7 @@ export class CommentTreesComponent implements OnDestroy {
   private _showAddReplyButton = true;
   errorMessage: string;
 
-  constructor(
-    private backEnd: BackendService,
-    private authService: AuthService,
-    public appSession: AppSessionService,
-    private votingEventService: VotingEventService
-  ) {
+  constructor(private backEnd: BackendService, public appSession: AppSessionService, private votingEventService: VotingEventService) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<CommentFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);

@@ -19,7 +19,6 @@ import { TwRings } from 'src/app/models/ring';
 import { Comment } from 'src/app/models/comment';
 import { logError } from 'src/app/utils/utils';
 import { AppSessionService } from 'src/app/app-session.service';
-import { TechnologyListService } from '../../shared/technology-list/services/technology-list.service';
 import { TechnologyListComponent } from '../../shared/technology-list/technology-list/technology-list.component';
 import { getActionParameters, getIdentificationRoute } from 'src/app/utils/voting-event-flow.util';
 import { tap, concatMap, switchMap, map } from 'rxjs/operators';
@@ -49,8 +48,7 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
     public dialog: MatDialog,
     private voteService: VoteService,
     private appSession: AppSessionService,
-    private votingEventService: VotingEventService,
-    private technologyListService: TechnologyListService
+    private votingEventService: VotingEventService
   ) {}
 
   ngOnInit() {
@@ -64,7 +62,7 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
           this.excludeTechnologiesVoted();
         }),
         // wait for a tech to be selected or a new tech to be added to move to the voting dialogue
-        concatMap(() => merge(this.technologyListService.technologySelected$, this.votingEventService.newTechnologyAdded$))
+        concatMap(() => merge(this.votingEventService.selectedTechnology$, this.votingEventService.newTechnologyAdded$))
       )
       .subscribe((tech) => this.openVoteDialog(tech));
   }

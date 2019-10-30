@@ -10,7 +10,6 @@ import { AppMaterialModule } from '../../../../app-material.module';
 import { BackendService } from '../../../../services/backend.service';
 import { AppSessionService } from 'src/app/app-session.service';
 import { VoteService } from '../../../vote/services/vote.service';
-import { TechnologyListService } from '../services/technology-list.service';
 
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 import { MockVoteService, TEST_TECHNOLOGIES } from 'src/app/modules/test-mocks/mock-vote-service';
@@ -39,8 +38,7 @@ describe('TechnologyListComponent', () => {
         { provide: BackendService, useValue: mockBackendService },
         { provide: VoteService, useClass: MockVoteService },
         { provide: AppSessionService, useClass: MockAppSessionService },
-        { provide: VotingEventService, useClass: MockVotingEventService },
-        { provide: TechnologyListService, useClass: MockTechnologyListService }
+        { provide: VotingEventService, useClass: MockVotingEventService }
       ]
     }).compileComponents();
   }));
@@ -161,8 +159,7 @@ describe('add a new technology', () => {
         { provide: BackendService, useClass: MockStatefullBackEndService },
         { provide: VoteService, useClass: MockVoteService },
         { provide: AppSessionService, useClass: MockAppSessionService },
-        { provide: VotingEventService, useClass: MockStatefullVotingEventService },
-        { provide: TechnologyListService, useClass: MockStatefullTechnologyListService }
+        { provide: VotingEventService, useClass: MockStatefullVotingEventService }
       ]
     }).compileComponents();
   }));

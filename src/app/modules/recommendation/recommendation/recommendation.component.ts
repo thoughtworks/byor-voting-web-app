@@ -40,12 +40,11 @@ export class RecommendationComponent implements OnInit {
 
   signUp() {
     const eventId = this.votingEventService.getSelectedVotingEvent()._id;
-    const techName = this.appSession.getSelectedTechnology().name;
+    const techName = this.votingEventService.getSelectedTechnology().name;
     this.backEnd.signUpForRecommendation(eventId, techName).subscribe(
       () => {
         const tech = this.appSession.getSelectedTechnology();
         tech.recommendation = { author: this.appSession.getCredentials().userId };
-        this.appSession.setSelectedTechnology(tech);
         this.showRecommendation$.next(true);
       },
       (err) => {

@@ -12,13 +12,30 @@ import { VotingEvent } from '../models/voting-event';
 export class VotingEventService {
   private _votingEvent: VotingEvent;
   private readonly _votingEvent$ = new ReplaySubject<VotingEvent>(1);
+
   private _technologies: Technology[];
   private readonly _technologies$ = new ReplaySubject<Technology[]>(1);
+
+  // the _selectedTechnology$ Observable is modelled with a Subject and not a ReplaySubject
+  // the reason is that selectedTechnology$ is subscribed by the containers that contain TechnologyListComponent
+  // (i.e. VoteComponent, SelectTechForConversationComponent, SelectTechForRecommendationComponent) and is "nexted"
+  // only by logic within TechnologyListComponent.
+  // So TechnologyListComponent does next on _selectedTechnology$ and the containers of TechnologyListComponent
+  // are responsible to react to this event and go to the respective page, either the vote dialogue or the Conversation or Recommendation
+  // page.
+  // Since it is a Subject and not a ReplaySubject it does not hold history and therefore it allows the browser back button to work. If
+  // you are in the conversation page and you click back, than you enter again the container of the TechnologyListComponent, which
+  // subscribes to selectedTechnology$ which has not history. Since selectedTechnology$ has no history, this new subscription has
+  // to wait for a new next, i.e. the selection of a technology, to perform its task and navigate to the proper page
+  private _selectedTechnology: Technology;
+  private readonly _selectedTechnology$ = new Subject<Technology>();
+
   private readonly _newTechnologyAdded$ = new Subject<Technology>();
 
   // public Observable properties which are APIs of the service
   votingEvent$ = this._votingEvent$.asObservable();
   technologies$ = this._technologies$.asObservable();
+  selectedTechnology$ = this._selectedTechnology$.asObservable();
   quadrants$ = this.technologies$.pipe(
     // add filter to filter the cases when the technologies are null due to the fact that the VotingEvent passed to
     // setVotingEvent method has been read in a skinny mode and therefore does not contain the technologies
@@ -58,6 +75,14 @@ export class VotingEventService {
     this._votingEvent$.next(votingEvent);
     this._technologies = votingEvent.technologies;
     this._technologies$.next(this._technologies);
+  }
+
+  getSelectedTechnology() {
+    return this._selectedTechnology;
+  }
+  setSelectedTechnology(technology: Technology) {
+    this._selectedTechnology = technology;
+    this._selectedTechnology$.next(technology);
   }
 
   addTechnologyToVotingEvent$(votingEventId: string, technology: Technology) {

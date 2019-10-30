@@ -16,6 +16,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 import { MockVoteService, TEST_TECHNOLOGY } from 'src/app/modules/test-mocks/mock-vote-service';
 import { MockBackEndService } from 'src/app/modules/test-mocks/mock-back-end-service';
+import { MockVotingEventService } from 'src/app/modules/test-mocks/mock-voting-event-service';
+import { VotingEventService } from 'src/app/services/voting-event.service';
 
 const firsCommentId = 'firsCommentId';
 const replyToFirsCommentId = 'replyToFirsCommentId';
@@ -70,7 +72,8 @@ describe('CommentTreesComponent', () => {
       providers: [
         { provide: BackendService, useValue: mockBackendService },
         { provide: VoteService, useClass: MockVoteService },
-        { provide: AppSessionService, useClass: MockAppSessionService }
+        { provide: AppSessionService, useClass: MockAppSessionService },
+        { provide: VotingEventService, useClass: MockVotingEventService }
       ]
     }).compileComponents();
   }));

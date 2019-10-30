@@ -13,6 +13,8 @@ import { RecommendationCardComponent } from '../recommendation-card/recommendati
 
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 import { TwBlipsModule } from '../../shared/tw-blips/tw-blips.module';
+import { VotingEventService } from 'src/app/services/voting-event.service';
+import { MockVotingEventService } from '../../test-mocks/mock-voting-event-service';
 
 describe('RecommendationComponent', () => {
   let component: RecommendationComponent;
@@ -30,7 +32,11 @@ describe('RecommendationComponent', () => {
         TechnologyVotingResultsModule,
         TwBlipsModule
       ],
-      providers: [VoteService, { provide: AppSessionService, useClass: MockAppSessionService }]
+      providers: [
+        VoteService,
+        { provide: AppSessionService, useClass: MockAppSessionService },
+        { provide: VotingEventService, useClass: MockVotingEventService }
+      ]
     }).compileComponents();
   }));
 

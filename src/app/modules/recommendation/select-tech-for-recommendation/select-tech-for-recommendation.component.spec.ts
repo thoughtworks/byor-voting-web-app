@@ -6,7 +6,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AppMaterialModule } from 'src/app/app-material.module';
 
 import { VoteService } from '../../vote/services/vote.service';
-import { TechnologyListService } from '../../shared/technology-list/services/technology-list.service';
 import { TechnologyListComponent } from '../../shared/technology-list/technology-list/technology-list.component';
 
 import { SelectTechForRecommendationComponent } from './select-tech-for-recommendation.component';
@@ -23,11 +22,7 @@ describe('SelectTechForRecommendationComponent', () => {
     TestBed.configureTestingModule({
       declarations: [SelectTechForRecommendationComponent, TechnologyListComponent],
       imports: [BrowserAnimationsModule, RouterTestingModule, HttpClientTestingModule, AppMaterialModule],
-      providers: [
-        { provide: VoteService, useClass: MockVoteService },
-        TechnologyListService,
-        { provide: VotingEventService, useClass: MockVotingEventService }
-      ]
+      providers: [{ provide: VoteService, useClass: MockVoteService }, { provide: VotingEventService, useClass: MockVotingEventService }]
     }).compileComponents();
   }));
 

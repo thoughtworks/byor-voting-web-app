@@ -10,7 +10,6 @@ import * as _ from 'lodash';
 import { TwRings } from 'src/app/models/ring';
 import { logError } from 'src/app/utils/utils';
 import { AppSessionService } from 'src/app/app-session.service';
-import { TechnologyListService } from '../services/technology-list.service';
 import { VotingEventService } from 'src/app/services/voting-event.service';
 import { getActionParameters } from 'src/app/utils/voting-event-flow.util';
 
@@ -58,7 +57,6 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
     private router: Router,
     private errorService: ErrorService,
     private appSession: AppSessionService,
-    private techListService: TechnologyListService,
     private votingEventService: VotingEventService
   ) {}
 
@@ -126,7 +124,7 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
 
   technologySelected(technology: Technology) {
     this.appSession.setSelectedTechnology(technology);
-    this.techListService.technologySelected$.next(technology);
+    this.votingEventService.setSelectedTechnology(technology);
   }
 
   createNewTechnology(name: string, quadrant: string) {

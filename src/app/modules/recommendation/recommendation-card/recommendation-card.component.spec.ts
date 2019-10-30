@@ -9,6 +9,8 @@ import { AppSessionService } from 'src/app/app-session.service';
 import { MockAppSessionService } from 'src/app/modules/test-mocks/mock-app-session-service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { VotingEventService } from 'src/app/services/voting-event.service';
+import { MockVotingEventService } from '../../test-mocks/mock-voting-event-service';
 
 describe('RecommendationCardComponent', () => {
   let component: RecommendationCardComponent;
@@ -18,7 +20,10 @@ describe('RecommendationCardComponent', () => {
     TestBed.configureTestingModule({
       declarations: [RecommendationCardComponent],
       imports: [BrowserAnimationsModule, AppMaterialModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [{ provide: AppSessionService, useClass: MockAppSessionService }]
+      providers: [
+        { provide: AppSessionService, useClass: MockAppSessionService },
+        { provide: VotingEventService, useClass: MockVotingEventService }
+      ]
     }).compileComponents();
   }));
 
