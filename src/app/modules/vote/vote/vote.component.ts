@@ -159,8 +159,10 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
           dialogRef.afterClosed().subscribe((result) => {
             // at this point we are sure the selected voting event is stored as state in the VotingEventService
             // there is no reason to treat it as an Observable stream
-            const route = getIdentificationRoute(this.votingEventService.getSelectedVotingEvent());
-            this.router.navigate([route]);
+            if (result !== 'no-redirect') {
+              const route = getIdentificationRoute(this.votingEventService.getSelectedVotingEvent());
+              this.router.navigate([route]);
+            }
           });
         }
       },
