@@ -1,4 +1,4 @@
-export type IdentificationTypeNames = 'nickname' | 'login';
+export type IdentificationTypeNames = 'email' | 'nickname' | 'login';
 export type ActionNames = 'vote' | 'conversation' | 'recommendation';
 export type TechSelectLogic = 'TechWithComments' | 'TechUncertain';
 

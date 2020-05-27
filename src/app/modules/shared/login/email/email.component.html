@@ -1,0 +1,26 @@
+<div class="email-section">
+  <div>
+    <span class="event-label">Voting for event: <strong>{{votingEventService.getSelectedVotingEvent()?.name}}</strong></span>
+  </div>
+</div>
+  
+<div class="email-section">
+  <div class="email">
+    <label>Please enter your email</label>
+    <input #email type="email" class="email-input" id="email">
+  </div>
+
+  <div class="form-actions">
+    <button #startButton mat-flat-button color="accent" [class.button-disabled]="!(isValidInputData$ | async)"
+      [class.button-enabled]="(isValidInputData$ | async)" [disabled]="!(isValidInputData$ | async)">
+      <span class="button-text"> Start Session </span>
+    </button>
+  </div>
+
+  <div *ngIf="message$ | async as message" class="message" [innerHTML]="message"></div>
+
+</div>
+<div class="banner-section">
+  <a [href]="(configuration$ | async)?.bannerTargetUrl" target="_blank"><img
+      [src]="(configuration$ | async)?.bannerImageUrl"></a>
+</div>
