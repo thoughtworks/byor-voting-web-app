@@ -1,5 +1,11 @@
 @import "../../../styles/theme/colors";
 
+.vote-cloud-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .ring-buttons {
   display: flex;
   flex-wrap: wrap;
