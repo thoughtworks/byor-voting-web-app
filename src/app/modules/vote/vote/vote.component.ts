@@ -135,7 +135,7 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
     let voterIdentification;
     let voteCredentials: VoteCredentials;
     if (credentials) {
-      voterIdentification = credentials.nickname || credentials.userId;
+      voterIdentification = credentials.email || credentials.nickname || credentials.userId;
       voteCredentials = { voterId: credentials, votingEvent };
     } else {
       voteCredentials = this.voteService.credentials;
