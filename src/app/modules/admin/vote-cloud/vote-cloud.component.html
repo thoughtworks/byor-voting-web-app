@@ -1,7 +1,11 @@
 <header>
   <div class="vote-cloud-title">
     <div class="vote-cloud-title__text">
-      <h2>{{(eventName$ | async)}}</h2>
+      <h2>
+        <button mat-icon-button color="basic" aria-label="go back" (click)="goBack()">
+          <mat-icon>arrow_back_ios</mat-icon>
+        </button>
+        {{(eventName$ | async)}}</h2>
     </div>
   </div>
   <div class="ring-buttons">
