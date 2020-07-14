@@ -12,7 +12,9 @@
           <span [matBadge]="votes.length" matBadgeOverlap="false" matBadgeColor="accent">Votes</span>
         </mat-panel-title>
         <mat-panel-description>
-          <button mat-flat-button (click)="saveVotes()" color="accent">Save</button>
+          <a mat-flat-button (click)="viewVoteCloud()" class="panel-button external-links" *ngIf="votesHaveBeenAlreadySaved">Word Cloud</a>
+          <!-- <a mat-flat-button (click)="viewRadarForSelectedEvent()" class="panel-button external-links" *ngIf="votesHaveBeenAlreadySaved">Tech Radar</a> -->
+          <button mat-flat-button (click)="saveVotes()" color="accent" class="panel-button">{{getSaveButtonName()}}</button>
         </mat-panel-description>
       </mat-expansion-panel-header>
       <div *ngFor="let ring of rings" class="selection-list">

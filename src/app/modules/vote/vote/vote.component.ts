@@ -21,8 +21,11 @@ import { logError } from 'src/app/utils/utils';
 import { AppSessionService } from 'src/app/app-session.service';
 import { TechnologyListComponent } from '../../shared/technology-list/technology-list/technology-list.component';
 import { getActionParameters, getIdentificationRoute } from 'src/app/utils/voting-event-flow.util';
-import { tap, concatMap, switchMap, map } from 'rxjs/operators';
+import { tap, concatMap, switchMap, map, shareReplay } from 'rxjs/operators';
 import { VotingEventService } from 'src/app/services/voting-event.service';
+import { VoteCloudService } from '../../admin/vote-cloud/vote-cloud.service';
+import { ConfigurationService } from 'src/app/services/configuration.service';
+import { AuthService } from '../../shared/login/auth.service';
 
 @Component({
   selector: 'byor-vote',
@@ -34,6 +37,7 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
   rings = TwRings.names;
 
   votes = new Array<Vote>();
+  votesHaveBeenAlreadySaved = false;
   votingEventId$: Observable<any>;
 
   messageVote: string;
@@ -42,16 +46,23 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
 
   quadrants = new Array<string>();
 
+  configuration$: Observable<any>;
+
   constructor(
     private backEnd: BackendService,
     private router: Router,
     public dialog: MatDialog,
     private voteService: VoteService,
     private appSession: AppSessionService,
-    private votingEventService: VotingEventService
+    private votingEventService: VotingEventService,
+    private voteCloudService: VoteCloudService,
+    private configurationService: ConfigurationService,
+    private backend: BackendService,
+    private authenticationService: AuthService
   ) {}
 
   ngOnInit() {
+    this.configuration$ = this.configurationService.configurationForUser(this.authenticationService.user).pipe(shareReplay(1));
     // retrieve the details of the voting event and then the votes and then be ready to open the vote dialogue
     this.votingEventSubscription = this.votingEventService
       .getSelectedVotingEvent$()
@@ -59,6 +70,7 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
         concatMap((votingEvent) => this.backEnd.getVotes(votingEvent._id, this.appSession.getCredentials())),
         tap((votes) => {
           this.votes = votes;
+          this.votesHaveBeenAlreadySaved = votes.length > 0;
           this.excludeTechnologiesVoted();
         }),
         // wait for a tech to be selected or a new tech to be added to move to the voting dialogue
@@ -113,6 +125,7 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
   addVote(vote: Vote) {
     this.votes.push(vote);
     this.excludeTechnologiesVoted();
+    this.appSession.voteAdded$.next('');
   }
 
   removeVote(vote: Vote) {
@@ -152,18 +165,12 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
             - maybe there is something there`;
           }
         } else {
+          this.votesHaveBeenAlreadySaved = true;
           const dialogRef = this.dialog.open(VoteSavedDialogueComponent, {
             width: '400px'
           });
 
-          dialogRef.afterClosed().subscribe((result) => {
-            // at this point we are sure the selected voting event is stored as state in the VotingEventService
-            // there is no reason to treat it as an Observable stream
-            if (result !== 'no-redirect') {
-              const route = getIdentificationRoute(this.votingEventService.getSelectedVotingEvent());
-              this.router.navigate([route]);
-            }
-          });
+          dialogRef.afterClosed().subscribe((result) => {});
         }
       },
       (err) => {
@@ -195,5 +202,21 @@ export class VoteComponent implements OnInit, AfterViewInit, OnDestroy {
         return `q${quadrantIndex + 1}`;
       })
     );
+  }
+
+  getSaveButtonName() {
+    return this.votesHaveBeenAlreadySaved ? `Save Again` : `Save`;
+  }
+
+  viewVoteCloud() {
+    this.voteCloudService.setVotingEvent(this.votingEventService.getSelectedVotingEvent());
+    this.router.navigate(['admin/vote-cloud']);
+  }
+
+  viewRadarForSelectedEvent() {
+    this.configuration$.subscribe((config) => {
+      const selectedEvent = this.votingEventService.getSelectedVotingEvent();
+      this.backend.getBlipsForSelectedEvent(selectedEvent, config);
+    });
   }
 }

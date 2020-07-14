@@ -149,8 +149,8 @@ $boxes_padding: 1.3rem;
 .help-dialogue-button {
   border: none;
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 0px;
+  right: 0px;
 }
 
 .vote-comment {
@@ -159,4 +159,17 @@ $boxes_padding: 1.3rem;
 
 .vote-tags {
   width: 100%
+}
+
+.panel-button {
+  margin-left: 5px;
+  margin-right: 5px;
+  
+}
+
+.external-links {
+  color: #ee0b77;
+  background-color: white;
+  font-weight: bold;
+  border: 1px solid #ee0b77;
 }

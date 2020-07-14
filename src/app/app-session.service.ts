@@ -1,4 +1,4 @@
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
 
 import { Injectable } from '@angular/core';
 import { VotingEvent } from 'src/app/models/voting-event';
@@ -15,6 +15,7 @@ export class AppSessionService {
   private selectedTechnology: Technology;
   selectedTechnology$ = new ReplaySubject<Technology>(1);
   private credentials: Credentials;
+  public voteAdded$ = new Subject<any>();
 
   constructor() {}
 
