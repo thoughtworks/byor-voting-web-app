@@ -65,6 +65,9 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
     this.technologiesToShowSubscription = this.techonologiesToShow().subscribe((t) => {
       this.technologiesToShow = t;
     });
+    this.appSession.voteAdded$.subscribe(() => {
+      this.clearSearch();
+    });
   }
 
   ngAfterViewInit() {

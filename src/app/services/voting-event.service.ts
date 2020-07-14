@@ -41,7 +41,7 @@ export class VotingEventService {
     // setVotingEvent method has been read in a skinny mode and therefore does not contain the technologies
     filter((techs) => !!techs),
     map((techs) => {
-      return techs.map((t) => t.quadrant.toUpperCase());
+      return techs.map((t) => t.quadrant);
     }),
     map((quadrants) => {
       const uniqueQuadrantNamesSet = new Set(quadrants);
