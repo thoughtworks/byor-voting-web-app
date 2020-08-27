@@ -170,7 +170,7 @@ export class TechnologyListComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   getClassForQuadrant(quadrant: string) {
-    const quadrantIndex = this.quadrants.indexOf(quadrant.toUpperCase());
+    const quadrantIndex = this.quadrants.indexOf(quadrant);
     return `q${quadrantIndex + 1}`;
   }
 
