@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HelpDialogueComponent } from './help-dialogue.component';
 
 import { MatCardModule } from '@angular/material/card';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 
 describe('HelpDialogueComponent', () => {
   let component: HelpDialogueComponent;

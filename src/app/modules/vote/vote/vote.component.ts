@@ -1,6 +1,6 @@
 import { Component, ViewChild, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 import { Observable, merge, Subscription } from 'rxjs';
 

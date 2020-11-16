@@ -1,5 +1,6 @@
 import { Component, Inject, ViewChild, ElementRef, OnInit, AfterViewInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 import { TwRings } from '../../../models/ring';
 import { HelpDialogueComponent } from './help-dialogue/help-dialogue.component';
