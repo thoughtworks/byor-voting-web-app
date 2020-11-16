@@ -31,7 +31,7 @@ commands:
       - setup_remote_docker:
           version: 18.06.0-ce
           # Inactive for now... needs to be whitelisted (and/or OS), see https://circleci.com/docs/2.0/docker-layer-caching/
-          docker_layer_caching: true
+          docker_layer_caching: false
       - add_missing_dependencies
       - checkout
       - restore_cache:
