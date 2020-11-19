@@ -1,5 +1,10 @@
 ARG NODE_VERSION=10.23.0-alpine
 
+FROM node:${NODE_VERSION} AS dev
+
+# Install bash, ssh client and git
+RUN apk add --update bash openssh git
+
 FROM node:${NODE_VERSION} AS build
 
 # Install Chromium and Chromium ChromeDriver
