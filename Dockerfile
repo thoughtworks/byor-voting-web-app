@@ -5,6 +5,8 @@ FROM node:${NODE_VERSION} AS dev
 # Install bash, ssh client and git
 RUN apk add --update bash openssh git
 
+WORKDIR /usr/src/app
+
 FROM node:${NODE_VERSION} AS build
 
 # Install Chromium and Chromium ChromeDriver
