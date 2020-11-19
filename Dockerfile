@@ -1,6 +1,6 @@
-ARG NODE_VERSION=10-alpine
+ARG NODE_VERSION=10.23.0-alpine
 
-FROM byoritaly/byor-voting-base:${NODE_VERSION} AS dev
+FROM node:${NODE_VERSION} AS build
 
 # Install Chromium and Chromium ChromeDriver
 RUN apk add --update chromium chromium-chromedriver
@@ -9,8 +9,6 @@ ENV CHROME_BIN="/usr/bin/chromium-browser"
 # Install AWS CLI
 RUN apk add --update make curl openssh python py-pip && \
     pip install awscli --upgrade
-
-FROM node:${NODE_VERSION} AS build
 
 WORKDIR /usr/src/app
 
