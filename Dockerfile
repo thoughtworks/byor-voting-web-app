@@ -7,8 +7,6 @@ RUN apk add --update bash openssh git
 
 WORKDIR /usr/src/app
 
-FROM node:${NODE_VERSION} AS build
-
 # Install Chromium and Chromium ChromeDriver
 RUN apk add --update chromium chromium-chromedriver
 ENV CHROME_BIN="/usr/bin/chromium-browser"
@@ -16,6 +14,8 @@ ENV CHROME_BIN="/usr/bin/chromium-browser"
 # Install AWS CLI
 RUN apk add --update make curl openssh python py-pip && \
     pip install awscli --upgrade
+
+FROM node:${NODE_VERSION} AS build
 
 WORKDIR /usr/src/app
 
