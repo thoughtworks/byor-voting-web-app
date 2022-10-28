@@ -24,7 +24,7 @@ This repository contains the source code of the **web-app**, if you are looking 
 </p>
 
 ## BUILD YOUR OWN RADAR (aka BYOR)
-ThoughtWorks build its own Technology Radar twice a year.
+Thoughtworks builds its own Technology Radar twice a year.
 > you can find the latest edition [here](https://www.thoughtworks.com/radar).
 
 We found it so useful that we decided to share the process and build some tools to help every organization run their own radar creation exercise.
@@ -39,14 +39,14 @@ This enables you to:
 - Work out what kind of technology organization you want to be
 - Set a path for future success
 
-ThoughtWorks encourage you to run the radar twice a year to keep your organisation aware of the fast changing technologies landscape.
+Thoughtworks encourages you to run the radar twice a year to keep your organisation aware of the fast changing technologies landscape.
 
 
 ## BYOR-VotingApp
 
 ### Main features
 
-The BYOR-VotingApp comes preloaded with around 943 technologies to choose among and 1.860 blips evaluated by ThoughtWorks to compare with, extracted from TW TechRadar Vol1 up to Vol20.
+The BYOR-VotingApp comes preloaded with around 943 technologies to choose among and 1.860 blips evaluated by Thoughtworks to compare with, extracted from TW TechRadar Vol1 up to Vol20.
 
 If you are planning to use the BYOR creation excercise, the BYOR-VotingApp can help you to:
 - [manage one or more BYOR sessions](docs/admin_guide.md#manage-voting-events)
@@ -57,7 +57,7 @@ If you are planning to use the BYOR creation excercise, the BYOR-VotingApp can h
 - :warning: **[*TODO*]** identify technologies where people disagree on rings and a further decision is needed
 - [display the most voted technologies in real-time](docs/admin_guide.md#generate-an-event-word-cloud)
 - [display the final tech radar resulting from the votes collected from the participants of the event](docs/admin_guide.md#generate-an-event-tech-radar)
-- [show, for matching technologies, the ratings coming from the blips collected alognside with the ones published by ThoughtWorks](docs/admin_guide.md#thoughtworks-blips)
+- [show, for matching technologies, the ratings coming from the blips collected alognside with the ones published by Thoughtworks](docs/admin_guide.md#thoughtworks-blips)
 
 All the Data is stored in a MongoDB database.
 
